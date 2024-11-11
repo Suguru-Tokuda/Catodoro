@@ -1,0 +1,666 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		BB0B25D12C9CF5F000487314 /* StopButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0B25D02C9CF5F000487314 /* StopButton.swift */; };
+		BB1817B92C7EB23300BF8DA8 /* TimerCircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1817B82C7EB23300BF8DA8 /* TimerCircleView.swift */; };
+		BB1817BB2C7EB31800BF8DA8 /* PlayPauseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1817BA2C7EB31800BF8DA8 /* PlayPauseButton.swift */; };
+		BB1817BE2C7EB57B00BF8DA8 /* UIView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1817BD2C7EB57B00BF8DA8 /* UIView+Extensions.swift */; };
+		BB1817C02C7EC35B00BF8DA8 /* Int+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1817BF2C7EC35B00BF8DA8 /* Int+Extensions.swift */; };
+		BB479AB12CB487E7000CBE6D /* TimerPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB479AB02CB487E7000CBE6D /* TimerPickerView.swift */; };
+		BB479AB72CB49013000CBE6D /* TimePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB479AB62CB49013000CBE6D /* TimePickerView.swift */; };
+		BB479AB92CC87A1C000CBE6D /* UIButton+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB479AB82CC87A1C000CBE6D /* UIButton+Extensions.swift */; };
+		BB479AC02CC88164000CBE6D /* CatLoudVoice.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BB479ABF2CC88164000CBE6D /* CatLoudVoice.mp3 */; };
+		BB479AC42CC883D1000CBE6D /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB479AC32CC883D1000CBE6D /* AudioManager.swift */; };
+		BB479AC62CC9D228000CBE6D /* PawButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB479AC52CC9D228000CBE6D /* PawButton.swift */; };
+		BB516E452CAB933C0004B95C /* TimerConfigViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB516E442CAB933C0004B95C /* TimerConfigViewController.swift */; };
+		BB516E472CAB94D70004B95C /* TimerConfigViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB516E462CAB94D70004B95C /* TimerConfigViewModel.swift */; };
+		BB516E4B2CAB97B90004B95C /* TimerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB516E4A2CAB97B90004B95C /* TimerModel.swift */; };
+		BB516E4E2CAB98930004B95C /* TimerConfigModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB516E4D2CAB98930004B95C /* TimerConfigModel.swift */; };
+		BB8D283D2CE14E57001D73B1 /* TimerStartButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8D283C2CE14E57001D73B1 /* TimerStartButton.swift */; };
+		BB8D283F2CE15000001D73B1 /* SettingSubtitleLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8D283E2CE15000001D73B1 /* SettingSubtitleLabel.swift */; };
+		BB8D28412CE151A3001D73B1 /* ColorPickOptionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8D28402CE151A3001D73B1 /* ColorPickOptionViewCell.swift */; };
+		BB8D28432CE1559D001D73B1 /* TimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8D28422CE1559D001D73B1 /* TimerView.swift */; };
+		BB8D28452CE1595E001D73B1 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8D28442CE1595E001D73B1 /* SettingsViewModel.swift */; };
+		BB8D28472CE1597E001D73B1 /* ColorOptionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8D28462CE1597E001D73B1 /* ColorOptionModel.swift */; };
+		BB8D28492CE15B60001D73B1 /* ColorOptionsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8D28482CE15B60001D73B1 /* ColorOptionsList.swift */; };
+		BB8D28502CE15EE6001D73B1 /* cat_meow_regular.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BB8D284E2CE15EE6001D73B1 /* cat_meow_regular.mp3 */; };
+		BB8D28512CE15EE6001D73B1 /* cat_meow_loud.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BB8D284D2CE15EE6001D73B1 /* cat_meow_loud.mp3 */; };
+		BB8D28522CE15EE6001D73B1 /* kitty_meow.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BB8D284F2CE15EE6001D73B1 /* kitty_meow.mp3 */; };
+		BB8D28532CE15EE6001D73B1 /* angry_cat.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BB8D284C2CE15EE6001D73B1 /* angry_cat.mp3 */; };
+		BB8D28552CE18D8F001D73B1 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8D28542CE18D8F001D73B1 /* SettingsView.swift */; };
+		BB8D28572CE18E4B001D73B1 /* TimerConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8D28562CE18E4B001D73B1 /* TimerConfigView.swift */; };
+		BB8D28592CE18E73001D73B1 /* TimerConfigSubTitle.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8D28582CE18E73001D73B1 /* TimerConfigSubTitle.swift */; };
+		BBA3CDA22C866749002A3E7B /* UIStackView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA3CDA12C866749002A3E7B /* UIStackView+Extensions.swift */; };
+		BBA3CDA42C866A3F002A3E7B /* UIImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA3CDA32C866A3F002A3E7B /* UIImage+Extensions.swift */; };
+		BBA3CDA62C868CA6002A3E7B /* TimeInterval+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA3CDA52C868CA6002A3E7B /* TimeInterval+Extensions.swift */; };
+		BBF4F4582C763FF80079448E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F4572C763FF80079448E /* AppDelegate.swift */; };
+		BBF4F45A2C763FF80079448E /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F4592C763FF80079448E /* SceneDelegate.swift */; };
+		BBF4F45C2C763FF80079448E /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F45B2C763FF80079448E /* ViewController.swift */; };
+		BBF4F4612C763FF90079448E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BBF4F4602C763FF90079448E /* Assets.xcassets */; };
+		BBF4F4642C763FF90079448E /* Base in Resources */ = {isa = PBXBuildFile; fileRef = BBF4F4632C763FF90079448E /* Base */; };
+		BBF4F4702C76441F0079448E /* Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F46F2C76441F0079448E /* Coordinator.swift */; };
+		BBF4F4722C7644A20079448E /* TabCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F4712C7644A20079448E /* TabCoordinator.swift */; };
+		BBF4F4762C7644FB0079448E /* CustomNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F4752C7644FB0079448E /* CustomNavigationController.swift */; };
+		BBF4F47C2C7646EE0079448E /* NSObject+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F47B2C7646EE0079448E /* NSObject+Extensions.swift */; };
+		BBF4F4802C7648510079448E /* TimerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F47F2C7648510079448E /* TimerViewController.swift */; };
+		BBF4F4822C7648820079448E /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F4812C7648820079448E /* SettingsViewController.swift */; };
+		BBF4F4842C7654A10079448E /* TimerCoordiantor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F4832C7654A10079448E /* TimerCoordiantor.swift */; };
+		BBF4F4862C7673ED0079448E /* MainCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F4852C7673ED0079448E /* MainCoordinator.swift */; };
+		BBF4F4882C767A420079448E /* SettingsCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F4872C767A420079448E /* SettingsCoordinator.swift */; };
+		BBF4F48A2C76B5E10079448E /* PresetsCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F4892C76B5E10079448E /* PresetsCoordinator.swift */; };
+		BBF4F48C2C76B61A0079448E /* PresetsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F48B2C76B61A0079448E /* PresetsViewController.swift */; };
+		BBF4F48E2C76D2C90079448E /* TimerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F48D2C76D2C90079448E /* TimerViewModel.swift */; };
+		BBF4F4912C76D3B10079448E /* CatodoroPersistentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F4902C76D3B10079448E /* CatodoroPersistentController.swift */; };
+		BBF4F4942C76D3EE0079448E /* CatodoroCoreData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F4922C76D3EE0079448E /* CatodoroCoreData.xcdatamodeld */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		BB0B25D02C9CF5F000487314 /* StopButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopButton.swift; sourceTree = "<group>"; };
+		BB1817B82C7EB23300BF8DA8 /* TimerCircleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerCircleView.swift; sourceTree = "<group>"; };
+		BB1817BA2C7EB31800BF8DA8 /* PlayPauseButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayPauseButton.swift; sourceTree = "<group>"; };
+		BB1817BD2C7EB57B00BF8DA8 /* UIView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extensions.swift"; sourceTree = "<group>"; };
+		BB1817BF2C7EC35B00BF8DA8 /* Int+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Int+Extensions.swift"; sourceTree = "<group>"; };
+		BB479AB02CB487E7000CBE6D /* TimerPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerPickerView.swift; sourceTree = "<group>"; };
+		BB479AB62CB49013000CBE6D /* TimePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimePickerView.swift; sourceTree = "<group>"; };
+		BB479AB82CC87A1C000CBE6D /* UIButton+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+Extensions.swift"; sourceTree = "<group>"; };
+		BB479ABF2CC88164000CBE6D /* CatLoudVoice.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = CatLoudVoice.mp3; sourceTree = "<group>"; };
+		BB479AC32CC883D1000CBE6D /* AudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
+		BB479AC52CC9D228000CBE6D /* PawButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PawButton.swift; sourceTree = "<group>"; };
+		BB516E442CAB933C0004B95C /* TimerConfigViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerConfigViewController.swift; sourceTree = "<group>"; };
+		BB516E462CAB94D70004B95C /* TimerConfigViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerConfigViewModel.swift; sourceTree = "<group>"; };
+		BB516E4A2CAB97B90004B95C /* TimerModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerModel.swift; sourceTree = "<group>"; };
+		BB516E4D2CAB98930004B95C /* TimerConfigModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerConfigModel.swift; sourceTree = "<group>"; };
+		BB8D283C2CE14E57001D73B1 /* TimerStartButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerStartButton.swift; sourceTree = "<group>"; };
+		BB8D283E2CE15000001D73B1 /* SettingSubtitleLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingSubtitleLabel.swift; sourceTree = "<group>"; };
+		BB8D28402CE151A3001D73B1 /* ColorPickOptionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickOptionViewCell.swift; sourceTree = "<group>"; };
+		BB8D28422CE1559D001D73B1 /* TimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerView.swift; sourceTree = "<group>"; };
+		BB8D28442CE1595E001D73B1 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		BB8D28462CE1597E001D73B1 /* ColorOptionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorOptionModel.swift; sourceTree = "<group>"; };
+		BB8D28482CE15B60001D73B1 /* ColorOptionsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorOptionsList.swift; sourceTree = "<group>"; };
+		BB8D284C2CE15EE6001D73B1 /* angry_cat.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = angry_cat.mp3; sourceTree = "<group>"; };
+		BB8D284D2CE15EE6001D73B1 /* cat_meow_loud.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = cat_meow_loud.mp3; sourceTree = "<group>"; };
+		BB8D284E2CE15EE6001D73B1 /* cat_meow_regular.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = cat_meow_regular.mp3; sourceTree = "<group>"; };
+		BB8D284F2CE15EE6001D73B1 /* kitty_meow.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = kitty_meow.mp3; sourceTree = "<group>"; };
+		BB8D28542CE18D8F001D73B1 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		BB8D28562CE18E4B001D73B1 /* TimerConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerConfigView.swift; sourceTree = "<group>"; };
+		BB8D28582CE18E73001D73B1 /* TimerConfigSubTitle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerConfigSubTitle.swift; sourceTree = "<group>"; };
+		BBA3CDA12C866749002A3E7B /* UIStackView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIStackView+Extensions.swift"; sourceTree = "<group>"; };
+		BBA3CDA32C866A3F002A3E7B /* UIImage+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Extensions.swift"; sourceTree = "<group>"; };
+		BBA3CDA52C868CA6002A3E7B /* TimeInterval+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeInterval+Extensions.swift"; sourceTree = "<group>"; };
+		BBF4F4542C763FF80079448E /* Catodoro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Catodoro.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BBF4F4572C763FF80079448E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		BBF4F4592C763FF80079448E /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		BBF4F45B2C763FF80079448E /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		BBF4F4602C763FF90079448E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BBF4F4632C763FF90079448E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		BBF4F4652C763FF90079448E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BBF4F46F2C76441F0079448E /* Coordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinator.swift; sourceTree = "<group>"; };
+		BBF4F4712C7644A20079448E /* TabCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabCoordinator.swift; sourceTree = "<group>"; };
+		BBF4F4752C7644FB0079448E /* CustomNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNavigationController.swift; sourceTree = "<group>"; };
+		BBF4F47B2C7646EE0079448E /* NSObject+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSObject+Extensions.swift"; sourceTree = "<group>"; };
+		BBF4F47F2C7648510079448E /* TimerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerViewController.swift; sourceTree = "<group>"; };
+		BBF4F4812C7648820079448E /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		BBF4F4832C7654A10079448E /* TimerCoordiantor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerCoordiantor.swift; sourceTree = "<group>"; };
+		BBF4F4852C7673ED0079448E /* MainCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainCoordinator.swift; sourceTree = "<group>"; };
+		BBF4F4872C767A420079448E /* SettingsCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsCoordinator.swift; sourceTree = "<group>"; };
+		BBF4F4892C76B5E10079448E /* PresetsCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetsCoordinator.swift; sourceTree = "<group>"; };
+		BBF4F48B2C76B61A0079448E /* PresetsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetsViewController.swift; sourceTree = "<group>"; };
+		BBF4F48D2C76D2C90079448E /* TimerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerViewModel.swift; sourceTree = "<group>"; };
+		BBF4F4902C76D3B10079448E /* CatodoroPersistentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatodoroPersistentController.swift; sourceTree = "<group>"; };
+		BBF4F4932C76D3EE0079448E /* CatodoroCoreData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CatodoroCoreData.xcdatamodel; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		BBF4F4512C763FF80079448E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		BB1817B52C7EB1EA00BF8DA8 /* Timer */ = {
+			isa = PBXGroup;
+			children = (
+				BB479AC52CC9D228000CBE6D /* PawButton.swift */,
+				BB1817BA2C7EB31800BF8DA8 /* PlayPauseButton.swift */,
+				BB0B25D02C9CF5F000487314 /* StopButton.swift */,
+				BB479AB62CB49013000CBE6D /* TimePickerView.swift */,
+				BB1817B82C7EB23300BF8DA8 /* TimerCircleView.swift */,
+				BB8D28582CE18E73001D73B1 /* TimerConfigSubTitle.swift */,
+				BB8D28562CE18E4B001D73B1 /* TimerConfigView.swift */,
+				BB479AB02CB487E7000CBE6D /* TimerPickerView.swift */,
+				BB8D283C2CE14E57001D73B1 /* TimerStartButton.swift */,
+				BB8D28422CE1559D001D73B1 /* TimerView.swift */,
+			);
+			path = Timer;
+			sourceTree = "<group>";
+		};
+		BB1817B62C7EB1F100BF8DA8 /* Presets */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Presets;
+			sourceTree = "<group>";
+		};
+		BB1817B72C7EB20000BF8DA8 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				BB8D28482CE15B60001D73B1 /* ColorOptionsList.swift */,
+				BB8D28402CE151A3001D73B1 /* ColorPickOptionViewCell.swift */,
+				BB8D283E2CE15000001D73B1 /* SettingSubtitleLabel.swift */,
+				BB8D28542CE18D8F001D73B1 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		BB479ABE2CC8813E000CBE6D /* VoiceFiles */ = {
+			isa = PBXGroup;
+			children = (
+				BB8D284C2CE15EE6001D73B1 /* angry_cat.mp3 */,
+				BB8D284D2CE15EE6001D73B1 /* cat_meow_loud.mp3 */,
+				BB8D284E2CE15EE6001D73B1 /* cat_meow_regular.mp3 */,
+				BB479ABF2CC88164000CBE6D /* CatLoudVoice.mp3 */,
+				BB8D284F2CE15EE6001D73B1 /* kitty_meow.mp3 */,
+			);
+			path = VoiceFiles;
+			sourceTree = "<group>";
+		};
+		BB479AC22CC883BF000CBE6D /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				BB479AC32CC883D1000CBE6D /* AudioManager.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+		BB516E4C2CAB97CA0004B95C /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				BB8D28462CE1597E001D73B1 /* ColorOptionModel.swift */,
+				BB516E4D2CAB98930004B95C /* TimerConfigModel.swift */,
+				BB516E4A2CAB97B90004B95C /* TimerModel.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		BBF4F44B2C763FF80079448E = {
+			isa = PBXGroup;
+			children = (
+				BBF4F4562C763FF80079448E /* Catodoro */,
+				BBF4F4552C763FF80079448E /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		BBF4F4552C763FF80079448E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BBF4F4542C763FF80079448E /* Catodoro.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BBF4F4562C763FF80079448E /* Catodoro */ = {
+			isa = PBXGroup;
+			children = (
+				BBF4F4652C763FF90079448E /* Info.plist */,
+				BBF4F4572C763FF80079448E /* AppDelegate.swift */,
+				BBF4F4592C763FF80079448E /* SceneDelegate.swift */,
+				BBF4F45B2C763FF80079448E /* ViewController.swift */,
+				BBF4F4602C763FF90079448E /* Assets.xcassets */,
+				BBF4F4622C763FF90079448E /* LaunchScreen.storyboard */,
+				BBF4F46B2C76428D0079448E /* Coordinators */,
+				BBF4F48F2C76D3900079448E /* CoreData */,
+				BBF4F47A2C7646BA0079448E /* Extensions */,
+				BB479AC22CC883BF000CBE6D /* Helpers */,
+				BB516E4C2CAB97CA0004B95C /* Models */,
+				BBF4F46D2C7642ED0079448E /* ViewControllers */,
+				BBF4F46C2C7642940079448E /* ViewModels */,
+				BBF4F46E2C7643790079448E /* Views */,
+				BB479ABE2CC8813E000CBE6D /* VoiceFiles */,
+			);
+			path = Catodoro;
+			sourceTree = "<group>";
+		};
+		BBF4F46B2C76428D0079448E /* Coordinators */ = {
+			isa = PBXGroup;
+			children = (
+				BBF4F46F2C76441F0079448E /* Coordinator.swift */,
+				BBF4F4852C7673ED0079448E /* MainCoordinator.swift */,
+				BBF4F4892C76B5E10079448E /* PresetsCoordinator.swift */,
+				BBF4F4872C767A420079448E /* SettingsCoordinator.swift */,
+				BBF4F4712C7644A20079448E /* TabCoordinator.swift */,
+				BBF4F4832C7654A10079448E /* TimerCoordiantor.swift */,
+			);
+			path = Coordinators;
+			sourceTree = "<group>";
+		};
+		BBF4F46C2C7642940079448E /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				BB8D28442CE1595E001D73B1 /* SettingsViewModel.swift */,
+				BB516E462CAB94D70004B95C /* TimerConfigViewModel.swift */,
+				BBF4F48D2C76D2C90079448E /* TimerViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		BBF4F46D2C7642ED0079448E /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				BBF4F4742C7644E10079448E /* Core */,
+				BBF4F4732C7644C70079448E /* General */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		BBF4F46E2C7643790079448E /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				BB1817B62C7EB1F100BF8DA8 /* Presets */,
+				BB1817B72C7EB20000BF8DA8 /* Settings */,
+				BB1817B52C7EB1EA00BF8DA8 /* Timer */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		BBF4F4732C7644C70079448E /* General */ = {
+			isa = PBXGroup;
+			children = (
+				BBF4F4752C7644FB0079448E /* CustomNavigationController.swift */,
+			);
+			path = General;
+			sourceTree = "<group>";
+		};
+		BBF4F4742C7644E10079448E /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				BBF4F48B2C76B61A0079448E /* PresetsViewController.swift */,
+				BBF4F4812C7648820079448E /* SettingsViewController.swift */,
+				BB516E442CAB933C0004B95C /* TimerConfigViewController.swift */,
+				BBF4F47F2C7648510079448E /* TimerViewController.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		BBF4F47A2C7646BA0079448E /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				BB1817BF2C7EC35B00BF8DA8 /* Int+Extensions.swift */,
+				BBF4F47B2C7646EE0079448E /* NSObject+Extensions.swift */,
+				BBA3CDA52C868CA6002A3E7B /* TimeInterval+Extensions.swift */,
+				BB479AB82CC87A1C000CBE6D /* UIButton+Extensions.swift */,
+				BBA3CDA32C866A3F002A3E7B /* UIImage+Extensions.swift */,
+				BBA3CDA12C866749002A3E7B /* UIStackView+Extensions.swift */,
+				BB1817BD2C7EB57B00BF8DA8 /* UIView+Extensions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		BBF4F48F2C76D3900079448E /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+				BBF4F4902C76D3B10079448E /* CatodoroPersistentController.swift */,
+				BBF4F4922C76D3EE0079448E /* CatodoroCoreData.xcdatamodeld */,
+			);
+			path = CoreData;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		BBF4F4532C763FF80079448E /* Catodoro */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BBF4F4682C763FF90079448E /* Build configuration list for PBXNativeTarget "Catodoro" */;
+			buildPhases = (
+				BBF4F4502C763FF80079448E /* Sources */,
+				BBF4F4512C763FF80079448E /* Frameworks */,
+				BBF4F4522C763FF80079448E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Catodoro;
+			productName = Catodoro;
+			productReference = BBF4F4542C763FF80079448E /* Catodoro.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BBF4F44C2C763FF80079448E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1540;
+				LastUpgradeCheck = 1540;
+				TargetAttributes = {
+					BBF4F4532C763FF80079448E = {
+						CreatedOnToolsVersion = 15.4;
+					};
+				};
+			};
+			buildConfigurationList = BBF4F44F2C763FF80079448E /* Build configuration list for PBXProject "Catodoro" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = BBF4F44B2C763FF80079448E;
+			productRefGroup = BBF4F4552C763FF80079448E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				BBF4F4532C763FF80079448E /* Catodoro */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		BBF4F4522C763FF80079448E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BBF4F4612C763FF90079448E /* Assets.xcassets in Resources */,
+				BB479AC02CC88164000CBE6D /* CatLoudVoice.mp3 in Resources */,
+				BB8D28502CE15EE6001D73B1 /* cat_meow_regular.mp3 in Resources */,
+				BB8D28512CE15EE6001D73B1 /* cat_meow_loud.mp3 in Resources */,
+				BB8D28522CE15EE6001D73B1 /* kitty_meow.mp3 in Resources */,
+				BB8D28532CE15EE6001D73B1 /* angry_cat.mp3 in Resources */,
+				BBF4F4642C763FF90079448E /* Base in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		BBF4F4502C763FF80079448E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BBF4F4762C7644FB0079448E /* CustomNavigationController.swift in Sources */,
+				BB516E4E2CAB98930004B95C /* TimerConfigModel.swift in Sources */,
+				BBF4F4942C76D3EE0079448E /* CatodoroCoreData.xcdatamodeld in Sources */,
+				BB0B25D12C9CF5F000487314 /* StopButton.swift in Sources */,
+				BB8D28412CE151A3001D73B1 /* ColorPickOptionViewCell.swift in Sources */,
+				BBF4F4862C7673ED0079448E /* MainCoordinator.swift in Sources */,
+				BB479AC62CC9D228000CBE6D /* PawButton.swift in Sources */,
+				BB1817B92C7EB23300BF8DA8 /* TimerCircleView.swift in Sources */,
+				BBF4F4882C767A420079448E /* SettingsCoordinator.swift in Sources */,
+				BBF4F4802C7648510079448E /* TimerViewController.swift in Sources */,
+				BB516E452CAB933C0004B95C /* TimerConfigViewController.swift in Sources */,
+				BBA3CDA22C866749002A3E7B /* UIStackView+Extensions.swift in Sources */,
+				BB8D28552CE18D8F001D73B1 /* SettingsView.swift in Sources */,
+				BBF4F4912C76D3B10079448E /* CatodoroPersistentController.swift in Sources */,
+				BB1817C02C7EC35B00BF8DA8 /* Int+Extensions.swift in Sources */,
+				BB8D28592CE18E73001D73B1 /* TimerConfigSubTitle.swift in Sources */,
+				BB8D28452CE1595E001D73B1 /* SettingsViewModel.swift in Sources */,
+				BBF4F48C2C76B61A0079448E /* PresetsViewController.swift in Sources */,
+				BB479AB72CB49013000CBE6D /* TimePickerView.swift in Sources */,
+				BB8D283F2CE15000001D73B1 /* SettingSubtitleLabel.swift in Sources */,
+				BB8D28432CE1559D001D73B1 /* TimerView.swift in Sources */,
+				BBF4F4822C7648820079448E /* SettingsViewController.swift in Sources */,
+				BB1817BE2C7EB57B00BF8DA8 /* UIView+Extensions.swift in Sources */,
+				BBF4F45C2C763FF80079448E /* ViewController.swift in Sources */,
+				BB516E472CAB94D70004B95C /* TimerConfigViewModel.swift in Sources */,
+				BBF4F48A2C76B5E10079448E /* PresetsCoordinator.swift in Sources */,
+				BB479AC42CC883D1000CBE6D /* AudioManager.swift in Sources */,
+				BB8D28492CE15B60001D73B1 /* ColorOptionsList.swift in Sources */,
+				BBA3CDA42C866A3F002A3E7B /* UIImage+Extensions.swift in Sources */,
+				BBF4F47C2C7646EE0079448E /* NSObject+Extensions.swift in Sources */,
+				BB8D28472CE1597E001D73B1 /* ColorOptionModel.swift in Sources */,
+				BB8D283D2CE14E57001D73B1 /* TimerStartButton.swift in Sources */,
+				BBF4F4702C76441F0079448E /* Coordinator.swift in Sources */,
+				BBF4F4582C763FF80079448E /* AppDelegate.swift in Sources */,
+				BB1817BB2C7EB31800BF8DA8 /* PlayPauseButton.swift in Sources */,
+				BBF4F48E2C76D2C90079448E /* TimerViewModel.swift in Sources */,
+				BBF4F4842C7654A10079448E /* TimerCoordiantor.swift in Sources */,
+				BB479AB12CB487E7000CBE6D /* TimerPickerView.swift in Sources */,
+				BB8D28572CE18E4B001D73B1 /* TimerConfigView.swift in Sources */,
+				BBA3CDA62C868CA6002A3E7B /* TimeInterval+Extensions.swift in Sources */,
+				BB516E4B2CAB97B90004B95C /* TimerModel.swift in Sources */,
+				BBF4F4722C7644A20079448E /* TabCoordinator.swift in Sources */,
+				BB479AB92CC87A1C000CBE6D /* UIButton+Extensions.swift in Sources */,
+				BBF4F45A2C763FF80079448E /* SceneDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		BBF4F4622C763FF90079448E /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BBF4F4632C763FF90079448E /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		BBF4F4662C763FF90079448E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		BBF4F4672C763FF90079448E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		BBF4F4692C763FF90079448E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FVEGF5DQ7U;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Catodoro/Info.plist;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = sugurutokuda.Catodoro;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		BBF4F46A2C763FF90079448E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FVEGF5DQ7U;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Catodoro/Info.plist;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = sugurutokuda.Catodoro;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		BBF4F44F2C763FF80079448E /* Build configuration list for PBXProject "Catodoro" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BBF4F4662C763FF90079448E /* Debug */,
+				BBF4F4672C763FF90079448E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BBF4F4682C763FF90079448E /* Build configuration list for PBXNativeTarget "Catodoro" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BBF4F4692C763FF90079448E /* Debug */,
+				BBF4F46A2C763FF90079448E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		BBF4F4922C76D3EE0079448E /* CatodoroCoreData.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				BBF4F4932C76D3EE0079448E /* CatodoroCoreData.xcdatamodel */,
+			);
+			currentVersion = BBF4F4932C76D3EE0079448E /* CatodoroCoreData.xcdatamodel */;
+			name = CatodoroCoreData.xcdatamodeld;
+			path = "/Users/suguru/Documents/xcode-workspace/Catodoro/Catodoro/CoreData/CatodoroCoreData.xcdatamodeld";
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = BBF4F44C2C763FF80079448E /* Project object */;
+}
