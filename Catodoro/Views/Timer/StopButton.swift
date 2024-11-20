@@ -23,7 +23,7 @@ class StopButton: UIButton {
     }
 
     required init?(coder: NSCoder) {
-        fatalError()
+        nil
     }
 }
 

@@ -43,7 +43,7 @@ class PawButton: UIButton {
     }
     
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        nil
     }
 
     func setColor(_ color: UIColor, for state: UIControl.State) {

@@ -33,24 +33,28 @@ class TimerConfigViewController: UIViewController {
     }
 
     private func setupEventHandlers() {
-        timerConfigView.onMainTimerSelect = { (hours, minutes, seconds) in
+        timerConfigView.onMainTimerSelect = { [weak self] (hours, minutes, seconds) in
+            guard let self else { return }
             self.vm.timerModel.mainTimer = .init(hours: hours,
                                                  minutes: minutes,
                                                  seconds: seconds)
             self.timerConfigView.setStartButtonStatus(isEnabled: self.vm.isValidSelection)
         }
 
-        timerConfigView.onBreakTimerSelect = { (hours, minutes, seconds) in
+        timerConfigView.onBreakTimerSelect = { [weak self] (hours, minutes, seconds) in
+            guard let self else { return }
             self.vm.timerModel.interval = .init(hours: hours,
                                                 minutes: minutes,
                                                 seconds: seconds)
         }
 
-        timerConfigView.onIntervalSelect = { intervals in
+        timerConfigView.onIntervalSelect = { [weak self] intervals in
+            guard let self else { return }
             self.vm.timerModel.numberOfIntervals = intervals
         }
 
-        timerConfigView.onStartButtonTap = {
+        timerConfigView.onStartButtonTap = { [weak self] in
+            guard let self else { return }
             if let coordinator = self.coordinator as? TimerCoordiantor {
                 coordinator.navigateToTimerView(viewModel: self.vm)
             }

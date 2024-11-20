@@ -22,8 +22,7 @@ class TimerCircleView: UIView {
     }
 
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupCircleLayers()
+        nil
     }
 
     func setupCircleLayers() {
