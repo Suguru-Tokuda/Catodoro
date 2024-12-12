@@ -7,24 +7,33 @@
 
 import Foundation
 
+struct SettingModel {
+    let iconName: String
+    let title: String
+}
+
+enum SettingOptions: String, CaseIterable {
+    case color = "Color"
+    case sound = "Sound"
+
+    var iconName: String {
+        switch self {
+            case .color: return "paintbrush.fill"
+            case .sound: return "speaker"
+        }
+    }
+}
+
 class SettingsViewModel {
     var selectedColorOption: ColorOptionModel?
-    let colorOptions: [ColorOptionModel]
+    let settingOptions: [SettingModel]
 
-    init(selectedColorOption: ColorOptionModel? = nil,
-         colorOptions: [ColorOptionModel] = [
-            .init(color: .neonBlue, colorName: "Blue"),
-            .init(color: .neonGreen, colorName: "Green"),
-            .init(color: .neonOrange, colorName: "Orange"),
-            .init(color: .neonPink, colorName: "Pink"),
-            .init(color: .neonPurple, colorName: "Purple"),
-            .init(color: .yellow, colorName: "Yellow")
-         ]) {
-            self.selectedColorOption = selectedColorOption
-            self.colorOptions = colorOptions
-
-             if self.selectedColorOption == nil {
-                 self.selectedColorOption = colorOptions.first
-             }
+    init(selectedColorOption: ColorOptionModel? = nil) {
+        self.selectedColorOption = selectedColorOption
+        var settingOptions: [SettingModel] = []
+        SettingOptions.allCases.forEach {
+            settingOptions.append(.init(iconName: $0.iconName, title: $0.rawValue))
+        }
+        self.settingOptions = settingOptions
     }
 }

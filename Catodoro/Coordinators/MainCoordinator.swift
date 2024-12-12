@@ -68,9 +68,12 @@ class MainCoordinator: MainCoordinatorProtocol {
     var navigationController: UINavigationController
     var childCoordinators = [Coordinator]()
     var type: CoordinatorType { .app }
+    var preferences: CatodoroPreferences?
 
-    required init(_ navigationController: UINavigationController = CustomNavigationController()) {
+    required init(_ navigationController: UINavigationController = CustomNavigationController(),
+                  preferences: CatodoroPreferences?) {
         self.navigationController = navigationController
+        self.preferences = preferences
         navigationController.setNavigationBarHidden(true, animated: false)
     }
 
@@ -79,7 +82,8 @@ class MainCoordinator: MainCoordinatorProtocol {
     }
 
     func showMainFlow() {
-        let tabCoordinator = TabCoordinator.init(navigationController)
+        let tabCoordinator = TabCoordinator.init(navigationController,
+                                                 preferences: preferences)
         tabCoordinator.finishDelegate = self
         tabCoordinator.start()
         childCoordinators.append(tabCoordinator)

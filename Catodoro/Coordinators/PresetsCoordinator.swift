@@ -7,7 +7,12 @@
 
 import UIKit
 
+protocol PresetsCoordinatorDelegate: AnyObject {
+    func startTimer(model: PresetModel)
+}
+
 class PresetsCoordinator: Coordinator {
+    weak var delegate: PresetsCoordinatorDelegate?
     var finishDelegate: CoordinatorFinishDelegate?
     var type: CoordinatorType { .feature }
     var childCoordinators: [Coordinator] = []
@@ -18,8 +23,13 @@ class PresetsCoordinator: Coordinator {
     }
 
     func start() {
-        let settingsViewController = PresetsViewController()
-        settingsViewController.setCoordinator(coordinator: self)
-        self.navigationController.pushViewController(settingsViewController, animated: false)
+        let presetsViewController = PresetsViewController()
+        presetsViewController.setCoordinator(coordinator: self)
+        presetsViewController.onPresetSelected = { [weak self] preset in
+            guard let self else { return }
+            delegate?.startTimer(model: preset)
+        }
+
+        self.navigationController.pushViewController(presetsViewController, animated: false)
     }
 }

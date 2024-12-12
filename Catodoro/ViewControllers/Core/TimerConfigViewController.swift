@@ -16,14 +16,17 @@ class TimerConfigViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupUI()
+        setupSubviews()
+        setupConstraints()
         setupEventHandlers()
         setUpBackButtonTitle()
     }
 
-    private func setupUI() {
+    private func setupSubviews() {
         view.addAutolayoutSubview(timerConfigView)
+    }
 
+    private func setupConstraints() {
         NSLayoutConstraint.activate([
             timerConfigView.topAnchor.constraint(equalTo: view.topAnchor),
             timerConfigView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
@@ -50,7 +53,7 @@ class TimerConfigViewController: UIViewController {
 
         timerConfigView.onIntervalSelect = { [weak self] intervals in
             guard let self else { return }
-            self.vm.timerModel.numberOfIntervals = intervals
+            self.vm.timerModel.intervals = intervals
         }
 
         timerConfigView.onStartButtonTap = { [weak self] in

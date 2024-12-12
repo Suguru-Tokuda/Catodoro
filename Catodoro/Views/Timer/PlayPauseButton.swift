@@ -23,16 +23,17 @@ enum TimerButtonStatus {
 
 class PlayPauseButton: UIButton {
     var onButtonTap: (() -> ())?
-    let buttonHeight = 80
-    let buttonWidth = 80
+    let buttonHeight: CGFloat
+    let buttonWidth: CGFloat
     let config = UIImage.SymbolConfiguration(weight: .thin)
 
-    init() {
+    init(buttonHeight: CGFloat = 80,
+         buttonWidth: CGFloat = 80,
+         buttonStatus: TimerButtonStatus = .playing) {
+        self.buttonHeight = buttonHeight
+        self.buttonWidth = buttonWidth
         super.init(frame: .zero)
-        self.setImage(UIImage(systemName: "play", withConfiguration: config)?
-                        .resizedTo(.init(width: buttonWidth, height: buttonHeight))
-                        .withTintColor(.white),
-                      for: .normal)
+        configure(timerStatus: buttonStatus)
         self.addTarget(self, action: #selector(handleButtonTap), for: .touchUpInside)
     }
     

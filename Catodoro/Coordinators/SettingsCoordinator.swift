@@ -12,6 +12,7 @@ class SettingsCoordinator: Coordinator {
     var type: CoordinatorType { .feature }
     var childCoordinators: [Coordinator] = []
     var navigationController: UINavigationController
+    var preferences: CatodoroPreferences?
 
     init(navigationController: UINavigationController = CustomNavigationController()) {
         self.navigationController = navigationController
@@ -20,6 +21,37 @@ class SettingsCoordinator: Coordinator {
     func start() {
         let settingsViewController = SettingsViewController()
         settingsViewController.setCoordinator(coordinator: self)
-        self.navigationController.pushViewController(settingsViewController, animated: false)
+        settingsViewController.preferences = preferences
+        navigationController.pushViewController(settingsViewController, animated: false)
+    }
+
+    func navigateToColorSelectionsView() {
+        var options: [OptionModel] = []
+        let selectedColorCode = preferences?.color ?? ColorOptions.white.code
+        ColorOptions.allCases.forEach {
+            options.append(.init(id: $0.code, title: $0.rawValue, selected: $0.code == selectedColorCode))
+        }
+        let viewModel = OptionSelectionViewModel(options: options)
+        viewModel.preferences = preferences
+        viewModel.selectedId = selectedColorCode
+
+        let colorSelectionViewController = ColorSelectionViewController(vm: viewModel, titleLabelText: "Color")
+        colorSelectionViewController.setCoordinator(coordinator: self)
+        navigationController.pushViewController(colorSelectionViewController, animated: true)
+    }
+
+    func navigateToSoundSelectionsView() {
+        var options: [OptionModel] = []
+        let selectedSoundId = preferences?.sound ?? SoundOptions.meowRegular.id
+        SoundOptions.allCases.forEach {
+            options.append(.init(id: $0.id, title: $0.rawValue, selected: $0.id == selectedSoundId))
+        }
+        let viewModel = OptionSelectionViewModel(options: options)
+        viewModel.preferences = preferences
+        viewModel.selectedId = selectedSoundId
+        
+        let soundSelectionViewController = SoundSelectionViewController(vm: viewModel, titleLabelText: "Sound")
+        soundSelectionViewController.setCoordinator(coordinator: self)
+        navigationController.pushViewController(soundSelectionViewController, animated: true)
     }
 }

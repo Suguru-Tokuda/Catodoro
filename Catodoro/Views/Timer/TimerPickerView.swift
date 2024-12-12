@@ -63,7 +63,8 @@ class TimerPickerView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setupUI()
+        setupSubviews()
+        setupConstraints()
         setupEventHandlers()
     }
     
@@ -71,7 +72,7 @@ class TimerPickerView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupUI() {
+    private func setupSubviews() {
         addAutolayoutSubview(outerStackView)
 
         outerStackView.addArrangedSubviews([
@@ -90,7 +91,9 @@ class TimerPickerView: UIView {
             minutePicker,
             secondPicker
         ])
-    
+    }
+
+    private func setupConstraints() {
         NSLayoutConstraint.activate([
             outerStackView.topAnchor.constraint(equalTo: topAnchor),
             outerStackView.leadingAnchor.constraint(equalTo: leadingAnchor),

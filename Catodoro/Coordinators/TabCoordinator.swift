@@ -31,8 +31,12 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
     var presetsCoordiantor: PresetsCoordinator?
     var settingsCoordinator: SettingsCoordinator?
 
-    required init(_ navigationController: UINavigationController = CustomNavigationController()) {
+    var preferences: CatodoroPreferences?
+
+    required init(_ navigationController: UINavigationController = CustomNavigationController(),
+                  preferences: CatodoroPreferences?) {
         self.navigationController = navigationController
+        self.preferences = preferences
         self.tabBarController = .init()
     }
 
@@ -55,12 +59,14 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
             }
         case .presets:
             presetsCoordiantor = .init()
+            presetsCoordiantor?.delegate = self
             if let presetsCoordiantor {
                 presetsCoordiantor.start()
                 navController = presetsCoordiantor.navigationController
             }
         case .settings:
             settingsCoordinator = .init()
+            settingsCoordinator?.preferences = self.preferences
             if let settingsCoordinator {
                 settingsCoordinator.start()
                 navController = settingsCoordinator.navigationController
@@ -110,5 +116,21 @@ extension TabCoordinator: UITabBarControllerDelegate {
         let newIndex = tabBarController.viewControllers?.firstIndex(of: viewController) ?? 0
         setSelectedIndex(newIndex)
         return false
+    }
+}
+
+extension TabCoordinator: PresetsCoordinatorDelegate {
+    func startTimer(model: PresetModel) {
+        if let timerCoordinator {
+            selectPage(.timer)
+            if let timerDuration = model.totalDuration.toTimerModel(),
+               let interval = model.intervalDuration.toTimerModel() {
+                let timerConfig = TimerConfigModel(id: model.id,
+                                              mainTimer: timerDuration,
+                                              interval: interval,
+                                              intervals: model.intervals)
+                timerCoordinator.navigateToTimerView(viewModel: .init(timerModel: timerConfig))
+            }
+        }
     }
 }

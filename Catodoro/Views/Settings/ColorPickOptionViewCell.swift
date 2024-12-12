@@ -22,16 +22,29 @@ class ColorPickOptionViewCell: UITableViewCell {
         return imageView
     }()
 
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        setupSubviews()
+        setupConstraints()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupSubviews()
+        setupConstraints()
+    }
+
     func configure(colorName: String, color: UIColor) {
         colorLabel.textColor = color
         pawImageView.tintColor = color
         colorLabel.text = colorName
     }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        contentView.addAutolayoutSubviews([colorLabel, pawImageView])
 
+    private func setupSubviews() {
+        contentView.addAutolayoutSubviews([colorLabel, pawImageView])
+    }
+
+    private func setupConstraints() {
         NSLayoutConstraint.activate([
             colorLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             colorLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),

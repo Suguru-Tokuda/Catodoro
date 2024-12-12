@@ -10,13 +10,11 @@ import UIKit
 class ColorOptionsList: UITableView {
     init() {
         super.init(frame: .zero, style: .plain)
+        register(ColorPickOptionViewCell.self,
+                 forCellReuseIdentifier: ColorPickOptionViewCell.reuseIdentifier)
     }
     
     required init?(coder: NSCoder) {
         nil
-    }
-
-    private func setUpUI() {
-        register(ColorPickOptionViewCell.self, forCellReuseIdentifier: ColorPickOptionViewCell.reuseIdentifier)
     }
 }

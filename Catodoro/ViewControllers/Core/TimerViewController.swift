@@ -26,7 +26,8 @@ class TimerViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        setUpUI()
+        setupSubviews()
+        setupConstraints()
         setActionHandlers()
         navigationItem.setHidesBackButton(true, animated: false)
     }
@@ -87,11 +88,14 @@ class TimerViewController: UIViewController {
     func configure(viewModel: TimerConfigViewModel) {
         vm.configure(duration: viewModel.timerModel.mainTimer.duration,
                      intervalTime: viewModel.timerModel.interval.duration,
-                     numberOfIntervals: viewModel.timerModel.numberOfIntervals)
+                     numberOfIntervals: viewModel.timerModel.intervals)
     }
-    
-    private func setUpUI() {
+
+    private func setupSubviews() {
         view.addAutolayoutSubview(timerView)
+    }
+
+    private func setupConstraints() {
         NSLayoutConstraint.activate([
             timerView.topAnchor.constraint(equalTo: view.topAnchor),
             timerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),

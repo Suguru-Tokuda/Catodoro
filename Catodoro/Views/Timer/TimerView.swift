@@ -50,19 +50,15 @@ class TimerView: UIView {
         timerCircleView = .init(frame: .init(x: 0, y: 0, width: timerCircleDiameter, height: timerCircleDiameter))
         super.init(frame: frame)
         setUpActionHandlers()
+        setupSubviews()
+        setUpConstraints()
     }
     
     required init?(coder: NSCoder) {
         nil
     }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        setUpUI()
-        setUpConstraints()
-    }
 
-    private func setUpUI() {
+    private func setupSubviews() {
         addAutolayoutSubviews([
             timerNameLabel,
             timerCircleView,

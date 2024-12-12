@@ -10,11 +10,12 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     var mainCoordinator: Coordinator?
+    var preferences: CatodoroPreferences = .init()
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(frame: windowScene.coordinateSpace.bounds)
-        mainCoordinator = MainCoordinator()
+        mainCoordinator = MainCoordinator(preferences: preferences)
         mainCoordinator?.start()
         window?.windowScene = windowScene
         window?.rootViewController = mainCoordinator?.navigationController

@@ -32,4 +32,25 @@ extension TimeInterval {
 
         return "00:00:00"
     }
+
+    func toTimerModel() -> TimerModel? {
+        if self >= 0 {
+            var timerValue: Int = Int(self)
+            let hours = timerValue / 3600
+
+            if hours > 0 {
+                timerValue -= hours * 3600
+            }
+
+            let minutes = timerValue / 60
+
+            if minutes > 0 {
+                timerValue -= minutes * 60
+            }
+
+            return TimerModel(hours: hours, minutes: minutes, seconds: timerValue)
+        }
+
+        return nil
+    }
 }
