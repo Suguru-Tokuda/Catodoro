@@ -22,15 +22,15 @@ class TimerStartButton: UIButton {
         trailingImageView = UIImageView(image: image)
 
         super.init(frame: frame)
-        setUpUI()
-        setUpConstraints()
+        setupUI()
+        setupConstraints()
     }
     
     required init?(coder: NSCoder) {
         nil
     }
 
-    private func setUpUI() {
+    private func setupUI() {
         leadingImageView.tintColor = .white
         trailingImageView.tintColor = .white
         let buttonLabel = UILabel()
@@ -60,7 +60,7 @@ class TimerStartButton: UIButton {
         isEnabled = false
     }
 
-    private func setUpConstraints() {
+    private func setupConstraints() {
         NSLayoutConstraint.activate([
             leadingImageView.heightAnchor.constraint(equalToConstant: 28),
             leadingImageView.widthAnchor.constraint(equalToConstant: 30),

@@ -19,7 +19,7 @@ class TimerConfigViewController: UIViewController {
         setupSubviews()
         setupConstraints()
         setupEventHandlers()
-        setUpBackButtonTitle()
+        setupBackButtonTitle()
     }
 
     private func setupSubviews() {
@@ -64,7 +64,7 @@ class TimerConfigViewController: UIViewController {
         }
     }
 
-    private func setUpBackButtonTitle() {
+    private func setupBackButtonTitle() {
         let backButton = UIBarButtonItem(title: "Timer Config",
                                          style: .plain,
                                          target: nil,

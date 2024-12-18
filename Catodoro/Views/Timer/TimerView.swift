@@ -49,9 +49,9 @@ class TimerView: UIView {
     override init(frame: CGRect) {
         timerCircleView = .init(frame: .init(x: 0, y: 0, width: timerCircleDiameter, height: timerCircleDiameter))
         super.init(frame: frame)
-        setUpActionHandlers()
+        setupActionHandlers()
         setupSubviews()
-        setUpConstraints()
+        setupConstraints()
     }
     
     required init?(coder: NSCoder) {
@@ -74,7 +74,7 @@ class TimerView: UIView {
         timerCircleView.setupCircleLayers()
     }
 
-    private func setUpConstraints() {
+    private func setupConstraints() {
         NSLayoutConstraint.activate([
             timerNameLabel.bottomAnchor.constraint(equalTo: timerCircleView.topAnchor, constant: -8),
             timerNameLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -102,7 +102,7 @@ class TimerView: UIView {
         ])
     }
 
-    private func setUpActionHandlers() {
+    private func setupActionHandlers() {
         playPauseButton.onButtonTap = {
             self.onPlayPauseButtonTap?()
         }

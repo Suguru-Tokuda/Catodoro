@@ -54,7 +54,6 @@
 		BBA3CDA62C868CA6002A3E7B /* TimeInterval+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA3CDA52C868CA6002A3E7B /* TimeInterval+Extensions.swift */; };
 		BBF4F4582C763FF80079448E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F4572C763FF80079448E /* AppDelegate.swift */; };
 		BBF4F45A2C763FF80079448E /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F4592C763FF80079448E /* SceneDelegate.swift */; };
-		BBF4F45C2C763FF80079448E /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F45B2C763FF80079448E /* ViewController.swift */; };
 		BBF4F4612C763FF90079448E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BBF4F4602C763FF90079448E /* Assets.xcassets */; };
 		BBF4F4642C763FF90079448E /* Base in Resources */ = {isa = PBXBuildFile; fileRef = BBF4F4632C763FF90079448E /* Base */; };
 		BBF4F4702C76441F0079448E /* Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F46F2C76441F0079448E /* Coordinator.swift */; };
@@ -122,7 +121,6 @@
 		BBF4F4542C763FF80079448E /* Catodoro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Catodoro.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BBF4F4572C763FF80079448E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BBF4F4592C763FF80079448E /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		BBF4F45B2C763FF80079448E /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		BBF4F4602C763FF90079448E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BBF4F4632C763FF90079448E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		BBF4F4652C763FF90079448E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -254,7 +252,6 @@
 				BBF4F4652C763FF90079448E /* Info.plist */,
 				BBF4F4572C763FF80079448E /* AppDelegate.swift */,
 				BBF4F4592C763FF80079448E /* SceneDelegate.swift */,
-				BBF4F45B2C763FF80079448E /* ViewController.swift */,
 				BBF4F4602C763FF90079448E /* Assets.xcassets */,
 				BBF4F4622C763FF90079448E /* LaunchScreen.storyboard */,
 				BBF4F46B2C76428D0079448E /* Coordinators */,
@@ -465,7 +462,6 @@
 				BB8D28432CE1559D001D73B1 /* TimerView.swift in Sources */,
 				BBF4F4822C7648820079448E /* SettingsViewController.swift in Sources */,
 				BB1817BE2C7EB57B00BF8DA8 /* UIView+Extensions.swift in Sources */,
-				BBF4F45C2C763FF80079448E /* ViewController.swift in Sources */,
 				BB516E472CAB94D70004B95C /* TimerConfigViewModel.swift in Sources */,
 				BBF4F48A2C76B5E10079448E /* PresetsCoordinator.swift in Sources */,
 				BB479AC42CC883D1000CBE6D /* AudioManager.swift in Sources */,

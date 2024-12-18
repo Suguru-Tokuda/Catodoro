@@ -43,15 +43,15 @@ class TimerConfigView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setUpSubviews()
-        setUpConstraints()
+        setupSubviews()
+        setupConstraints()
     }
     
     required init?(coder: NSCoder) {
         nil
     }
 
-    private func setUpSubviews() {
+    private func setupSubviews() {
         addAutolayoutSubview(scrollView)
         scrollView.addAutolayoutSubviews([stackView])
         intervalStackView.addArrangedSubviews([intervalPicker, UIView(), UIView()])
@@ -66,7 +66,7 @@ class TimerConfigView: UIView {
         ])
     }
 
-    private func setUpConstraints() {
+    private func setupConstraints() {
         NSLayoutConstraint.activate([
             // scrollView constraints
             scrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: .init(16)),

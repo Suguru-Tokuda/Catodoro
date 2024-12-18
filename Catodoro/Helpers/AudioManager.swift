@@ -10,7 +10,7 @@ import AVFoundation
 enum AudioError: Error {
     case fileNotFound,
          playerNotSet,
-         setUp
+         setup
 }
 
 protocol AudioManaging {
@@ -28,7 +28,7 @@ class AudioManager: AudioManaging {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
             try AVAudioSession.sharedInstance().setActive(true)
         } catch {
-            throw AudioError.setUp
+            throw AudioError.setup
         }
         try audioPlayer = getAudioPlayer(fileName: fileName, fileExtension: fileExtension)
         audioPlayer?.numberOfLoops = -1
