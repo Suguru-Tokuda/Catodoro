@@ -18,17 +18,17 @@ class PresetListViewCell: UITableViewCell {
 
     let timerLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 20, weight: .semibold)
+        label.font = .systemFont(ofSize: 32, weight: .regular)
         return label
     }()
     let intervalDurationLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 12, weight: .regular)
+        label.font = .systemFont(ofSize: 16, weight: .light)
         return label
     }()
     let intervalLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 8, weight: .regular)
+        label.font = .systemFont(ofSize: 14, weight: .light)
         return label
     }()
     let playButton: PlayPauseButton = .init(buttonHeight: 36,
