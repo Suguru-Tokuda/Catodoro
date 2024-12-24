@@ -27,6 +27,7 @@
 		BB49DC712D08F33D001E3CDC /* OptionSelectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB49DC702D08F33D001E3CDC /* OptionSelectionViewModel.swift */; };
 		BB49DC732D08F859001E3CDC /* BaseOptionSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB49DC722D08F859001E3CDC /* BaseOptionSelectionViewController.swift */; };
 		BB49DC752D08FA37001E3CDC /* SoundSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB49DC742D08FA37001E3CDC /* SoundSelectionViewController.swift */; };
+		BB4E43432D191B2300C34D04 /* CatodoroCoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4E43422D191B2300C34D04 /* CatodoroCoreDataManager.swift */; };
 		BB516E452CAB933C0004B95C /* TimerConfigViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB516E442CAB933C0004B95C /* TimerConfigViewController.swift */; };
 		BB516E472CAB94D70004B95C /* TimerConfigViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB516E462CAB94D70004B95C /* TimerConfigViewModel.swift */; };
 		BB516E4B2CAB97B90004B95C /* TimerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB516E4A2CAB97B90004B95C /* TimerModel.swift */; };
@@ -93,6 +94,7 @@
 		BB49DC702D08F33D001E3CDC /* OptionSelectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionSelectionViewModel.swift; sourceTree = "<group>"; };
 		BB49DC722D08F859001E3CDC /* BaseOptionSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseOptionSelectionViewController.swift; sourceTree = "<group>"; };
 		BB49DC742D08FA37001E3CDC /* SoundSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundSelectionViewController.swift; sourceTree = "<group>"; };
+		BB4E43422D191B2300C34D04 /* CatodoroCoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatodoroCoreDataManager.swift; sourceTree = "<group>"; };
 		BB516E442CAB933C0004B95C /* TimerConfigViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerConfigViewController.swift; sourceTree = "<group>"; };
 		BB516E462CAB94D70004B95C /* TimerConfigViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerConfigViewModel.swift; sourceTree = "<group>"; };
 		BB516E4A2CAB97B90004B95C /* TimerModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerModel.swift; sourceTree = "<group>"; };
@@ -352,6 +354,7 @@
 		BBF4F48F2C76D3900079448E /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
+				BB4E43422D191B2300C34D04 /* CatodoroCoreDataManager.swift */,
 				BBF4F4902C76D3B10079448E /* CatodoroPersistentController.swift */,
 				BBF4F4922C76D3EE0079448E /* CatodoroCoreData.xcdatamodeld */,
 			);
@@ -444,6 +447,7 @@
 				BBF4F4882C767A420079448E /* SettingsCoordinator.swift in Sources */,
 				BBF4F4802C7648510079448E /* TimerViewController.swift in Sources */,
 				BB516E452CAB933C0004B95C /* TimerConfigViewController.swift in Sources */,
+				BB4E43432D191B2300C34D04 /* CatodoroCoreDataManager.swift in Sources */,
 				BBA3CDA22C866749002A3E7B /* UIStackView+Extensions.swift in Sources */,
 				BB8D28552CE18D8F001D73B1 /* SettingsView.swift in Sources */,
 				BB7AFB3C2D0B4DAA00801CAA /* NSLayoutConstraint+Extensions.swift in Sources */,
