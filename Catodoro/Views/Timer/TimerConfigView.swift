@@ -8,6 +8,20 @@
 import UIKit
 
 class TimerConfigView: UIView {
+    struct Model {
+        let color: UIColor
+
+        init(color: UIColor = ColorOptions.neonBlue.color) {
+            self.color = color
+        }
+    }
+
+    var model: Model? {
+        didSet {
+            applyModel()
+        }
+    }
+
     // MARK: Closures
     var onStartButtonTap: (() -> Void)?
     var onMainTimerSelect: ((Int, Int, Int) -> Void)?
@@ -97,6 +111,12 @@ class TimerConfigView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         setupEventHandlers()
+    }
+
+    private func applyModel() {
+        guard let model else { return }
+        
+        startButton.model = .init(color: model.color)
     }
 }
 

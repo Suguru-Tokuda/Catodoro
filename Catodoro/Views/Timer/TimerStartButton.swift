@@ -8,6 +8,20 @@
 import UIKit
 
 class TimerStartButton: UIButton {
+    struct Model {
+        let color: UIColor
+
+        init(color: UIColor = ColorOptions.neonBlue.color) {
+            self.color = color
+        }
+    }
+
+    var model: Model? {
+        didSet {
+            applyModel()
+        }
+    }
+
     // Stack view to hold images and label
     let stackView = UIStackView()
     let leadingImageView: UIImageView
@@ -70,5 +84,13 @@ class TimerStartButton: UIButton {
             stackView.centerYAnchor.constraint(equalTo: centerYAnchor),
             stackView.heightAnchor.constraint(equalToConstant: 50)
         ])
+    }
+
+    private func applyModel() {
+        guard let model else { return }
+    
+        backgroundColor = model.color
+        setBackgroundColor(model.color, for: .normal)
+        setBackgroundColor(model.color, for: .disabled)
     }
 }

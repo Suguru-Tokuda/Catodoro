@@ -15,7 +15,7 @@ struct OptionModel {
 
 class OptionSelectionViewModel {
     var selectedId: String?
-    var preferences: CatodoroPreferences?
+    var preferences: CatodoroPreferencesProtocol?
     var options: [OptionModel]
 
     init(options: [OptionModel]) {
@@ -23,7 +23,7 @@ class OptionSelectionViewModel {
     }
 
     func setColor(colorCode: String) {
-        preferences?.color = colorCode
+        preferences?.setColor(ColorOptions(colorCode))
         options = options.map { option in
             var option = option
             option.selected = option.id == colorCode
@@ -32,7 +32,7 @@ class OptionSelectionViewModel {
     }
 
     func setSound(soundId: String) {
-        preferences?.sound = soundId
+        preferences?.setSound(SoundOptions(soundId))
         options = options.map { option in
             var option = option
             option.selected = option.id == soundId

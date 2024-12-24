@@ -14,7 +14,25 @@ enum ColorOptions: String, CaseIterable {
     case neonPink = "Pink"
     case neonPurple = "Purple"
     case neonYellow = "Yellow"
-    case white = "White"
+
+    init(_ code: String) {
+        switch code {
+        case "nBlue":
+            self = .neonBlue
+        case "nGreen":
+            self = .neonGreen
+        case "nOrange":
+            self = .neonOrange
+        case "nPink":
+            self = .neonPink
+        case "nPurple":
+            self = .neonPurple
+        case "nYellow":
+            self = .neonYellow
+        default:
+            self = .neonBlue
+        }
+    }
 
     var code: String {
         switch self {
@@ -30,8 +48,6 @@ enum ColorOptions: String, CaseIterable {
             "nPurple"
         case .neonYellow:
             "nYellow"
-        case .white:
-            "white"
         }
     }
 
@@ -49,8 +65,6 @@ enum ColorOptions: String, CaseIterable {
             .neonPurple
         case .neonYellow:
             .neonYellow
-        case .white:
-            .white
         }
     }
 }

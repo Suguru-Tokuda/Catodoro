@@ -12,7 +12,7 @@ class SettingsCoordinator: Coordinator {
     var type: CoordinatorType { .feature }
     var childCoordinators: [Coordinator] = []
     var navigationController: UINavigationController
-    var preferences: CatodoroPreferences?
+    var preferences: CatodoroPreferencesProtocol?
 
     init(navigationController: UINavigationController = CustomNavigationController()) {
         self.navigationController = navigationController
@@ -27,7 +27,7 @@ class SettingsCoordinator: Coordinator {
 
     func navigateToColorSelectionsView() {
         var options: [OptionModel] = []
-        let selectedColorCode = preferences?.color ?? ColorOptions.white.code
+        let selectedColorCode = preferences?.color ?? ColorOptions.neonBlue.code
         ColorOptions.allCases.forEach {
             options.append(.init(id: $0.code, title: $0.rawValue, selected: $0.code == selectedColorCode))
         }

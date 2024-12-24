@@ -12,19 +12,20 @@ class TimerCoordiantor: Coordinator {
     var type: CoordinatorType { .feature }
     var childCoordinators: [Coordinator] = []
     var navigationController: UINavigationController
+    var preferences: CatodoroPreferencesProtocol?
 
     init(navigationController: UINavigationController = CustomNavigationController()) {
         self.navigationController = navigationController
     }
 
     func start() {
-        let timerConfigViewController = TimerConfigViewController()
+        let timerConfigViewController = TimerConfigViewController(preferences: preferences)
         timerConfigViewController.setCoordinator(coordinator: self)
         self.navigationController.pushViewController(timerConfigViewController, animated: false)
     }
 
     func navigateToTimerView(viewModel: TimerConfigViewModel) {
-        let viewController = TimerViewController()
+        let viewController = TimerViewController(preferences: preferences)
         viewController.setCoordinator(coordinator: self)
         viewController.configure(viewModel: viewModel)
         navigationController.pushViewController(viewController, animated: true)

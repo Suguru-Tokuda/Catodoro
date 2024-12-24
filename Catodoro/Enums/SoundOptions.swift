@@ -14,6 +14,23 @@ enum SoundOptions: String, CaseIterable {
     case hungry = "Hugnry"
     case kitty = "Kitty"
 
+    init(_ id: String) {
+        switch id {
+            case "angry":
+            self = .angry
+        case "meowLoud":
+            self = .meowLoud
+        case "meowRegular":
+            self = .meowRegular
+        case "hungry":
+            self = .hungry
+        case "kitty":
+            self = .kitty
+        default:
+            self = .meowRegular
+        }
+    }
+
     var id: String {
         switch self {
         case .angry:

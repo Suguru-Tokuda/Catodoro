@@ -9,29 +9,29 @@ import Combine
 import Foundation
 
 enum TimerStatus {
-    case paused,
-         playing
+    case paused
+    case playing
 }
 
 enum TimerActions {
-    case start,
-         pause,
-         resume,
-         stop,
-         finish
+    case start
+    case pause
+    case resume
+    case stop
+    case finish
 }
 
 enum TimerType {
-    case main,
-         breakTime
+    case main
+    case breakTime
 }
 
 class TimerViewModel {
     var currentTimerValue: TimeInterval = 0 // Could be timerTime or intervalTime
-    private var timerTime: TimeInterval = 0
-    private var intervalTime: TimeInterval = 0 // in seconds
-    private let timerInterval: Double = 0.01
-    private var numberOfIntervals: Int = 0
+    private var totalDuration: TimeInterval = 0
+    private var intervalDuration: TimeInterval = 0 // in seconds
+    private let timerInterval: Double = 0.01 // used to update the timer for every x seconds.
+    private var intervals: Int = 0
     var duration: TimeInterval = 0
     /// Used to send updated string representation of
     /// timer value for timer label
@@ -45,9 +45,11 @@ class TimerViewModel {
     private var timerType: TimerType?
     private var cancellables: Set<AnyCancellable> = .init()
     private var audioManager: AudioManaging
+    private var preferences: CatodoroPreferencesProtocol?
 
-    init(audioManager: AudioManaging = AudioManager()) {
+    init(audioManager: AudioManaging = AudioManager(), preferences: CatodoroPreferencesProtocol?) {
         self.audioManager = audioManager
+        self.preferences = preferences
         addSubscriptions()
     }
 
@@ -61,7 +63,7 @@ class TimerViewModel {
                         interval += 1
                     }
                     
-                    if interval == (numberOfIntervals + 1) {
+                    if interval == (intervals + 1) {
                         if let timer {
                             timer.invalidate()
                             self.timer = nil
@@ -72,9 +74,9 @@ class TimerViewModel {
                         timerType = timerType == .main ? .breakTime : .main
                         switch timerType {
                         case .breakTime:
-                            duration = intervalTime
+                            duration = intervalDuration
                         case .main, .none:
-                            duration = timerTime
+                            duration = totalDuration
                         }
                         DispatchQueue.main.async {
                             self.startTimer()
@@ -99,10 +101,10 @@ class TimerViewModel {
 
     func configure(duration: TimeInterval, intervalTime: TimeInterval, numberOfIntervals: Int) {
         self.duration = duration
-        self.timerTime = duration
+        self.totalDuration = duration
         self.currentTimerValue = duration
-        self.intervalTime = intervalTime
-        self.numberOfIntervals = numberOfIntervals
+        self.intervalDuration = intervalTime
+        self.intervals = numberOfIntervals
         self.timerType = .main
         interval = 1
         DispatchQueue.main.async {
@@ -172,8 +174,8 @@ class TimerViewModel {
             self.timer = nil
         }
         timerType = .main
-        duration = timerTime
-        currentTimerValue = timerTime
+        duration = totalDuration
+        currentTimerValue = totalDuration
         timerSubject.send(currentTimerValue.getTimerLabelValue())
         timerStatus = .paused
         interval = 1
@@ -191,7 +193,25 @@ class TimerViewModel {
     }
     
     func playFinishSound() {
-        try? audioManager.setPlayer(fileName: "CatLoudVoice", fileExtension: "mp3")
+        let fileName = preferences?.sound ?? SoundOptions.meowRegular.rawValue
+        try? audioManager.setPlayer(fileName: fileName, fileExtension: "mp3")
         try? audioManager.play()
     }
 }
+
+#if DEBUG
+extension TimerViewModel {
+    var testHooks: TestHooks {
+        .init(target: self)
+    }
+
+    struct TestHooks {
+        let target: TimerViewModel
+
+        var totalDuration: TimeInterval? { target.totalDuration }
+        var intervalDuration: TimeInterval? { target.intervalDuration }
+        var timer: Timer? { target.timer }
+        var timerType: TimerType? { target.timerType }
+    }
+}
+#endif

@@ -53,6 +53,7 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
         switch page {
         case .timer:
             timerCoordinator = .init()
+            timerCoordinator?.preferences = preferences
             if let timerCoordinator {
                 timerCoordinator.start()
                 navController = timerCoordinator.navigationController
@@ -66,7 +67,7 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
             }
         case .settings:
             settingsCoordinator = .init()
-            settingsCoordinator?.preferences = self.preferences
+            settingsCoordinator?.preferences = preferences
             if let settingsCoordinator {
                 settingsCoordinator.start()
                 navController = settingsCoordinator.navigationController

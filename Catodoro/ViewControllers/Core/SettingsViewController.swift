@@ -9,7 +9,7 @@ import UIKit
 
 class SettingsViewController: UIViewController {
     private weak var coordinator: Coordinator?
-    var preferences: CatodoroPreferences?
+    var preferences: CatodoroPreferencesProtocol?
     private var vm: SettingsViewModel = .init()
     private var label: UILabel = {
         let label = UILabel()

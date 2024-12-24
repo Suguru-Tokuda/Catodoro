@@ -32,6 +32,11 @@
 		BB516E472CAB94D70004B95C /* TimerConfigViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB516E462CAB94D70004B95C /* TimerConfigViewModel.swift */; };
 		BB516E4B2CAB97B90004B95C /* TimerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB516E4A2CAB97B90004B95C /* TimerModel.swift */; };
 		BB516E4E2CAB98930004B95C /* TimerConfigModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB516E4D2CAB98930004B95C /* TimerConfigModel.swift */; };
+		BB6C851D2D1A5825005C4D0B /* CatodoroUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB6C851C2D1A5825005C4D0B /* CatodoroUITests.swift */; };
+		BB6C851F2D1A5825005C4D0B /* CatodoroUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB6C851E2D1A5825005C4D0B /* CatodoroUITestsLaunchTests.swift */; };
+		BB6C852E2D1A666F005C4D0B /* TimerViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB6C852D2D1A666F005C4D0B /* TimerViewModelTests.swift */; };
+		BB6C85312D1A66FA005C4D0B /* PreferencesMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB6C85302D1A66FA005C4D0B /* PreferencesMock.swift */; };
+		BB6C85332D1A6784005C4D0B /* AudioManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB6C85322D1A6784005C4D0B /* AudioManagerMock.swift */; };
 		BB7AFB362D0B286B00801CAA /* PresetListViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB7AFB352D0B286B00801CAA /* PresetListViewCell.swift */; };
 		BB7AFB382D0B3BD600801CAA /* PresetsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB7AFB372D0B3BD600801CAA /* PresetsViewModel.swift */; };
 		BB7AFB3A2D0B436600801CAA /* PresetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB7AFB392D0B436600801CAA /* PresetModel.swift */; };
@@ -73,6 +78,23 @@
 		BBF4F4942C76D3EE0079448E /* CatodoroCoreData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F4922C76D3EE0079448E /* CatodoroCoreData.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		BB6C85112D1A5808005C4D0B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BBF4F44C2C763FF80079448E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BBF4F4532C763FF80079448E;
+			remoteInfo = Catodoro;
+		};
+		BB6C85202D1A5825005C4D0B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BBF4F44C2C763FF80079448E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BBF4F4532C763FF80079448E;
+			remoteInfo = Catodoro;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		BB0B25D02C9CF5F000487314 /* StopButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopButton.swift; sourceTree = "<group>"; };
 		BB1817B82C7EB23300BF8DA8 /* TimerCircleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerCircleView.swift; sourceTree = "<group>"; };
@@ -99,6 +121,13 @@
 		BB516E462CAB94D70004B95C /* TimerConfigViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerConfigViewModel.swift; sourceTree = "<group>"; };
 		BB516E4A2CAB97B90004B95C /* TimerModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerModel.swift; sourceTree = "<group>"; };
 		BB516E4D2CAB98930004B95C /* TimerConfigModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerConfigModel.swift; sourceTree = "<group>"; };
+		BB6C850D2D1A5807005C4D0B /* CatodoroTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CatodoroTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB6C851A2D1A5825005C4D0B /* CatodoroUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CatodoroUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB6C851C2D1A5825005C4D0B /* CatodoroUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatodoroUITests.swift; sourceTree = "<group>"; };
+		BB6C851E2D1A5825005C4D0B /* CatodoroUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatodoroUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		BB6C852D2D1A666F005C4D0B /* TimerViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerViewModelTests.swift; sourceTree = "<group>"; };
+		BB6C85302D1A66FA005C4D0B /* PreferencesMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesMock.swift; sourceTree = "<group>"; };
+		BB6C85322D1A6784005C4D0B /* AudioManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioManagerMock.swift; sourceTree = "<group>"; };
 		BB7AFB352D0B286B00801CAA /* PresetListViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetListViewCell.swift; sourceTree = "<group>"; };
 		BB7AFB372D0B3BD600801CAA /* PresetsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetsViewModel.swift; sourceTree = "<group>"; };
 		BB7AFB392D0B436600801CAA /* PresetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetModel.swift; sourceTree = "<group>"; };
@@ -143,6 +172,20 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		BB6C850A2D1A5807005C4D0B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB6C85172D1A5825005C4D0B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BBF4F4512C763FF80079448E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -232,10 +275,55 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
+		BB6C85252D1A5853005C4D0B /* CatodoroTests */ = {
+			isa = PBXGroup;
+			children = (
+				BB6C852F2D1A66EC005C4D0B /* Helper */,
+				BB6C852C2D1A6647005C4D0B /* ViewModels */,
+				BB6C852B2D1A663D005C4D0B /* ViewControllers */,
+			);
+			path = CatodoroTests;
+			sourceTree = "<group>";
+		};
+		BB6C85262D1A586D005C4D0B /* CatodoroUITests */ = {
+			isa = PBXGroup;
+			children = (
+				BB6C851C2D1A5825005C4D0B /* CatodoroUITests.swift */,
+				BB6C851E2D1A5825005C4D0B /* CatodoroUITestsLaunchTests.swift */,
+			);
+			path = CatodoroUITests;
+			sourceTree = "<group>";
+		};
+		BB6C852B2D1A663D005C4D0B /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		BB6C852C2D1A6647005C4D0B /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				BB6C852D2D1A666F005C4D0B /* TimerViewModelTests.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		BB6C852F2D1A66EC005C4D0B /* Helper */ = {
+			isa = PBXGroup;
+			children = (
+				BB6C85302D1A66FA005C4D0B /* PreferencesMock.swift */,
+				BB6C85322D1A6784005C4D0B /* AudioManagerMock.swift */,
+			);
+			path = Helper;
+			sourceTree = "<group>";
+		};
 		BBF4F44B2C763FF80079448E = {
 			isa = PBXGroup;
 			children = (
 				BBF4F4562C763FF80079448E /* Catodoro */,
+				BB6C85252D1A5853005C4D0B /* CatodoroTests */,
+				BB6C85262D1A586D005C4D0B /* CatodoroUITests */,
 				BBF4F4552C763FF80079448E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -244,6 +332,8 @@
 			isa = PBXGroup;
 			children = (
 				BBF4F4542C763FF80079448E /* Catodoro.app */,
+				BB6C850D2D1A5807005C4D0B /* CatodoroTests.xctest */,
+				BB6C851A2D1A5825005C4D0B /* CatodoroUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -364,6 +454,46 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		BB6C850C2D1A5807005C4D0B /* CatodoroTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB6C85132D1A5808005C4D0B /* Build configuration list for PBXNativeTarget "CatodoroTests" */;
+			buildPhases = (
+				BB6C85092D1A5807005C4D0B /* Sources */,
+				BB6C850A2D1A5807005C4D0B /* Frameworks */,
+				BB6C850B2D1A5807005C4D0B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BB6C85122D1A5808005C4D0B /* PBXTargetDependency */,
+			);
+			name = CatodoroTests;
+			packageProductDependencies = (
+			);
+			productName = CatodoroTests;
+			productReference = BB6C850D2D1A5807005C4D0B /* CatodoroTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		BB6C85192D1A5825005C4D0B /* CatodoroUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB6C85222D1A5825005C4D0B /* Build configuration list for PBXNativeTarget "CatodoroUITests" */;
+			buildPhases = (
+				BB6C85162D1A5825005C4D0B /* Sources */,
+				BB6C85172D1A5825005C4D0B /* Frameworks */,
+				BB6C85182D1A5825005C4D0B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BB6C85212D1A5825005C4D0B /* PBXTargetDependency */,
+			);
+			name = CatodoroUITests;
+			packageProductDependencies = (
+			);
+			productName = CatodoroUITests;
+			productReference = BB6C851A2D1A5825005C4D0B /* CatodoroUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		BBF4F4532C763FF80079448E /* Catodoro */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = BBF4F4682C763FF90079448E /* Build configuration list for PBXNativeTarget "Catodoro" */;
@@ -388,9 +518,18 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1540;
+				LastSwiftUpdateCheck = 1620;
 				LastUpgradeCheck = 1540;
 				TargetAttributes = {
+					BB6C850C2D1A5807005C4D0B = {
+						CreatedOnToolsVersion = 16.2;
+						LastSwiftMigration = 1620;
+						TestTargetID = BBF4F4532C763FF80079448E;
+					};
+					BB6C85192D1A5825005C4D0B = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = BBF4F4532C763FF80079448E;
+					};
 					BBF4F4532C763FF80079448E = {
 						CreatedOnToolsVersion = 15.4;
 					};
@@ -410,11 +549,27 @@
 			projectRoot = "";
 			targets = (
 				BBF4F4532C763FF80079448E /* Catodoro */,
+				BB6C850C2D1A5807005C4D0B /* CatodoroTests */,
+				BB6C85192D1A5825005C4D0B /* CatodoroUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		BB6C850B2D1A5807005C4D0B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB6C85182D1A5825005C4D0B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BBF4F4522C763FF80079448E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -432,6 +587,25 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		BB6C85092D1A5807005C4D0B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB6C85312D1A66FA005C4D0B /* PreferencesMock.swift in Sources */,
+				BB6C852E2D1A666F005C4D0B /* TimerViewModelTests.swift in Sources */,
+				BB6C85332D1A6784005C4D0B /* AudioManagerMock.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB6C85162D1A5825005C4D0B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB6C851F2D1A5825005C4D0B /* CatodoroUITestsLaunchTests.swift in Sources */,
+				BB6C851D2D1A5825005C4D0B /* CatodoroUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BBF4F4502C763FF80079448E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -498,6 +672,19 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		BB6C85122D1A5808005C4D0B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BBF4F4532C763FF80079448E /* Catodoro */;
+			targetProxy = BB6C85112D1A5808005C4D0B /* PBXContainerItemProxy */;
+		};
+		BB6C85212D1A5825005C4D0B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BBF4F4532C763FF80079448E /* Catodoro */;
+			targetProxy = BB6C85202D1A5825005C4D0B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin PBXVariantGroup section */
 		BBF4F4622C763FF90079448E /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
@@ -510,6 +697,83 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		BB6C85142D1A5808005C4D0B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FVEGF5DQ7U;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = sugurutokuda.CatodoroTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Catodoro.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Catodoro";
+			};
+			name = Debug;
+		};
+		BB6C85152D1A5808005C4D0B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FVEGF5DQ7U;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = sugurutokuda.CatodoroTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Catodoro.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Catodoro";
+			};
+			name = Release;
+		};
+		BB6C85232D1A5825005C4D0B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FVEGF5DQ7U;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = sugurutokuda.CatodoroUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Catodoro;
+			};
+			name = Debug;
+		};
+		BB6C85242D1A5825005C4D0B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FVEGF5DQ7U;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = sugurutokuda.CatodoroUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Catodoro;
+			};
+			name = Release;
+		};
 		BBF4F4662C763FF90079448E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -688,6 +952,24 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		BB6C85132D1A5808005C4D0B /* Build configuration list for PBXNativeTarget "CatodoroTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB6C85142D1A5808005C4D0B /* Debug */,
+				BB6C85152D1A5808005C4D0B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BB6C85222D1A5825005C4D0B /* Build configuration list for PBXNativeTarget "CatodoroUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB6C85232D1A5825005C4D0B /* Debug */,
+				BB6C85242D1A5825005C4D0B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		BBF4F44F2C763FF80079448E /* Build configuration list for PBXProject "Catodoro" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

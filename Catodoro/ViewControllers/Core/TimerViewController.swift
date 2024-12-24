@@ -11,10 +11,11 @@ import UIKit
 class TimerViewController: UIViewController {
     private weak var coordinator: Coordinator?
     private var cancellables: Set<AnyCancellable> = .init()
-    private var vm = TimerViewModel()
+    private var vm: TimerViewModel
     private lazy var timerView = TimerView(frame: .zero)
 
-    init() {
+    init(preferences: CatodoroPreferencesProtocol?) {
+        vm = .init(preferences: preferences)
         super.init(nibName: nil, bundle: nil)
         addSubscripitons()
     }
