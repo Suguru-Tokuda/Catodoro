@@ -9,9 +9,12 @@ import UIKit
 
 class TimerStartButton: UIButton {
     struct Model {
+        let buttonLabelText: String
         let color: UIColor
 
-        init(color: UIColor = ColorOptions.neonBlue.color) {
+        init(buttonLabelText: String = "Start",
+             color: UIColor = ColorOptions.neonBlue.color) {
+            self.buttonLabelText = buttonLabelText
             self.color = color
         }
     }
@@ -21,6 +24,14 @@ class TimerStartButton: UIButton {
             applyModel()
         }
     }
+
+    // MARK: - UI Components
+
+    private let buttonLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 28, weight: .bold)
+        return label
+    }()
 
     // Stack view to hold images and label
     let stackView = UIStackView()
@@ -47,9 +58,6 @@ class TimerStartButton: UIButton {
     private func setupUI() {
         leadingImageView.tintColor = .white
         trailingImageView.tintColor = .white
-        let buttonLabel = UILabel()
-        buttonLabel.text = "Start"
-        buttonLabel.font = .systemFont(ofSize: 28, weight: .bold)
 
         stackView.addArrangedSubviews([
             leadingImageView,
@@ -88,9 +96,9 @@ class TimerStartButton: UIButton {
 
     private func applyModel() {
         guard let model else { return }
-    
+        buttonLabel.text = model.buttonLabelText
         backgroundColor = model.color
         setBackgroundColor(model.color, for: .normal)
-        setBackgroundColor(model.color, for: .disabled)
+        setBackgroundColor(.lightGray, for: .disabled)
     }
 }

@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BB07847D2D1B293E004BF908 /* CatodoroCoreData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = BB07847B2D1B293E004BF908 /* CatodoroCoreData.xcdatamodeld */; };
+		BB0784842D1BBC60004BF908 /* PawButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0784832D1BBC60004BF908 /* PawButtonTests.swift */; };
+		BB0784862D1BC57B004BF908 /* PlayPauseButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0784852D1BC57B004BF908 /* PlayPauseButtonTests.swift */; };
 		BB0B25D12C9CF5F000487314 /* StopButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0B25D02C9CF5F000487314 /* StopButton.swift */; };
 		BB1817B92C7EB23300BF8DA8 /* TimerCircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1817B82C7EB23300BF8DA8 /* TimerCircleView.swift */; };
 		BB1817BB2C7EB31800BF8DA8 /* PlayPauseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1817BA2C7EB31800BF8DA8 /* PlayPauseButton.swift */; };
@@ -37,6 +40,8 @@
 		BB6C852E2D1A666F005C4D0B /* TimerViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB6C852D2D1A666F005C4D0B /* TimerViewModelTests.swift */; };
 		BB6C85312D1A66FA005C4D0B /* PreferencesMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB6C85302D1A66FA005C4D0B /* PreferencesMock.swift */; };
 		BB6C85332D1A6784005C4D0B /* AudioManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB6C85322D1A6784005C4D0B /* AudioManagerMock.swift */; };
+		BB6C85352D1A8B57005C4D0B /* OptionSelectionViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB6C85342D1A8B57005C4D0B /* OptionSelectionViewModelTests.swift */; };
+		BB6C85372D1B19DB005C4D0B /* AddPresetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB6C85362D1B19DB005C4D0B /* AddPresetViewController.swift */; };
 		BB7AFB362D0B286B00801CAA /* PresetListViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB7AFB352D0B286B00801CAA /* PresetListViewCell.swift */; };
 		BB7AFB382D0B3BD600801CAA /* PresetsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB7AFB372D0B3BD600801CAA /* PresetsViewModel.swift */; };
 		BB7AFB3A2D0B436600801CAA /* PresetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB7AFB392D0B436600801CAA /* PresetModel.swift */; };
@@ -75,7 +80,6 @@
 		BBF4F48C2C76B61A0079448E /* PresetsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F48B2C76B61A0079448E /* PresetsViewController.swift */; };
 		BBF4F48E2C76D2C90079448E /* TimerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F48D2C76D2C90079448E /* TimerViewModel.swift */; };
 		BBF4F4912C76D3B10079448E /* CatodoroPersistentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F4902C76D3B10079448E /* CatodoroPersistentController.swift */; };
-		BBF4F4942C76D3EE0079448E /* CatodoroCoreData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F4922C76D3EE0079448E /* CatodoroCoreData.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -96,6 +100,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		BB07847C2D1B293E004BF908 /* CatodoroCoreData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CatodoroCoreData.xcdatamodel; sourceTree = "<group>"; };
+		BB0784832D1BBC60004BF908 /* PawButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PawButtonTests.swift; sourceTree = "<group>"; };
+		BB0784852D1BC57B004BF908 /* PlayPauseButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayPauseButtonTests.swift; sourceTree = "<group>"; };
 		BB0B25D02C9CF5F000487314 /* StopButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopButton.swift; sourceTree = "<group>"; };
 		BB1817B82C7EB23300BF8DA8 /* TimerCircleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerCircleView.swift; sourceTree = "<group>"; };
 		BB1817BA2C7EB31800BF8DA8 /* PlayPauseButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayPauseButton.swift; sourceTree = "<group>"; };
@@ -128,6 +135,8 @@
 		BB6C852D2D1A666F005C4D0B /* TimerViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerViewModelTests.swift; sourceTree = "<group>"; };
 		BB6C85302D1A66FA005C4D0B /* PreferencesMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesMock.swift; sourceTree = "<group>"; };
 		BB6C85322D1A6784005C4D0B /* AudioManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioManagerMock.swift; sourceTree = "<group>"; };
+		BB6C85342D1A8B57005C4D0B /* OptionSelectionViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionSelectionViewModelTests.swift; sourceTree = "<group>"; };
+		BB6C85362D1B19DB005C4D0B /* AddPresetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPresetViewController.swift; sourceTree = "<group>"; };
 		BB7AFB352D0B286B00801CAA /* PresetListViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetListViewCell.swift; sourceTree = "<group>"; };
 		BB7AFB372D0B3BD600801CAA /* PresetsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetsViewModel.swift; sourceTree = "<group>"; };
 		BB7AFB392D0B436600801CAA /* PresetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetModel.swift; sourceTree = "<group>"; };
@@ -168,7 +177,6 @@
 		BBF4F48B2C76B61A0079448E /* PresetsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetsViewController.swift; sourceTree = "<group>"; };
 		BBF4F48D2C76D2C90079448E /* TimerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerViewModel.swift; sourceTree = "<group>"; };
 		BBF4F4902C76D3B10079448E /* CatodoroPersistentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatodoroPersistentController.swift; sourceTree = "<group>"; };
-		BBF4F4932C76D3EE0079448E /* CatodoroCoreData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CatodoroCoreData.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -196,6 +204,39 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		BB07847E2D1BBBF5004BF908 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				BB0784822D1BBC10004BF908 /* Presets */,
+				BB0784802D1BBC03004BF908 /* Settings */,
+				BB07847F2D1BBBFE004BF908 /* Timer */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		BB07847F2D1BBBFE004BF908 /* Timer */ = {
+			isa = PBXGroup;
+			children = (
+				BB0784832D1BBC60004BF908 /* PawButtonTests.swift */,
+				BB0784852D1BC57B004BF908 /* PlayPauseButtonTests.swift */,
+			);
+			path = Timer;
+			sourceTree = "<group>";
+		};
+		BB0784802D1BBC03004BF908 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		BB0784822D1BBC10004BF908 /* Presets */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Presets;
+			sourceTree = "<group>";
+		};
 		BB1817B52C7EB1EA00BF8DA8 /* Timer */ = {
 			isa = PBXGroup;
 			children = (
@@ -278,6 +319,7 @@
 		BB6C85252D1A5853005C4D0B /* CatodoroTests */ = {
 			isa = PBXGroup;
 			children = (
+				BB07847E2D1BBBF5004BF908 /* Views */,
 				BB6C852F2D1A66EC005C4D0B /* Helper */,
 				BB6C852C2D1A6647005C4D0B /* ViewModels */,
 				BB6C852B2D1A663D005C4D0B /* ViewControllers */,
@@ -304,6 +346,7 @@
 		BB6C852C2D1A6647005C4D0B /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				BB6C85342D1A8B57005C4D0B /* OptionSelectionViewModelTests.swift */,
 				BB6C852D2D1A666F005C4D0B /* TimerViewModelTests.swift */,
 			);
 			path = ViewModels;
@@ -416,6 +459,7 @@
 		BBF4F4742C7644E10079448E /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				BB6C85362D1B19DB005C4D0B /* AddPresetViewController.swift */,
 				BB49DC6E2D08F31A001E3CDC /* ColorSelectionViewController.swift */,
 				BBF4F48B2C76B61A0079448E /* PresetsViewController.swift */,
 				BBF4F4812C7648820079448E /* SettingsViewController.swift */,
@@ -446,7 +490,7 @@
 			children = (
 				BB4E43422D191B2300C34D04 /* CatodoroCoreDataManager.swift */,
 				BBF4F4902C76D3B10079448E /* CatodoroPersistentController.swift */,
-				BBF4F4922C76D3EE0079448E /* CatodoroCoreData.xcdatamodeld */,
+				BB07847B2D1B293E004BF908 /* CatodoroCoreData.xcdatamodeld */,
 			);
 			path = CoreData;
 			sourceTree = "<group>";
@@ -591,6 +635,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BB0784862D1BC57B004BF908 /* PlayPauseButtonTests.swift in Sources */,
+				BB0784842D1BBC60004BF908 /* PawButtonTests.swift in Sources */,
+				BB6C85352D1A8B57005C4D0B /* OptionSelectionViewModelTests.swift in Sources */,
 				BB6C85312D1A66FA005C4D0B /* PreferencesMock.swift in Sources */,
 				BB6C852E2D1A666F005C4D0B /* TimerViewModelTests.swift in Sources */,
 				BB6C85332D1A6784005C4D0B /* AudioManagerMock.swift in Sources */,
@@ -612,7 +659,6 @@
 			files = (
 				BBF4F4762C7644FB0079448E /* CustomNavigationController.swift in Sources */,
 				BB516E4E2CAB98930004B95C /* TimerConfigModel.swift in Sources */,
-				BBF4F4942C76D3EE0079448E /* CatodoroCoreData.xcdatamodeld in Sources */,
 				BB0B25D12C9CF5F000487314 /* StopButton.swift in Sources */,
 				BB8D28412CE151A3001D73B1 /* ColorPickOptionViewCell.swift in Sources */,
 				BBF4F4862C7673ED0079448E /* MainCoordinator.swift in Sources */,
@@ -632,6 +678,7 @@
 				BB8D28592CE18E73001D73B1 /* TimerConfigSubTitle.swift in Sources */,
 				BB8D28452CE1595E001D73B1 /* SettingsViewModel.swift in Sources */,
 				BB49DC672D08D167001E3CDC /* ColorOptions.swift in Sources */,
+				BB07847D2D1B293E004BF908 /* CatodoroCoreData.xcdatamodeld in Sources */,
 				BBF4F48C2C76B61A0079448E /* PresetsViewController.swift in Sources */,
 				BB479AB72CB49013000CBE6D /* TimePickerView.swift in Sources */,
 				BB8D283F2CE15000001D73B1 /* SettingSubtitleLabel.swift in Sources */,
@@ -663,6 +710,7 @@
 				BB49DC712D08F33D001E3CDC /* OptionSelectionViewModel.swift in Sources */,
 				BB49DC6D2D08EFE2001E3CDC /* OptionSelectionViewCell.swift in Sources */,
 				BBA3CDA62C868CA6002A3E7B /* TimeInterval+Extensions.swift in Sources */,
+				BB6C85372D1B19DB005C4D0B /* AddPresetViewController.swift in Sources */,
 				BB516E4B2CAB97B90004B95C /* TimerModel.swift in Sources */,
 				BBF4F4722C7644A20079448E /* TabCoordinator.swift in Sources */,
 				BB479AB92CC87A1C000CBE6D /* UIButton+Extensions.swift in Sources */,
@@ -903,6 +951,7 @@
 				DEVELOPMENT_TEAM = FVEGF5DQ7U;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Catodoro/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIStatusBarStyle = "";
@@ -931,6 +980,7 @@
 				DEVELOPMENT_TEAM = FVEGF5DQ7U;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Catodoro/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIStatusBarStyle = "";
@@ -991,14 +1041,13 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
-		BBF4F4922C76D3EE0079448E /* CatodoroCoreData.xcdatamodeld */ = {
+		BB07847B2D1B293E004BF908 /* CatodoroCoreData.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				BBF4F4932C76D3EE0079448E /* CatodoroCoreData.xcdatamodel */,
+				BB07847C2D1B293E004BF908 /* CatodoroCoreData.xcdatamodel */,
 			);
-			currentVersion = BBF4F4932C76D3EE0079448E /* CatodoroCoreData.xcdatamodel */;
-			name = CatodoroCoreData.xcdatamodeld;
-			path = "/Users/suguru/Documents/xcode-workspace/Catodoro/Catodoro/CoreData/CatodoroCoreData.xcdatamodeld";
+			currentVersion = BB07847C2D1B293E004BF908 /* CatodoroCoreData.xcdatamodel */;
+			path = CatodoroCoreData.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

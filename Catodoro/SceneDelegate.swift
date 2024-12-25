@@ -21,7 +21,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.rootViewController = mainCoordinator?.navigationController
         window?.makeKeyAndVisible()
 
+        window?.overrideUserInterfaceStyle = .dark
+
         UINavigationBar.appearance().tintColor = .white
+
+        setupAppearance()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -37,5 +41,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
+    }
+}
+
+extension SceneDelegate {
+    private func setupAppearance() {
+        let barButtonItemAppearance = UIBarButtonItem.appearance()
+        barButtonItemAppearance.setBackButtonTitlePositionAdjustment(UIOffset(horizontal: -1000, vertical: 0), for: .default)
     }
 }

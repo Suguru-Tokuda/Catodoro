@@ -17,6 +17,7 @@ class PresetsCoordinator: Coordinator {
     var type: CoordinatorType { .feature }
     var childCoordinators: [Coordinator] = []
     var navigationController: UINavigationController
+    weak var preferences: CatodoroPreferences?
 
     init(navigationController: UINavigationController = CustomNavigationController()) {
         self.navigationController = navigationController
@@ -30,6 +31,17 @@ class PresetsCoordinator: Coordinator {
             delegate?.startTimer(model: preset)
         }
 
-        self.navigationController.pushViewController(presetsViewController, animated: false)
+        navigationController.pushViewController(presetsViewController, animated: false)
+    }
+
+    func navigateToAddPreset(onFinish: @escaping(() -> Void)) {
+        let addPresetViewController = AddPresetViewController(preferences: preferences)
+        addPresetViewController.setCoordinator(coordinator: self)
+        addPresetViewController.onFinish = { [weak self] in
+            guard let self else { return }
+            onFinish()
+            navigationController.popViewController(animated: true)
+        }
+        navigationController.pushViewController(addPresetViewController, animated: true)
     }
 }

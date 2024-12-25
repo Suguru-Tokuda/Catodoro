@@ -31,12 +31,12 @@ final class TimerViewModelTests: XCTestCase {
         super.tearDown()
     }
 
-    func testInitialState() {
+    func test_init_expectInitialState() {
         XCTAssertEqual(viewModel.timerStatus, .paused)
         XCTAssertEqual(viewModel.currentTimerValue, 0)
     }
 
-    func testConfigureTimer() {
+    func test_configure_expectTimerIsConfiguredCorrectly() {
         let duration: TimeInterval = 1500 // 25 minutes
         let intervalTime: TimeInterval = 300 // 5 minutes
         let intervals = 4
@@ -51,7 +51,7 @@ final class TimerViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.timerStatus, .paused)
     }
 
-    func testStartTimer() {
+    func test_startTimer_expectTimerValueUpdates() {
         let expectation = self.expectation(description: "Timer updates current value")
         let expectedValue = "00:24:59"
         viewModel.timerSubject
@@ -67,7 +67,7 @@ final class TimerViewModelTests: XCTestCase {
         waitForExpectations(timeout: 2.0)
     }
 
-    func testPauseTimer() {
+    func test_pauseTimer_expectTimerIsPaused() {
         viewModel.configure(duration: 1500, intervalTime: 300, numberOfIntervals: 4)
         viewModel.startTimer()
         viewModel.pauseTimer()
@@ -76,7 +76,7 @@ final class TimerViewModelTests: XCTestCase {
         XCTAssertNil(viewModel.testHooks.timer)
     }
 
-    func testResumeTimer() {
+    func test_resumeTimer_expectTimerResumesPlaying() {
         viewModel.configure(duration: 1500, intervalTime: 300, numberOfIntervals: 4)
         viewModel.startTimer()
         viewModel.pauseTimer()
@@ -86,7 +86,7 @@ final class TimerViewModelTests: XCTestCase {
         XCTAssertNotNil(viewModel.testHooks.timer)
     }
 
-    func testStopTimer() {
+    func test_stopTimer_expectTimerResets() {
         viewModel.configure(duration: 1500, intervalTime: 300, numberOfIntervals: 4)
         viewModel.startTimer()
         viewModel.stopTimer()
@@ -97,7 +97,7 @@ final class TimerViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.testHooks.timerType, .main)
     }
 
-    func testPlayFinishSound() {
+    func test_playFinishSound_expectAudioManagerPlaysFinishSound() {
         preferencesMock.sound = "finishSound"
         viewModel.playFinishSound()
 

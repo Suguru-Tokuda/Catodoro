@@ -8,15 +8,37 @@
 import Foundation
 
 class PresetsViewModel {
-    var presets: [PresetModel] = []
+    @Published var presets: [PresetModel] = []
+    var coreDataError: CoreDataError?
 
-    init(presets: [PresetModel] = []) {
-        self.presets = presets
-        for _ in 0..<20 {
-            self.presets.append(.init(id: UUID(),
-                                      totalDuration: 120,
-                                      intervalDuration: 60,
-                                      intervals: 5))
+    // MARK: - Dependencies
+
+    private var coreDataManager: CatodoroCoreDataManaging?
+
+    init(coreDataManager: CatodoroCoreDataManaging? = CatodoroCoreDataManager()) {
+        self.coreDataManager = coreDataManager
+    }
+
+    func loadPresets() async {
+        do {
+            presets = try await self.coreDataManager?.getPresets() ?? []
+        } catch {
+            if let coreDataError = error as? CoreDataError {
+                self.coreDataError = coreDataError
+            }
+        }
+    }
+
+    func deletePrset(_ preset: PresetModel) async {
+        do {
+            try await self.coreDataManager?.deletePreset(preset.id.uuidString)
+            if let index = presets.firstIndex(where: { $0.id == preset.id }) {
+                presets.remove(at: index)
+            }
+        } catch {
+            if let coreDataError = error as? CoreDataError {
+                self.coreDataError = coreDataError
+            }
         }
     }
 }

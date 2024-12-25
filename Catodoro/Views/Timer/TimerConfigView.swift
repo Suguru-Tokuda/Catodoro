@@ -9,14 +9,17 @@ import UIKit
 
 class TimerConfigView: UIView {
     struct Model {
+        let startLabelText: String
         let color: UIColor
 
-        init(color: UIColor = ColorOptions.neonBlue.color) {
+        init(startLabelText: String = "Start",
+             color: UIColor = ColorOptions.neonBlue.color) {
+            self.startLabelText = startLabelText
             self.color = color
         }
     }
 
-    var model: Model? {
+    var model: Model? = .init() {
         didSet {
             applyModel()
         }
@@ -78,6 +81,7 @@ class TimerConfigView: UIView {
             intervalStackView,
             startButton
         ])
+        applyModel()
     }
 
     private func setupConstraints() {
@@ -105,7 +109,7 @@ class TimerConfigView: UIView {
     private func setupEventHandlers() {
         mainTimerPicker.onSelect = onMainTimerSelect
         breakTimerPicker.onSelect = onBreakTimerSelect
-        onIntervalSelect = intervalPicker.onSelect
+        intervalPicker.onSelect = onIntervalSelect
     }
 
     override func layoutSubviews() {
@@ -116,7 +120,8 @@ class TimerConfigView: UIView {
     private func applyModel() {
         guard let model else { return }
         
-        startButton.model = .init(color: model.color)
+        startButton.model = .init(buttonLabelText: model.startLabelText,
+                                  color: model.color)
     }
 }
 

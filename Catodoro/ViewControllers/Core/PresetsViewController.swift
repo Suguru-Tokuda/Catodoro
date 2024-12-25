@@ -5,12 +5,15 @@
 //  Created by Suguru Tokuda on 8/21/24.
 //
 
+import Combine
 import UIKit
 
 class PresetsViewController: UIViewController {
     var onPresetSelected: ((PresetModel) -> Void)?
     private weak var coordinator: Coordinator?
     private var viewModel: PresetsViewModel = .init()
+    private var cancellables: Set<AnyCancellable> = .init()
+
     private lazy var label: UILabel = {
         let label = UILabel()
         label.text = "Presets"
@@ -25,10 +28,19 @@ class PresetsViewController: UIViewController {
         return tableView
     }()
 
+    deinit {
+        removeSubscriptions()
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupSubviews()
         setupConstraints()
+        setupAddButton()
+        addSubscriptions()
+        Task(priority: .utility) {
+            await viewModel.loadPresets()
+        }
     }
 
     func setCoordinator(coordinator: Coordinator) {
@@ -36,6 +48,7 @@ class PresetsViewController: UIViewController {
     }
 
     private func setupSubviews() {
+        presetsTableView.delegate = self
         presetsTableView.dataSource = self
         presetsTableView.allowsSelection = false
         view.addAutolayoutSubviews([
@@ -53,6 +66,47 @@ class PresetsViewController: UIViewController {
             presetsTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             presetsTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+    }
+
+    private func setupAddButton() {
+        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(handleAddButtonTap))
+        navigationItem.rightBarButtonItem = addButton
+    }
+
+    private func addSubscriptions() {
+        viewModel.$presets.receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self else { return }
+                presetsTableView.reloadData()
+            }
+            .store(in: &cancellables)
+    }
+
+    private func removeSubscriptions() {
+        cancellables.removeAll()
+    }
+}
+
+extension PresetsViewController {
+    @objc private func handleAddButtonTap() {
+        if let coordinator = coordinator as? PresetsCoordinator {
+            coordinator.navigateToAddPreset { [weak self] in
+                Task(priority: .utility) {
+                    await self?.viewModel.loadPresets()
+                }
+            }
+        }
+    }
+}
+
+extension PresetsViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            Task(priority: .utility) {
+                let preset = viewModel.presets[indexPath.row]
+                await viewModel.deletePrset(preset)
+            }
+        }
     }
 }
 

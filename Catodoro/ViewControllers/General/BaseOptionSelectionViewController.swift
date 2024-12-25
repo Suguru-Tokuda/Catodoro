@@ -8,7 +8,7 @@
 import UIKit
 
 class BaseOptionSelectionViewController: UIViewController {
-    private weak var coordinator: Coordinator?
+    weak var coordinator: Coordinator?
 
     // MARK: UI Components
     lazy var titleLabel: UILabel = {

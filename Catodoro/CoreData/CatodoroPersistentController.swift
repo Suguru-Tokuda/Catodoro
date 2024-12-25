@@ -18,7 +18,7 @@ struct CatodoroPersistentController {
     }()
 
     init(inMemory: Bool = false) {
-        container = NSPersistentContainer(name: "CatorodoCoreData")
+        container = NSPersistentContainer(name: "CatodoroCoreData")
 
         if inMemory {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")

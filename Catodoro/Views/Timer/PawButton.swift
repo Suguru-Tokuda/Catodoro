@@ -50,3 +50,19 @@ class PawButton: UIButton {
         pawImage.tintColor = color
     }
 }
+
+#if DEBUG
+extension PawButton {
+    var testHooks: TestHooks {
+        .init(target: self)
+    }
+    
+    struct TestHooks {
+        let target: PawButton
+
+        var label: UILabel { target.label }
+        var pawImage: UIImageView { target.pawImage }
+        var stackView: UIStackView { target.stackView }
+    }
+}
+#endif

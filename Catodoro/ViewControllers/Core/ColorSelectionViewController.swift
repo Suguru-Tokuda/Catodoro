@@ -33,6 +33,13 @@ extension ColorSelectionViewController: UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
         vm.setColor(colorCode: selectedId)
         optionTableView.reloadData()
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+            guard let self else { return }
+            if let coordinator = coordinator as? SettingsCoordinator {
+                coordinator.pop()
+            }
+        }
     }
 }
 

@@ -56,3 +56,15 @@ extension PlayPauseButton {
         onButtonTap?()
     }
 }
+
+#if DEBUG
+extension PlayPauseButton {
+    var testHooks: TestHooks {
+        .init(target: self)
+    }
+
+    struct TestHooks {
+        let target: PlayPauseButton
+    }
+}
+#endif

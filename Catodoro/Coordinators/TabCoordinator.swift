@@ -61,6 +61,7 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
         case .presets:
             presetsCoordiantor = .init()
             presetsCoordiantor?.delegate = self
+            presetsCoordiantor?.preferences = preferences
             if let presetsCoordiantor {
                 presetsCoordiantor.start()
                 navController = presetsCoordiantor.navigationController

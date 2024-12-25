@@ -25,6 +25,14 @@ class SettingsCoordinator: Coordinator {
         navigationController.pushViewController(settingsViewController, animated: false)
     }
 
+    func pop() {
+        navigationController.popViewController(animated: true)
+    }
+
+    func popToRoot() {
+        navigationController.popToRootViewController(animated: true)
+    }
+
     func navigateToColorSelectionsView() {
         var options: [OptionModel] = []
         let selectedColorCode = preferences?.color ?? ColorOptions.neonBlue.code
