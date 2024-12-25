@@ -27,16 +27,16 @@ class TimerConfigView: UIView {
 
     // MARK: Closures
     var onStartButtonTap: (() -> Void)?
-    var onMainTimerSelect: ((Int, Int, Int) -> Void)?
-    var onBreakTimerSelect: ((Int, Int, Int) -> Void)?
+    var onTotalDurationSelect: ((Int, Int, Int) -> Void)?
+    var onIntervalDurationSelect: ((Int, Int, Int) -> Void)?
     var onIntervalSelect: ((Int) -> Void)?
     // MARK: UI Components
     
-    private lazy var mainTimerLabel: TimerConfigSubTitle = .init(text: "Main Timer")
-    private lazy var breakTimerLabel: TimerConfigSubTitle = .init(text: "Break")
+    private lazy var totalDurationLabel: TimerConfigSubTitle = .init(text: "Main Timer")
+    private lazy var intervalDurationLabel: TimerConfigSubTitle = .init(text: "Interval")
     private lazy var intervalsLabel: TimerConfigSubTitle = .init(text: "Intervals")
-    private lazy var mainTimerPicker: TimerPickerView = .init()
-    private lazy var breakTimerPicker: TimerPickerView = .init()
+    private lazy var totalDurationPicker: TimerPickerView = .init()
+    private lazy var intervalDurationPicker: TimerPickerView = .init()
     private lazy var intervalPicker: TimePickerView = .init(frame: .zero, min: 1, max: 20)
     private lazy var intervalStackView: UIStackView = {
        let stackView = UIStackView()
@@ -73,10 +73,10 @@ class TimerConfigView: UIView {
         scrollView.addAutolayoutSubviews([stackView])
         intervalStackView.addArrangedSubviews([intervalPicker, UIView(), UIView()])
         stackView.addArrangedSubviews([
-            mainTimerLabel,
-            mainTimerPicker,
-            breakTimerLabel,
-            breakTimerPicker,
+            totalDurationLabel,
+            totalDurationPicker,
+            intervalDurationLabel,
+            intervalDurationPicker,
             intervalsLabel,
             intervalStackView,
             startButton
@@ -107,8 +107,8 @@ class TimerConfigView: UIView {
     }
 
     private func setupEventHandlers() {
-        mainTimerPicker.onSelect = onMainTimerSelect
-        breakTimerPicker.onSelect = onBreakTimerSelect
+        totalDurationPicker.onSelect = onTotalDurationSelect
+        intervalDurationPicker.onSelect = onIntervalDurationSelect
         intervalPicker.onSelect = onIntervalSelect
     }
 
@@ -136,3 +136,25 @@ extension TimerConfigView {
         onStartButtonTap?()
     }
 }
+
+#if DEBUG
+extension TimerConfigView {
+    var testHooks: TestHooks {
+        .init(target: self)
+    }
+
+    struct TestHooks {
+        let target: TimerConfigView
+
+        var scrollView: UIScrollView { target.scrollView }
+        var stackView: UIStackView { target.stackView }
+        var totalDurationLabel: TimerConfigSubTitle { target.totalDurationLabel }
+        var startButton: TimerStartButton { target.startButton }
+        var intervalDurationPicker: TimerPickerView { target.intervalDurationPicker }
+        var totalDurationPicker: TimerPickerView { target.totalDurationPicker }
+        var intervalPicker: TimePickerView { target.intervalPicker }
+
+        func setupEventHandlers() { target.setupEventHandlers() }
+    }
+}
+#endif

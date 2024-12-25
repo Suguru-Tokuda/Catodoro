@@ -99,3 +99,17 @@ class TimerCircleView: UIView {
         shapeLayer.speed = 0.0
     }
 }
+
+#if DEBUG
+extension TimerCircleView {
+    var testHooks: TestHooks {
+        .init(target: self)
+    }
+
+    struct TestHooks {
+        let target: TimerCircleView
+
+        var shapeLayer: CAShapeLayer { target.shapeLayer }
+    }
+}
+#endif

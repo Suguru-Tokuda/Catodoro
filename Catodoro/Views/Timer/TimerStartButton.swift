@@ -19,7 +19,7 @@ class TimerStartButton: UIButton {
         }
     }
 
-    var model: Model? {
+    var model: Model? = .init() {
         didSet {
             applyModel()
         }
@@ -49,6 +49,7 @@ class TimerStartButton: UIButton {
         super.init(frame: frame)
         setupUI()
         setupConstraints()
+        applyModel()
     }
     
     required init?(coder: NSCoder) {
@@ -74,9 +75,9 @@ class TimerStartButton: UIButton {
         configuration?.contentInsets = .zero
         addAutolayoutSubview(stackView)
 
-        backgroundColor = .systemBlue
-        setBackgroundColor(.systemBlue, for: .normal)
-        setBackgroundColor(.systemGray, for: .disabled)
+        backgroundColor = ColorOptions.neonBlue.color
+        setBackgroundColor(ColorOptions.neonBlue.color, for: .normal)
+        setBackgroundColor(.lightGray, for: .disabled)
         clipsToBounds = true
         layer.cornerRadius = 16
         isEnabled = false
@@ -102,3 +103,17 @@ class TimerStartButton: UIButton {
         setBackgroundColor(.lightGray, for: .disabled)
     }
 }
+
+#if DEBUG
+extension TimerStartButton {
+    var testHooks: TestHooks {
+        .init(target: self)
+    }
+
+    struct TestHooks {
+        let target: TimerStartButton
+
+        var buttonLabel: UILabel { target.buttonLabel }
+    }
+}
+#endif

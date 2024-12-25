@@ -53,7 +53,7 @@ class TimerConfigViewController: UIViewController {
     }
 
     private func setupEventHandlers() {
-        timerConfigView.onMainTimerSelect = { [weak self] (hours, minutes, seconds) in
+        timerConfigView.onTotalDurationSelect = { [weak self] (hours, minutes, seconds) in
             guard let self else { return }
             self.viewModel.timerModel.mainTimer = .init(hours: hours,
                                                  minutes: minutes,
@@ -61,7 +61,7 @@ class TimerConfigViewController: UIViewController {
             self.timerConfigView.setStartButtonStatus(isEnabled: self.viewModel.isValidSelection)
         }
 
-        timerConfigView.onBreakTimerSelect = { [weak self] (hours, minutes, seconds) in
+        timerConfigView.onIntervalDurationSelect = { [weak self] (hours, minutes, seconds) in
             guard let self else { return }
             self.viewModel.timerModel.interval = .init(hours: hours,
                                                 minutes: minutes,

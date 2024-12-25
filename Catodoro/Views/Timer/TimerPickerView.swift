@@ -129,8 +129,27 @@ class TimerPickerView: UIView {
     }
 
     func configure(hour: Int, minute: Int, second: Int) {
+        self.hours = hour
+        self.minutes = minute
+        self.seconds = second
         hourPicker.selectRow(hour, inComponent: 0, animated: false)
         minutePicker.selectRow(minute, inComponent: 0, animated: false)
         secondPicker.selectRow(second, inComponent: 0, animated: false)
     }
 }
+
+#if DEBUG
+extension TimerPickerView {
+    var testHooks: TestHooks {
+        .init(target: self)
+    }
+
+    struct TestHooks {
+        let target: TimerPickerView
+
+        var hourPicker: TimePickerView { target.hourPicker }
+        var minutePicker: TimePickerView { target.minutePicker }
+        var secondPicker: TimePickerView { target.secondPicker }
+    }
+}
+#endif

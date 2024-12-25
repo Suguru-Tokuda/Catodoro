@@ -142,3 +142,22 @@ extension TimerView {
         timerCircleView.resumeTimer()
     }
 }
+
+#if DEBUG
+extension TimerView {
+    var testHooks: TestHooks {
+        .init(target: self)
+    }
+
+    struct TestHooks {
+        let target: TimerView
+
+        var timerNameLabel: UILabel { target.timerNameLabel }
+        var timerLabel: UILabel { target.timerLabel }
+        var stackView: UIStackView { target.stackView }
+        var timerCircleView: TimerCircleView { target.timerCircleView }
+        var playPauseButton: PlayPauseButton { target.playPauseButton }
+        var stopButton: StopButton { target.stopButton }
+    }
+}
+#endif

@@ -63,6 +63,14 @@
 		BBA3CDA22C866749002A3E7B /* UIStackView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA3CDA12C866749002A3E7B /* UIStackView+Extensions.swift */; };
 		BBA3CDA42C866A3F002A3E7B /* UIImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA3CDA32C866A3F002A3E7B /* UIImage+Extensions.swift */; };
 		BBA3CDA62C868CA6002A3E7B /* TimeInterval+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA3CDA52C868CA6002A3E7B /* TimeInterval+Extensions.swift */; };
+		BBEA02C12D1C6AE300922951 /* StopButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02C02D1C6AE300922951 /* StopButtonTests.swift */; };
+		BBEA02C32D1C6B5700922951 /* TimePickerViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02C22D1C6B5700922951 /* TimePickerViewTests.swift */; };
+		BBEA02C52D1C6C5300922951 /* TimerCircleViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02C42D1C6C5300922951 /* TimerCircleViewTests.swift */; };
+		BBEA02C72D1C6ED700922951 /* TimerConfigSubTitleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02C62D1C6ED700922951 /* TimerConfigSubTitleTests.swift */; };
+		BBEA02C92D1C6F0200922951 /* TimerConfigViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02C82D1C6F0200922951 /* TimerConfigViewTests.swift */; };
+		BBEA02CB2D1C784800922951 /* TimerPickerViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02CA2D1C784800922951 /* TimerPickerViewTests.swift */; };
+		BBEA02CD2D1C797700922951 /* TimerStartButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02CC2D1C797700922951 /* TimerStartButtonTests.swift */; };
+		BBEA02CF2D1C7CAF00922951 /* TimerViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02CE2D1C7CAF00922951 /* TimerViewTests.swift */; };
 		BBF4F4582C763FF80079448E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F4572C763FF80079448E /* AppDelegate.swift */; };
 		BBF4F45A2C763FF80079448E /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F4592C763FF80079448E /* SceneDelegate.swift */; };
 		BBF4F4612C763FF90079448E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BBF4F4602C763FF90079448E /* Assets.xcassets */; };
@@ -158,6 +166,14 @@
 		BBA3CDA12C866749002A3E7B /* UIStackView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIStackView+Extensions.swift"; sourceTree = "<group>"; };
 		BBA3CDA32C866A3F002A3E7B /* UIImage+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Extensions.swift"; sourceTree = "<group>"; };
 		BBA3CDA52C868CA6002A3E7B /* TimeInterval+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeInterval+Extensions.swift"; sourceTree = "<group>"; };
+		BBEA02C02D1C6AE300922951 /* StopButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopButtonTests.swift; sourceTree = "<group>"; };
+		BBEA02C22D1C6B5700922951 /* TimePickerViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimePickerViewTests.swift; sourceTree = "<group>"; };
+		BBEA02C42D1C6C5300922951 /* TimerCircleViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerCircleViewTests.swift; sourceTree = "<group>"; };
+		BBEA02C62D1C6ED700922951 /* TimerConfigSubTitleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerConfigSubTitleTests.swift; sourceTree = "<group>"; };
+		BBEA02C82D1C6F0200922951 /* TimerConfigViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerConfigViewTests.swift; sourceTree = "<group>"; };
+		BBEA02CA2D1C784800922951 /* TimerPickerViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerPickerViewTests.swift; sourceTree = "<group>"; };
+		BBEA02CC2D1C797700922951 /* TimerStartButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerStartButtonTests.swift; sourceTree = "<group>"; };
+		BBEA02CE2D1C7CAF00922951 /* TimerViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerViewTests.swift; sourceTree = "<group>"; };
 		BBF4F4542C763FF80079448E /* Catodoro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Catodoro.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BBF4F4572C763FF80079448E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BBF4F4592C763FF80079448E /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -219,6 +235,14 @@
 			children = (
 				BB0784832D1BBC60004BF908 /* PawButtonTests.swift */,
 				BB0784852D1BC57B004BF908 /* PlayPauseButtonTests.swift */,
+				BBEA02C02D1C6AE300922951 /* StopButtonTests.swift */,
+				BBEA02C22D1C6B5700922951 /* TimePickerViewTests.swift */,
+				BBEA02C42D1C6C5300922951 /* TimerCircleViewTests.swift */,
+				BBEA02C62D1C6ED700922951 /* TimerConfigSubTitleTests.swift */,
+				BBEA02C82D1C6F0200922951 /* TimerConfigViewTests.swift */,
+				BBEA02CA2D1C784800922951 /* TimerPickerViewTests.swift */,
+				BBEA02CC2D1C797700922951 /* TimerStartButtonTests.swift */,
+				BBEA02CE2D1C7CAF00922951 /* TimerViewTests.swift */,
 			);
 			path = Timer;
 			sourceTree = "<group>";
@@ -637,10 +661,18 @@
 			files = (
 				BB0784862D1BC57B004BF908 /* PlayPauseButtonTests.swift in Sources */,
 				BB0784842D1BBC60004BF908 /* PawButtonTests.swift in Sources */,
+				BBEA02C52D1C6C5300922951 /* TimerCircleViewTests.swift in Sources */,
+				BBEA02C72D1C6ED700922951 /* TimerConfigSubTitleTests.swift in Sources */,
+				BBEA02C92D1C6F0200922951 /* TimerConfigViewTests.swift in Sources */,
 				BB6C85352D1A8B57005C4D0B /* OptionSelectionViewModelTests.swift in Sources */,
+				BBEA02CB2D1C784800922951 /* TimerPickerViewTests.swift in Sources */,
+				BBEA02CD2D1C797700922951 /* TimerStartButtonTests.swift in Sources */,
+				BBEA02C12D1C6AE300922951 /* StopButtonTests.swift in Sources */,
 				BB6C85312D1A66FA005C4D0B /* PreferencesMock.swift in Sources */,
+				BBEA02CF2D1C7CAF00922951 /* TimerViewTests.swift in Sources */,
 				BB6C852E2D1A666F005C4D0B /* TimerViewModelTests.swift in Sources */,
 				BB6C85332D1A6784005C4D0B /* AudioManagerMock.swift in Sources */,
+				BBEA02C32D1C6B5700922951 /* TimePickerViewTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
