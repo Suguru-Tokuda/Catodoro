@@ -8,8 +8,6 @@
 import UIKit
 
 class BaseOptionSelectionViewController: UIViewController {
-    weak var coordinator: Coordinator?
-
     // MARK: UI Components
     lazy var titleLabel: UILabel = {
         let label = UILabel()
@@ -56,9 +54,5 @@ class BaseOptionSelectionViewController: UIViewController {
             optionTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             optionTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
-    }
-
-    func setCoordinator(coordinator: Coordinator) {
-        self.coordinator = coordinator
     }
 }

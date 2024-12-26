@@ -10,7 +10,7 @@ import Foundation
 @testable import Catodoro
 
 // Mock implementation of CatodoroPreferencesProtocol
-final class PreferencesMock: CatodoroPreferencesProtocol {
+final class MockPreferences: CatodoroPreferencesProtocol {
     var color: String? {
         didSet {
             colorSubject.send(color)

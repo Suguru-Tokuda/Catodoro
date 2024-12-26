@@ -7,7 +7,13 @@
 
 import Foundation
 
-class TimerConfigViewModel {
+protocol TimerConfigViewModelProtocol {
+    var timerModel: TimerConfigModel { get set }
+    var isValidSelection: Bool { get }
+    func addPreset() async throws
+}
+
+class TimerConfigViewModel: TimerConfigViewModelProtocol {
     var timerModel: TimerConfigModel
     private var coreDataManager: CatodoroCoreDataManaging?
 

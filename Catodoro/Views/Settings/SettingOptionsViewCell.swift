@@ -58,6 +58,32 @@ class SettingOptionsViewCell: UITableViewCell {
 
     func configure(settingLabelText: String, iconName: String) {
         settingLabel.text = settingLabelText
-        icon.image = UIImage(systemName: iconName)
+        settingLabel.isAccessibilityElement = true
+        settingLabel.accessibilityLabel = settingLabelText
+
+        if let image = UIImage(systemName: iconName) {
+            icon.image = image
+            icon.isAccessibilityElement = true
+            icon.accessibilityLabel = iconName
+        } else {
+            icon.image = nil
+            icon.isAccessibilityElement = false
+            icon.accessibilityLabel = nil
+        }
     }
 }
+
+#if DEBUG
+extension SettingOptionsViewCell {
+    var testHooks: TestHooks {
+        .init(target: self)
+    }
+
+    struct TestHooks {
+        let target: SettingOptionsViewCell
+
+        var icon: UIImageView { target.icon }
+        var settingLabel: UILabel { target.settingLabel }
+    }
+}
+#endif

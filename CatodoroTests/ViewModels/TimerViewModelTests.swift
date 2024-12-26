@@ -11,14 +11,14 @@ import Combine
 
 final class TimerViewModelTests: XCTestCase {
     private var viewModel: TimerViewModel!
-    private var audioManagerMock: AudioManagerMock!
-    private var preferencesMock: PreferencesMock!
+    private var audioManagerMock: MockAudioManager!
+    private var preferencesMock: MockPreferences!
     private var cancellables: Set<AnyCancellable>!
 
     override func setUp() {
         super.setUp()
-        audioManagerMock = AudioManagerMock()
-        preferencesMock = PreferencesMock()
+        audioManagerMock = MockAudioManager()
+        preferencesMock = MockPreferences()
         viewModel = TimerViewModel(audioManager: audioManagerMock, preferences: preferencesMock)
         cancellables = []
     }

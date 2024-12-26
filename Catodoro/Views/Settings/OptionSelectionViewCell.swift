@@ -17,8 +17,8 @@ class OptionSelectionViewCell: UITableViewCell {
         label.textAlignment = .left
         return label
     }()
-    private var checkIcon: UIImageView = {
-        let icon = UIImageView(image: .init(systemName: "checkmark.circle"))
+    private var selectedIcon: UIImageView = {
+        let icon = UIImageView(image: .init(systemName: "pawprint.fill"))
         icon.tintColor = .label
         return icon
     }()
@@ -45,13 +45,13 @@ class OptionSelectionViewCell: UITableViewCell {
 
     private func setupSubviews() {
         contentView.addAutolayoutSubview(stackView)
-        stackView.addArrangedSubviews([optionLabel, checkIcon])
+        stackView.addArrangedSubviews([optionLabel, selectedIcon])
     }
 
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-            checkIcon.widthAnchor.constraint(equalToConstant: 24),
-            checkIcon.heightAnchor.constraint(equalToConstant: 24),
+            selectedIcon.widthAnchor.constraint(equalToConstant: 24),
+            selectedIcon.heightAnchor.constraint(equalToConstant: 24),
         ])
         NSLayoutConstraint.activate([
             stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
@@ -63,8 +63,32 @@ class OptionSelectionViewCell: UITableViewCell {
         ])
     }
 
-    func configure(optionLabelText: String, isSelected: Bool) {
+    func configure(optionLabelText: String, isSelected: Bool, textColor: UIColor = .label) {
         optionLabel.text = optionLabelText
-        checkIcon.alpha = isSelected ? 1 : 0 
+        optionLabel.isAccessibilityElement = true
+        optionLabel.accessibilityLabel = optionLabelText
+
+        selectedIcon.alpha = isSelected ? 1 : 0
+        selectedIcon.isAccessibilityElement = true
+        selectedIcon.accessibilityLabel = isSelected ? "Selected" : "Not Selected"
+        
+        optionLabel.textColor = textColor
+        selectedIcon.tintColor = textColor
     }
 }
+
+#if DEBUG
+extension OptionSelectionViewCell {
+    var testHooks: TestHooks {
+        .init(target: self)
+    }
+
+    struct TestHooks {
+        let target: OptionSelectionViewCell
+
+        var stackView: UIStackView { target.stackView }
+        var optionLabel: UILabel { target.optionLabel }
+        var selectedIcon: UIImageView { target.selectedIcon }
+    }
+}
+#endif

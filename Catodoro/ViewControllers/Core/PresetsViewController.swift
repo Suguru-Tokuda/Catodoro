@@ -8,10 +8,14 @@
 import Combine
 import UIKit
 
+protocol PresetsViewControllerDelegate: AnyObject {
+    func presetsViewControllerDidSelectPreset(_ viewController: PresetsViewController, preset: PresetModel)
+    func presetsViewControllerDidTapAddButton(_ viewController: PresetsViewController, onFinish: @escaping(() -> Void))
+}
+
 class PresetsViewController: UIViewController {
-    var onPresetSelected: ((PresetModel) -> Void)?
-    private weak var coordinator: Coordinator?
-    private var viewModel: PresetsViewModel = .init()
+    weak var delegate: PresetsViewControllerDelegate?
+    private var viewModel: PresetsViewModelProtocol = PresetsViewModel()
     private var cancellables: Set<AnyCancellable> = .init()
 
     private lazy var label: UILabel = {
@@ -43,10 +47,6 @@ class PresetsViewController: UIViewController {
         }
     }
 
-    func setCoordinator(coordinator: Coordinator) {
-        self.coordinator = coordinator
-    }
-
     private func setupSubviews() {
         presetsTableView.delegate = self
         presetsTableView.dataSource = self
@@ -74,10 +74,9 @@ class PresetsViewController: UIViewController {
     }
 
     private func addSubscriptions() {
-        viewModel.$presets.receive(on: DispatchQueue.main)
+        viewModel.presetsPublisher.receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                guard let self else { return }
-                presetsTableView.reloadData()
+                self?.presetsTableView.reloadData()
             }
             .store(in: &cancellables)
     }
@@ -89,11 +88,11 @@ class PresetsViewController: UIViewController {
 
 extension PresetsViewController {
     @objc private func handleAddButtonTap() {
-        if let coordinator = coordinator as? PresetsCoordinator {
-            coordinator.navigateToAddPreset { [weak self] in
-                Task(priority: .utility) {
-                    await self?.viewModel.loadPresets()
-                }
+        delegate?.presetsViewControllerDidTapAddButton(self) { [weak self] in
+            guard let self else { return }
+            Task(priority: .utility) { [weak self] in
+                guard let self else { return }
+                await viewModel.loadPresets()
             }
         }
     }
@@ -102,9 +101,9 @@ extension PresetsViewController {
 extension PresetsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
+            let preset = viewModel.presets[indexPath.row]
             Task(priority: .utility) {
-                let preset = viewModel.presets[indexPath.row]
-                await viewModel.deletePrset(preset)
+                await viewModel.deletePreset(preset)
             }
         }
     }
@@ -121,8 +120,7 @@ extension PresetsViewController: UITableViewDataSource {
             let presetModel = viewModel.presets[indexPath.row]
             cell.model = presetModel
             cell.onPlayButtonTapped = { [weak self] in
-                guard let self else { return }
-                onPresetSelected?(presetModel)
+                self?.delegate?.presetsViewControllerDidSelectPreset(self!, preset: presetModel)
             }
             return cell
         } else {
@@ -130,3 +128,20 @@ extension PresetsViewController: UITableViewDataSource {
         }
     }
 }
+
+
+#if DEBUG
+extension PresetsViewController {
+    var testHooks: TestHooks {
+        .init(target: self)
+    }
+
+    struct TestHooks {
+        let target: PresetsViewController
+
+        var presetsTableView: UITableView { target.presetsTableView }
+        func setViewModel(viewModel: PresetsViewModelProtocol) { target.viewModel = viewModel}
+        func handleAddButtonTap() { target.handleAddButtonTap() }
+    }
+}
+#endif

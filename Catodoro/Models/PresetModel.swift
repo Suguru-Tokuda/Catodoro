@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct PresetModel {
+struct PresetModel: Equatable {
     let id: UUID
     let totalDuration: TimeInterval
     let intervalDuration: TimeInterval

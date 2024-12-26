@@ -7,11 +7,16 @@
 
 import UIKit
 
+protocol SoundSelectionViewControllerDelegate: AnyObject {
+    func onSoundSelect()
+}
+
 class SoundSelectionViewController: BaseOptionSelectionViewController {
-    var vm: OptionSelectionViewModel
+    weak var delegate: SoundSelectionViewControllerDelegate?
+    var viewModel: OptionSelectionViewModel
 
     init(vm: OptionSelectionViewModel, titleLabelText: String) {
-        self.vm = vm
+        self.viewModel = vm
         super.init(titleLabelText: titleLabelText)
     }
     
@@ -28,29 +33,27 @@ class SoundSelectionViewController: BaseOptionSelectionViewController {
 
 extension SoundSelectionViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectedId = vm.options[indexPath.row].id
-        vm.selectedId = selectedId
+        let selectedId = viewModel.options[indexPath.row].id
+        viewModel.selectedId = selectedId
         tableView.deselectRow(at: indexPath, animated: true)
-        vm.setSound(soundId: selectedId)
+        viewModel.setSound(soundId: selectedId)
         optionTableView.reloadData()
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
             guard let self else { return }
-            if let coordinator = coordinator as? SettingsCoordinator {
-                coordinator.pop()
-            }
+            delegate?.onSoundSelect()
         }
     }
 }
 
 extension SoundSelectionViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        vm.options.count
+        viewModel.options.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let cell = tableView.dequeueReusableCell(withIdentifier: OptionSelectionViewCell.reuseIdentifier, for: indexPath) as? OptionSelectionViewCell {
-            let option = vm.options[indexPath.row]
+            let option = viewModel.options[indexPath.row]
             cell.configure(optionLabelText: option.title, isSelected: option.selected)
             return cell
         } else {

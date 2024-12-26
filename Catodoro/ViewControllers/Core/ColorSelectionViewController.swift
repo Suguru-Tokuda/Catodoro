@@ -7,11 +7,16 @@
 
 import UIKit
 
-class ColorSelectionViewController: BaseOptionSelectionViewController {
-    var vm: OptionSelectionViewModel
+protocol ColorSelectionViewControllerDelegate: AnyObject {
+    func onColorSelected()
+}
 
-    init(vm: OptionSelectionViewModel, titleLabelText: String) {
-        self.vm = vm
+class ColorSelectionViewController: BaseOptionSelectionViewController {
+    weak var delegate: ColorSelectionViewControllerDelegate?
+    var viewModel: OptionSelectionViewModel
+
+    init(viewModel: OptionSelectionViewModel, titleLabelText: String) {
+        self.viewModel = viewModel
         super.init(titleLabelText: titleLabelText)
     }
     
@@ -28,30 +33,28 @@ class ColorSelectionViewController: BaseOptionSelectionViewController {
 
 extension ColorSelectionViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectedId = vm.options[indexPath.row].id
-        vm.selectedId = selectedId
+        let selectedId = viewModel.options[indexPath.row].id
+        viewModel.selectedId = selectedId
         tableView.deselectRow(at: indexPath, animated: true)
-        vm.setColor(colorCode: selectedId)
+        viewModel.setColor(colorCode: selectedId)
         optionTableView.reloadData()
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
             guard let self else { return }
-            if let coordinator = coordinator as? SettingsCoordinator {
-                coordinator.pop()
-            }
+            delegate?.onColorSelected()
         }
     }
 }
 
 extension ColorSelectionViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        vm.options.count
+        viewModel.options.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let cell = tableView.dequeueReusableCell(withIdentifier: OptionSelectionViewCell.reuseIdentifier, for: indexPath) as? OptionSelectionViewCell {
-            let option = vm.options[indexPath.row]
-            cell.configure(optionLabelText: option.title, isSelected: option.selected)
+            let option = viewModel.options[indexPath.row]
+            cell.configure(optionLabelText: option.title, isSelected: option.selected, textColor: option.color)
             return cell
         } else {
             return UITableViewCell()

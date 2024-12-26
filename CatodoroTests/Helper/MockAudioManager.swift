@@ -8,7 +8,7 @@
 import Foundation
 @testable import Catodoro
 
-final class AudioManagerMock: AudioManaging {
+final class MockAudioManager: AudioManaging {
     var playedFileName: String?
     var playedFileExtension: String?
     var isPlaying: Bool = false

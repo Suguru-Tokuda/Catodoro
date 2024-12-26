@@ -7,10 +7,14 @@
 
 import UIKit
 
+protocol SettingsViewControllerDelegate: AnyObject {
+    func onSettingMenuSelected(settingOption: SettingOptions)
+}
+
 class SettingsViewController: UIViewController {
-    private weak var coordinator: Coordinator?
+    weak var delegate: SettingsViewControllerDelegate?
     var preferences: CatodoroPreferencesProtocol?
-    private var vm: SettingsViewModel = .init()
+    private var viewModel: SettingsViewModel = .init()
     private var label: UILabel = {
         let label = UILabel()
         label.text = "Settings"
@@ -38,10 +42,6 @@ class SettingsViewController: UIViewController {
         super.viewDidAppear(animated)
     }
 
-    func setCoordinator(coordinator: Coordinator) {
-        self.coordinator = coordinator
-    }
-
     private func setupSubviewss() {
         view.addAutolayoutSubviews([
             label,
@@ -63,15 +63,9 @@ class SettingsViewController: UIViewController {
 
 extension SettingsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectedOption = vm.settingOptions[indexPath.row]
-        if let settingModel = SettingOptions.init(rawValue: selectedOption.title),
-           let settingsCoordinator = coordinator as? SettingsCoordinator {
-            switch settingModel {
-            case .color:
-                settingsCoordinator.navigateToColorSelectionsView()
-            case .sound:
-                settingsCoordinator.navigateToSoundSelectionsView()
-            }
+        let selectedOption = viewModel.settingOptions[indexPath.row]
+        if let settingModel = SettingOptions.init(rawValue: selectedOption.title) {
+            delegate?.onSettingMenuSelected(settingOption: settingModel)
         }
         tableView.deselectRow(at: indexPath, animated: true)
     }
@@ -79,14 +73,14 @@ extension SettingsViewController: UITableViewDelegate {
 
 extension SettingsViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        vm.settingOptions.count
+        viewModel.settingOptions.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let cell = tableView.dequeueReusableCell(withIdentifier: SettingOptionsViewCell.reuseIdentifier,
                                                     for: indexPath) as? SettingOptionsViewCell {
-            let optionLabelText = vm.settingOptions[indexPath.row].title
-            let iconName = vm.settingOptions[indexPath.row].iconName
+            let optionLabelText = viewModel.settingOptions[indexPath.row].title
+            let iconName = viewModel.settingOptions[indexPath.row].iconName
             cell.configure(settingLabelText: optionLabelText, iconName: iconName)
             return cell
         } else {

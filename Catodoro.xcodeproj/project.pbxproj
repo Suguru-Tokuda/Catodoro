@@ -38,8 +38,8 @@
 		BB6C851D2D1A5825005C4D0B /* CatodoroUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB6C851C2D1A5825005C4D0B /* CatodoroUITests.swift */; };
 		BB6C851F2D1A5825005C4D0B /* CatodoroUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB6C851E2D1A5825005C4D0B /* CatodoroUITestsLaunchTests.swift */; };
 		BB6C852E2D1A666F005C4D0B /* TimerViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB6C852D2D1A666F005C4D0B /* TimerViewModelTests.swift */; };
-		BB6C85312D1A66FA005C4D0B /* PreferencesMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB6C85302D1A66FA005C4D0B /* PreferencesMock.swift */; };
-		BB6C85332D1A6784005C4D0B /* AudioManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB6C85322D1A6784005C4D0B /* AudioManagerMock.swift */; };
+		BB6C85312D1A66FA005C4D0B /* MockPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB6C85302D1A66FA005C4D0B /* MockPreferences.swift */; };
+		BB6C85332D1A6784005C4D0B /* MockAudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB6C85322D1A6784005C4D0B /* MockAudioManager.swift */; };
 		BB6C85352D1A8B57005C4D0B /* OptionSelectionViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB6C85342D1A8B57005C4D0B /* OptionSelectionViewModelTests.swift */; };
 		BB6C85372D1B19DB005C4D0B /* AddPresetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB6C85362D1B19DB005C4D0B /* AddPresetViewController.swift */; };
 		BB7AFB362D0B286B00801CAA /* PresetListViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB7AFB352D0B286B00801CAA /* PresetListViewCell.swift */; };
@@ -48,16 +48,13 @@
 		BB7AFB3C2D0B4DAA00801CAA /* NSLayoutConstraint+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB7AFB3B2D0B4DAA00801CAA /* NSLayoutConstraint+Extensions.swift */; };
 		BB8D283D2CE14E57001D73B1 /* TimerStartButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8D283C2CE14E57001D73B1 /* TimerStartButton.swift */; };
 		BB8D283F2CE15000001D73B1 /* SettingSubtitleLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8D283E2CE15000001D73B1 /* SettingSubtitleLabel.swift */; };
-		BB8D28412CE151A3001D73B1 /* ColorPickOptionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8D28402CE151A3001D73B1 /* ColorPickOptionViewCell.swift */; };
 		BB8D28432CE1559D001D73B1 /* TimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8D28422CE1559D001D73B1 /* TimerView.swift */; };
 		BB8D28452CE1595E001D73B1 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8D28442CE1595E001D73B1 /* SettingsViewModel.swift */; };
 		BB8D28472CE1597E001D73B1 /* ColorOptionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8D28462CE1597E001D73B1 /* ColorOptionModel.swift */; };
-		BB8D28492CE15B60001D73B1 /* ColorOptionsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8D28482CE15B60001D73B1 /* ColorOptionsList.swift */; };
 		BB8D28502CE15EE6001D73B1 /* cat_meow_regular.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BB8D284E2CE15EE6001D73B1 /* cat_meow_regular.mp3 */; };
 		BB8D28512CE15EE6001D73B1 /* cat_meow_loud.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BB8D284D2CE15EE6001D73B1 /* cat_meow_loud.mp3 */; };
 		BB8D28522CE15EE6001D73B1 /* kitty_meow.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BB8D284F2CE15EE6001D73B1 /* kitty_meow.mp3 */; };
 		BB8D28532CE15EE6001D73B1 /* angry_cat.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BB8D284C2CE15EE6001D73B1 /* angry_cat.mp3 */; };
-		BB8D28552CE18D8F001D73B1 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8D28542CE18D8F001D73B1 /* SettingsView.swift */; };
 		BB8D28572CE18E4B001D73B1 /* TimerConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8D28562CE18E4B001D73B1 /* TimerConfigView.swift */; };
 		BB8D28592CE18E73001D73B1 /* TimerConfigSubTitle.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8D28582CE18E73001D73B1 /* TimerConfigSubTitle.swift */; };
 		BBA3CDA22C866749002A3E7B /* UIStackView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA3CDA12C866749002A3E7B /* UIStackView+Extensions.swift */; };
@@ -71,6 +68,17 @@
 		BBEA02CB2D1C784800922951 /* TimerPickerViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02CA2D1C784800922951 /* TimerPickerViewTests.swift */; };
 		BBEA02CD2D1C797700922951 /* TimerStartButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02CC2D1C797700922951 /* TimerStartButtonTests.swift */; };
 		BBEA02CF2D1C7CAF00922951 /* TimerViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02CE2D1C7CAF00922951 /* TimerViewTests.swift */; };
+		BBEA02D12D1CE3D600922951 /* PresetListViewCellTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02D02D1CE3D600922951 /* PresetListViewCellTests.swift */; };
+		BBEA02D32D1CFF0100922951 /* OptionSelectionViewCellTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02D22D1CFF0100922951 /* OptionSelectionViewCellTests.swift */; };
+		BBEA02D52D1D006900922951 /* SettingOptionsViewCellTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02D42D1D006900922951 /* SettingOptionsViewCellTests.swift */; };
+		BBEA02D72D1D011500922951 /* SettingSubtitleLabelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02D62D1D011500922951 /* SettingSubtitleLabelTests.swift */; };
+		BBEA02DB2D1D01BF00922951 /* BaseOptionSelectionViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02DA2D1D01BF00922951 /* BaseOptionSelectionViewControllerTests.swift */; };
+		BBEA02DD2D1D01EF00922951 /* MockCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02DC2D1D01EF00922951 /* MockCoordinator.swift */; };
+		BBEA02DF2D1D02D400922951 /* CustomNavigationControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02DE2D1D02D400922951 /* CustomNavigationControllerTests.swift */; };
+		BBEA02E12D1D035900922951 /* AddPresetViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02E02D1D035900922951 /* AddPresetViewControllerTests.swift */; };
+		BBEA02E32D1D07C200922951 /* MockTimerConfigViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02E22D1D07C200922951 /* MockTimerConfigViewModel.swift */; };
+		BBEA02E52D1D07FC00922951 /* PresetsViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02E42D1D07FC00922951 /* PresetsViewControllerTests.swift */; };
+		BBEA02E72D1D0ADB00922951 /* MockPresetsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02E62D1D0ADB00922951 /* MockPresetsViewModel.swift */; };
 		BBF4F4582C763FF80079448E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F4572C763FF80079448E /* AppDelegate.swift */; };
 		BBF4F45A2C763FF80079448E /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F4592C763FF80079448E /* SceneDelegate.swift */; };
 		BBF4F4612C763FF90079448E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BBF4F4602C763FF90079448E /* Assets.xcassets */; };
@@ -141,8 +149,8 @@
 		BB6C851C2D1A5825005C4D0B /* CatodoroUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatodoroUITests.swift; sourceTree = "<group>"; };
 		BB6C851E2D1A5825005C4D0B /* CatodoroUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatodoroUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		BB6C852D2D1A666F005C4D0B /* TimerViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerViewModelTests.swift; sourceTree = "<group>"; };
-		BB6C85302D1A66FA005C4D0B /* PreferencesMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesMock.swift; sourceTree = "<group>"; };
-		BB6C85322D1A6784005C4D0B /* AudioManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioManagerMock.swift; sourceTree = "<group>"; };
+		BB6C85302D1A66FA005C4D0B /* MockPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPreferences.swift; sourceTree = "<group>"; };
+		BB6C85322D1A6784005C4D0B /* MockAudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAudioManager.swift; sourceTree = "<group>"; };
 		BB6C85342D1A8B57005C4D0B /* OptionSelectionViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionSelectionViewModelTests.swift; sourceTree = "<group>"; };
 		BB6C85362D1B19DB005C4D0B /* AddPresetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPresetViewController.swift; sourceTree = "<group>"; };
 		BB7AFB352D0B286B00801CAA /* PresetListViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetListViewCell.swift; sourceTree = "<group>"; };
@@ -151,16 +159,13 @@
 		BB7AFB3B2D0B4DAA00801CAA /* NSLayoutConstraint+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSLayoutConstraint+Extensions.swift"; sourceTree = "<group>"; };
 		BB8D283C2CE14E57001D73B1 /* TimerStartButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerStartButton.swift; sourceTree = "<group>"; };
 		BB8D283E2CE15000001D73B1 /* SettingSubtitleLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingSubtitleLabel.swift; sourceTree = "<group>"; };
-		BB8D28402CE151A3001D73B1 /* ColorPickOptionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickOptionViewCell.swift; sourceTree = "<group>"; };
 		BB8D28422CE1559D001D73B1 /* TimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerView.swift; sourceTree = "<group>"; };
 		BB8D28442CE1595E001D73B1 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		BB8D28462CE1597E001D73B1 /* ColorOptionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorOptionModel.swift; sourceTree = "<group>"; };
-		BB8D28482CE15B60001D73B1 /* ColorOptionsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorOptionsList.swift; sourceTree = "<group>"; };
 		BB8D284C2CE15EE6001D73B1 /* angry_cat.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = angry_cat.mp3; sourceTree = "<group>"; };
 		BB8D284D2CE15EE6001D73B1 /* cat_meow_loud.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = cat_meow_loud.mp3; sourceTree = "<group>"; };
 		BB8D284E2CE15EE6001D73B1 /* cat_meow_regular.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = cat_meow_regular.mp3; sourceTree = "<group>"; };
 		BB8D284F2CE15EE6001D73B1 /* kitty_meow.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = kitty_meow.mp3; sourceTree = "<group>"; };
-		BB8D28542CE18D8F001D73B1 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		BB8D28562CE18E4B001D73B1 /* TimerConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerConfigView.swift; sourceTree = "<group>"; };
 		BB8D28582CE18E73001D73B1 /* TimerConfigSubTitle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerConfigSubTitle.swift; sourceTree = "<group>"; };
 		BBA3CDA12C866749002A3E7B /* UIStackView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIStackView+Extensions.swift"; sourceTree = "<group>"; };
@@ -174,6 +179,17 @@
 		BBEA02CA2D1C784800922951 /* TimerPickerViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerPickerViewTests.swift; sourceTree = "<group>"; };
 		BBEA02CC2D1C797700922951 /* TimerStartButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerStartButtonTests.swift; sourceTree = "<group>"; };
 		BBEA02CE2D1C7CAF00922951 /* TimerViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerViewTests.swift; sourceTree = "<group>"; };
+		BBEA02D02D1CE3D600922951 /* PresetListViewCellTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetListViewCellTests.swift; sourceTree = "<group>"; };
+		BBEA02D22D1CFF0100922951 /* OptionSelectionViewCellTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionSelectionViewCellTests.swift; sourceTree = "<group>"; };
+		BBEA02D42D1D006900922951 /* SettingOptionsViewCellTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingOptionsViewCellTests.swift; sourceTree = "<group>"; };
+		BBEA02D62D1D011500922951 /* SettingSubtitleLabelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingSubtitleLabelTests.swift; sourceTree = "<group>"; };
+		BBEA02DA2D1D01BF00922951 /* BaseOptionSelectionViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseOptionSelectionViewControllerTests.swift; sourceTree = "<group>"; };
+		BBEA02DC2D1D01EF00922951 /* MockCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCoordinator.swift; sourceTree = "<group>"; };
+		BBEA02DE2D1D02D400922951 /* CustomNavigationControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNavigationControllerTests.swift; sourceTree = "<group>"; };
+		BBEA02E02D1D035900922951 /* AddPresetViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPresetViewControllerTests.swift; sourceTree = "<group>"; };
+		BBEA02E22D1D07C200922951 /* MockTimerConfigViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockTimerConfigViewModel.swift; sourceTree = "<group>"; };
+		BBEA02E42D1D07FC00922951 /* PresetsViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetsViewControllerTests.swift; sourceTree = "<group>"; };
+		BBEA02E62D1D0ADB00922951 /* MockPresetsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPresetsViewModel.swift; sourceTree = "<group>"; };
 		BBF4F4542C763FF80079448E /* Catodoro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Catodoro.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BBF4F4572C763FF80079448E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BBF4F4592C763FF80079448E /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -250,6 +266,9 @@
 		BB0784802D1BBC03004BF908 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				BBEA02D22D1CFF0100922951 /* OptionSelectionViewCellTests.swift */,
+				BBEA02D42D1D006900922951 /* SettingOptionsViewCellTests.swift */,
+				BBEA02D62D1D011500922951 /* SettingSubtitleLabelTests.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -257,6 +276,7 @@
 		BB0784822D1BBC10004BF908 /* Presets */ = {
 			isa = PBXGroup;
 			children = (
+				BBEA02D02D1CE3D600922951 /* PresetListViewCellTests.swift */,
 			);
 			path = Presets;
 			sourceTree = "<group>";
@@ -289,12 +309,9 @@
 		BB1817B72C7EB20000BF8DA8 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				BB8D28482CE15B60001D73B1 /* ColorOptionsList.swift */,
-				BB8D28402CE151A3001D73B1 /* ColorPickOptionViewCell.swift */,
 				BB49DC6C2D08EFE2001E3CDC /* OptionSelectionViewCell.swift */,
 				BB49DC5D2D07AE14001E3CDC /* SettingOptionsViewCell.swift */,
 				BB8D283E2CE15000001D73B1 /* SettingSubtitleLabel.swift */,
-				BB8D28542CE18D8F001D73B1 /* SettingsView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -363,6 +380,8 @@
 		BB6C852B2D1A663D005C4D0B /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				BBEA02D82D1D015300922951 /* Core */,
+				BBEA02D92D1D015B00922951 /* General */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -379,10 +398,31 @@
 		BB6C852F2D1A66EC005C4D0B /* Helper */ = {
 			isa = PBXGroup;
 			children = (
-				BB6C85302D1A66FA005C4D0B /* PreferencesMock.swift */,
-				BB6C85322D1A6784005C4D0B /* AudioManagerMock.swift */,
+				BB6C85322D1A6784005C4D0B /* MockAudioManager.swift */,
+				BBEA02DC2D1D01EF00922951 /* MockCoordinator.swift */,
+				BB6C85302D1A66FA005C4D0B /* MockPreferences.swift */,
+				BBEA02E22D1D07C200922951 /* MockTimerConfigViewModel.swift */,
+				BBEA02E62D1D0ADB00922951 /* MockPresetsViewModel.swift */,
 			);
 			path = Helper;
+			sourceTree = "<group>";
+		};
+		BBEA02D82D1D015300922951 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				BBEA02E02D1D035900922951 /* AddPresetViewControllerTests.swift */,
+				BBEA02E42D1D07FC00922951 /* PresetsViewControllerTests.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		BBEA02D92D1D015B00922951 /* General */ = {
+			isa = PBXGroup;
+			children = (
+				BBEA02DA2D1D01BF00922951 /* BaseOptionSelectionViewControllerTests.swift */,
+				BBEA02DE2D1D02D400922951 /* CustomNavigationControllerTests.swift */,
+			);
+			path = General;
 			sourceTree = "<group>";
 		};
 		BBF4F44B2C763FF80079448E = {
@@ -660,18 +700,29 @@
 			buildActionMask = 2147483647;
 			files = (
 				BB0784862D1BC57B004BF908 /* PlayPauseButtonTests.swift in Sources */,
+				BBEA02D52D1D006900922951 /* SettingOptionsViewCellTests.swift in Sources */,
+				BBEA02DF2D1D02D400922951 /* CustomNavigationControllerTests.swift in Sources */,
+				BBEA02DD2D1D01EF00922951 /* MockCoordinator.swift in Sources */,
 				BB0784842D1BBC60004BF908 /* PawButtonTests.swift in Sources */,
+				BBEA02D32D1CFF0100922951 /* OptionSelectionViewCellTests.swift in Sources */,
 				BBEA02C52D1C6C5300922951 /* TimerCircleViewTests.swift in Sources */,
 				BBEA02C72D1C6ED700922951 /* TimerConfigSubTitleTests.swift in Sources */,
 				BBEA02C92D1C6F0200922951 /* TimerConfigViewTests.swift in Sources */,
 				BB6C85352D1A8B57005C4D0B /* OptionSelectionViewModelTests.swift in Sources */,
 				BBEA02CB2D1C784800922951 /* TimerPickerViewTests.swift in Sources */,
+				BBEA02D72D1D011500922951 /* SettingSubtitleLabelTests.swift in Sources */,
+				BBEA02E32D1D07C200922951 /* MockTimerConfigViewModel.swift in Sources */,
 				BBEA02CD2D1C797700922951 /* TimerStartButtonTests.swift in Sources */,
+				BBEA02DB2D1D01BF00922951 /* BaseOptionSelectionViewControllerTests.swift in Sources */,
 				BBEA02C12D1C6AE300922951 /* StopButtonTests.swift in Sources */,
-				BB6C85312D1A66FA005C4D0B /* PreferencesMock.swift in Sources */,
+				BBEA02E12D1D035900922951 /* AddPresetViewControllerTests.swift in Sources */,
+				BBEA02D12D1CE3D600922951 /* PresetListViewCellTests.swift in Sources */,
+				BB6C85312D1A66FA005C4D0B /* MockPreferences.swift in Sources */,
 				BBEA02CF2D1C7CAF00922951 /* TimerViewTests.swift in Sources */,
 				BB6C852E2D1A666F005C4D0B /* TimerViewModelTests.swift in Sources */,
-				BB6C85332D1A6784005C4D0B /* AudioManagerMock.swift in Sources */,
+				BBEA02E72D1D0ADB00922951 /* MockPresetsViewModel.swift in Sources */,
+				BB6C85332D1A6784005C4D0B /* MockAudioManager.swift in Sources */,
+				BBEA02E52D1D07FC00922951 /* PresetsViewControllerTests.swift in Sources */,
 				BBEA02C32D1C6B5700922951 /* TimePickerViewTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -692,7 +743,6 @@
 				BBF4F4762C7644FB0079448E /* CustomNavigationController.swift in Sources */,
 				BB516E4E2CAB98930004B95C /* TimerConfigModel.swift in Sources */,
 				BB0B25D12C9CF5F000487314 /* StopButton.swift in Sources */,
-				BB8D28412CE151A3001D73B1 /* ColorPickOptionViewCell.swift in Sources */,
 				BBF4F4862C7673ED0079448E /* MainCoordinator.swift in Sources */,
 				BB479AC62CC9D228000CBE6D /* PawButton.swift in Sources */,
 				BB1817B92C7EB23300BF8DA8 /* TimerCircleView.swift in Sources */,
@@ -701,7 +751,6 @@
 				BB516E452CAB933C0004B95C /* TimerConfigViewController.swift in Sources */,
 				BB4E43432D191B2300C34D04 /* CatodoroCoreDataManager.swift in Sources */,
 				BBA3CDA22C866749002A3E7B /* UIStackView+Extensions.swift in Sources */,
-				BB8D28552CE18D8F001D73B1 /* SettingsView.swift in Sources */,
 				BB7AFB3C2D0B4DAA00801CAA /* NSLayoutConstraint+Extensions.swift in Sources */,
 				BBF4F4912C76D3B10079448E /* CatodoroPersistentController.swift in Sources */,
 				BB7AFB382D0B3BD600801CAA /* PresetsViewModel.swift in Sources */,
@@ -722,7 +771,6 @@
 				BB516E472CAB94D70004B95C /* TimerConfigViewModel.swift in Sources */,
 				BBF4F48A2C76B5E10079448E /* PresetsCoordinator.swift in Sources */,
 				BB479AC42CC883D1000CBE6D /* AudioManager.swift in Sources */,
-				BB8D28492CE15B60001D73B1 /* ColorOptionsList.swift in Sources */,
 				BBA3CDA42C866A3F002A3E7B /* UIImage+Extensions.swift in Sources */,
 				BBF4F47C2C7646EE0079448E /* NSObject+Extensions.swift in Sources */,
 				BB8D28472CE1597E001D73B1 /* ColorOptionModel.swift in Sources */,

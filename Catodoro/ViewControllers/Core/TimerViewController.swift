@@ -8,8 +8,12 @@
 import Combine
 import UIKit
 
+protocol TimerViewControllerDelegate: AnyObject {
+    func timerViewControllerDidFinish(_ controller: TimerViewController)
+}
+
 class TimerViewController: UIViewController {
-    private weak var coordinator: Coordinator?
+    weak var delegate: TimerViewControllerDelegate?
     private var cancellables: Set<AnyCancellable> = .init()
     private var vm: TimerViewModel
     private lazy var timerView = TimerView(frame: .zero)
@@ -82,10 +86,6 @@ class TimerViewController: UIViewController {
             .store(in: &cancellables)
     }
 
-    func setCoordinator(coordinator: Coordinator) {
-        self.coordinator = coordinator
-    }
-
     func configure(viewModel: TimerConfigViewModel) {
         vm.configure(duration: viewModel.timerModel.mainTimer.duration,
                      intervalTime: viewModel.timerModel.interval.duration,
@@ -126,7 +126,7 @@ extension TimerViewController {
             guard let self else { return }
             vm.stopTimer()
             timerView.stopTimer()
-            coordinator?.navigationController.popViewController(animated: true)
+            delegate?.timerViewControllerDidFinish(self)
         }
     }
 }

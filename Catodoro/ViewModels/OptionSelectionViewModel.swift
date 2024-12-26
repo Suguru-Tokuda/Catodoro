@@ -5,12 +5,20 @@
 //  Created by Suguru Tokuda on 12/10/24.
 //
 
-import Foundation
+import UIKit
 
 struct OptionModel {
     let id: String
     let title: String
     var selected: Bool
+    let color: UIColor
+
+    init(id: String, title: String, selected: Bool, color: UIColor = .label) {
+        self.id = id
+        self.title = title
+        self.selected = selected
+        self.color = color
+    }
 }
 
 class OptionSelectionViewModel {

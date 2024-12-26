@@ -16,24 +16,43 @@ class PresetListViewCell: UITableViewCell {
         }
     }
 
+    // MARK: UI Components
+
     let timerLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 32, weight: .regular)
+        label.numberOfLines = 0
+        label.isAccessibilityElement = true
+        label.accessibilityLabel = "Timer"
+        label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        label.setContentHuggingPriority(.defaultHigh, for: .vertical)
         return label
     }()
+
     let intervalDurationLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .light)
+        label.isAccessibilityElement = true
+        label.accessibilityLabel = "Interval duration"
         return label
     }()
+
     let intervalLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14, weight: .light)
+        label.isAccessibilityElement = true
+        label.accessibilityLabel = "Intervals"
         return label
     }()
-    let playButton: PlayPauseButton = .init(buttonHeight: 36,
-                                            buttonWidth: 36,
-                                            buttonStatus: .paused)
+
+    let playButton: PlayPauseButton = {
+        let button = PlayPauseButton(buttonHeight: 36,
+                                     buttonWidth: 36,
+                                     buttonStatus: .paused)
+        button.isAccessibilityElement = true
+        button.accessibilityLabel = "Play or Pause"
+        return button
+    }()
     let horizontalStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal

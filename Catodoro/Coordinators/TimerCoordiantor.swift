@@ -20,14 +20,26 @@ class TimerCoordiantor: Coordinator {
 
     func start() {
         let timerConfigViewController = TimerConfigViewController(preferences: preferences)
-        timerConfigViewController.setCoordinator(coordinator: self)
+        timerConfigViewController.delegate = self
         self.navigationController.pushViewController(timerConfigViewController, animated: false)
     }
 
     func navigateToTimerView(viewModel: TimerConfigViewModel) {
         let viewController = TimerViewController(preferences: preferences)
-        viewController.setCoordinator(coordinator: self)
+        viewController.delegate = self
         viewController.configure(viewModel: viewModel)
         navigationController.pushViewController(viewController, animated: true)
+    }
+}
+
+extension TimerCoordiantor: TimerConfigViewControllerDelegate {
+    func didFinishConfiguring(viewModel: TimerConfigViewModel) {
+        navigateToTimerView(viewModel: viewModel)
+    }
+}
+
+extension TimerCoordiantor: TimerViewControllerDelegate {
+    func timerViewControllerDidFinish(_ controller: TimerViewController) {
+        navigationController.popViewController(animated: true)
     }
 }

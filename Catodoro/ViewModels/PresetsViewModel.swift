@@ -5,11 +5,22 @@
 //  Created by Suguru Tokuda on 12/12/24.
 //
 
+import Combine
 import Foundation
 
-class PresetsViewModel {
+protocol PresetsViewModelProtocol {
+    var presetsPublisher: AnyPublisher<[PresetModel], Never> { get }
+    var presets: [PresetModel] { get }
+    var coreDataError: CoreDataError? { get }
+    
+    func loadPresets() async
+    func deletePreset(_ preset: PresetModel) async
+}
+
+class PresetsViewModel: PresetsViewModelProtocol {    
     @Published var presets: [PresetModel] = []
     var coreDataError: CoreDataError?
+    private var cancellables: Set<AnyCancellable> = .init()
 
     // MARK: - Dependencies
 
@@ -29,7 +40,7 @@ class PresetsViewModel {
         }
     }
 
-    func deletePrset(_ preset: PresetModel) async {
+    func deletePreset(_ preset: PresetModel) async {
         do {
             try await self.coreDataManager?.deletePreset(preset.id.uuidString)
             if let index = presets.firstIndex(where: { $0.id == preset.id }) {
@@ -40,5 +51,9 @@ class PresetsViewModel {
                 self.coreDataError = coreDataError
             }
         }
+    }
+
+    var presetsPublisher: AnyPublisher<[PresetModel], Never> {
+        $presets.eraseToAnyPublisher()
     }
 }

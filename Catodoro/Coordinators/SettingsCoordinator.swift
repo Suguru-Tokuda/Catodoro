@@ -20,7 +20,7 @@ class SettingsCoordinator: Coordinator {
 
     func start() {
         let settingsViewController = SettingsViewController()
-        settingsViewController.setCoordinator(coordinator: self)
+        settingsViewController.delegate = self
         settingsViewController.preferences = preferences
         navigationController.pushViewController(settingsViewController, animated: false)
     }
@@ -37,14 +37,17 @@ class SettingsCoordinator: Coordinator {
         var options: [OptionModel] = []
         let selectedColorCode = preferences?.color ?? ColorOptions.neonBlue.code
         ColorOptions.allCases.forEach {
-            options.append(.init(id: $0.code, title: $0.rawValue, selected: $0.code == selectedColorCode))
+            options.append(.init(id: $0.code,
+                                 title: $0.rawValue,
+                                 selected: $0.code == selectedColorCode,
+                                 color: $0.color))
         }
         let viewModel = OptionSelectionViewModel(options: options)
         viewModel.preferences = preferences
         viewModel.selectedId = selectedColorCode
 
-        let colorSelectionViewController = ColorSelectionViewController(vm: viewModel, titleLabelText: "Color")
-        colorSelectionViewController.setCoordinator(coordinator: self)
+        let colorSelectionViewController = ColorSelectionViewController(viewModel: viewModel, titleLabelText: "Color")
+        colorSelectionViewController.delegate = self
         navigationController.pushViewController(colorSelectionViewController, animated: true)
     }
 
@@ -59,7 +62,30 @@ class SettingsCoordinator: Coordinator {
         viewModel.selectedId = selectedSoundId
         
         let soundSelectionViewController = SoundSelectionViewController(vm: viewModel, titleLabelText: "Sound")
-        soundSelectionViewController.setCoordinator(coordinator: self)
+        soundSelectionViewController.delegate = self
         navigationController.pushViewController(soundSelectionViewController, animated: true)
+    }
+}
+
+extension SettingsCoordinator: SettingsViewControllerDelegate {
+    func onSettingMenuSelected(settingOption: SettingOptions) {
+        switch settingOption {
+        case .color:
+            navigateToColorSelectionsView()
+        case .sound:
+            navigateToSoundSelectionsView()
+        }
+    }
+}
+
+extension SettingsCoordinator: SoundSelectionViewControllerDelegate {
+    func onSoundSelect() {
+        navigationController.popViewController(animated: true)
+    }
+}
+
+extension SettingsCoordinator: ColorSelectionViewControllerDelegate {
+    func onColorSelected() {
+        navigationController.popViewController(animated: true)
     }
 }

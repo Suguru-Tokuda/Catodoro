@@ -25,23 +25,32 @@ class PresetsCoordinator: Coordinator {
 
     func start() {
         let presetsViewController = PresetsViewController()
-        presetsViewController.setCoordinator(coordinator: self)
-        presetsViewController.onPresetSelected = { [weak self] preset in
-            guard let self else { return }
-            delegate?.startTimer(model: preset)
-        }
-
+        presetsViewController.delegate = self
         navigationController.pushViewController(presetsViewController, animated: false)
     }
 
     func navigateToAddPreset(onFinish: @escaping(() -> Void)) {
         let addPresetViewController = AddPresetViewController(preferences: preferences)
-        addPresetViewController.setCoordinator(coordinator: self)
-        addPresetViewController.onFinish = { [weak self] in
+        addPresetViewController.delegate = self
+        navigationController.pushViewController(addPresetViewController, animated: true)
+    }
+}
+
+extension PresetsCoordinator: PresetsViewControllerDelegate {
+    func presetsViewControllerDidSelectPreset(_ viewController: PresetsViewController, preset: PresetModel) {
+        delegate?.startTimer(model: preset)
+    }
+    
+    func presetsViewControllerDidTapAddButton(_ viewController: PresetsViewController, onFinish: @escaping(() -> Void)) {
+        navigateToAddPreset { [weak self] in
             guard let self else { return }
             onFinish()
-            navigationController.popViewController(animated: true)
         }
-        navigationController.pushViewController(addPresetViewController, animated: true)
+    }
+}
+
+extension PresetsCoordinator: AddPresetViewControllerDelegate {
+    func onFinish() {
+        navigationController.popViewController(animated: true)
     }
 }

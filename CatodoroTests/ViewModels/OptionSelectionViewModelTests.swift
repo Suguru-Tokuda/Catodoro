@@ -19,7 +19,7 @@ class OptionSelectionViewModelTests: XCTestCase {
         super.setUp()
         
         // Create mock preferences
-        mockPreferences = PreferencesMock()
+        mockPreferences = MockPreferences()
         
         // Create options for testing
         colorOptions = [

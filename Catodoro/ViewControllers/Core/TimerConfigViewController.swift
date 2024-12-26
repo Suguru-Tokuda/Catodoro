@@ -8,8 +8,12 @@
 import Combine
 import UIKit
 
+protocol TimerConfigViewControllerDelegate: AnyObject {
+    func didFinishConfiguring(viewModel: TimerConfigViewModel)
+}
+
 class TimerConfigViewController: UIViewController {
-    private weak var coordinator: Coordinator?
+    weak var delegate: TimerConfigViewControllerDelegate?
     private var viewModel: TimerConfigViewModel = .init()
     private weak var preferences: CatodoroPreferencesProtocol?
     private var cancellables: Set<AnyCancellable> = .init()
@@ -75,9 +79,7 @@ class TimerConfigViewController: UIViewController {
 
         timerConfigView.onStartButtonTap = { [weak self] in
             guard let self else { return }
-            if let coordinator = self.coordinator as? TimerCoordiantor {
-                coordinator.navigateToTimerView(viewModel: self.viewModel)
-            }
+            delegate?.didFinishConfiguring(viewModel: viewModel)
         }
     }
 
@@ -87,10 +89,6 @@ class TimerConfigViewController: UIViewController {
                                          target: nil,
                                          action: nil)
         navigationItem.backBarButtonItem = backButton
-    }
-
-    func setCoordinator(coordinator: Coordinator) {
-        self.coordinator = coordinator
     }
 
     func addSubscriptions() {

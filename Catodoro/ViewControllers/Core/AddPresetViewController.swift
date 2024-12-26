@@ -8,10 +8,13 @@
 import Combine
 import UIKit
 
+protocol AddPresetViewControllerDelegate: AnyObject {
+    func onFinish()
+}
+
 class AddPresetViewController: UIViewController {
-    var onFinish: (() -> Void)?
-    private weak var coordinator: Coordinator?
-    private var viewModel: TimerConfigViewModel = .init()
+    weak var delegate: AddPresetViewControllerDelegate?
+    private var viewModel: TimerConfigViewModelProtocol = TimerConfigViewModel()
     private weak var preferences: CatodoroPreferencesProtocol?
     private var cancellables: Set<AnyCancellable> = .init()
 
@@ -79,14 +82,28 @@ class AddPresetViewController: UIViewController {
                 guard let self else { return }
                 do {
                     try await viewModel.addPreset()
-                    onFinish?()
+                    delegate?.onFinish()
                 } catch {
                 }
             }
         }
     }
+}
 
-    func setCoordinator(coordinator: Coordinator) {
-        self.coordinator = coordinator
+#if DEBUG
+extension AddPresetViewController {
+    var testHooks: TestHooks {
+        .init(target: self)
+    }
+
+    struct TestHooks {
+        let target: AddPresetViewController
+
+        var timerConfigView: TimerConfigView { target.timerConfigView }
+        
+        func setViewModel(viewModel: TimerConfigViewModelProtocol) {
+            target.viewModel = viewModel
+        }
     }
 }
+#endif
