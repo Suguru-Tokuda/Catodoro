@@ -66,6 +66,7 @@ class TimerCircleView: UIView {
             animation.duration = duration
             animation.fillMode = .forwards
             animation.isRemovedOnCompletion = false
+            animation.delegate = self
             shapeLayer.speed = 1.0
             shapeLayer.add(animation, forKey: timerAnimationKey)
         }
@@ -97,6 +98,15 @@ class TimerCircleView: UIView {
         // reset strokeEnd to 0 (no progress)
         shapeLayer.strokeEnd = 0
         shapeLayer.speed = 0.0
+    }
+}
+
+extension TimerCircleView: CAAnimationDelegate {
+    func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
+        if flag, anim == shapeLayer.animation(forKey: timerAnimationKey) {
+            // Ensure strokeEnd is set to 1 when the animation completes
+            shapeLayer.strokeEnd = 1.0
+        }
     }
 }
 

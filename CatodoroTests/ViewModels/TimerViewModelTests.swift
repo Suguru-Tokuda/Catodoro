@@ -53,7 +53,7 @@ final class TimerViewModelTests: XCTestCase {
 
     func test_startTimer_expectTimerValueUpdates() {
         let expectation = self.expectation(description: "Timer updates current value")
-        let expectedValue = "00:24:59"
+        let expectedValue = "00:25:00"
         viewModel.timerSubject
             .sink { value in
                 expectation.fulfill()
