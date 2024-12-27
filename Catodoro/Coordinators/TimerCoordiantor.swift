@@ -27,7 +27,7 @@ class TimerCoordiantor: Coordinator {
     func navigateToTimerView(viewModel: TimerConfigViewModel) {
         let viewController = TimerViewController(preferences: preferences)
         viewController.delegate = self
-        viewController.configure(viewModel: viewModel)
+        viewController.configure(timerConfigViewModel: viewModel)
         navigationController.pushViewController(viewController, animated: true)
     }
 }

@@ -61,7 +61,7 @@ class SettingsCoordinator: Coordinator {
         viewModel.preferences = preferences
         viewModel.selectedId = selectedSoundId
         
-        let soundSelectionViewController = SoundSelectionViewController(vm: viewModel, titleLabelText: "Sound")
+        let soundSelectionViewController = SoundSelectionViewController(viewModel: viewModel, titleLabelText: "Sound")
         soundSelectionViewController.delegate = self
         navigationController.pushViewController(soundSelectionViewController, animated: true)
     }

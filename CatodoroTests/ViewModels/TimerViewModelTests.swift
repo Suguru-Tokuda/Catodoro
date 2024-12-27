@@ -41,7 +41,7 @@ final class TimerViewModelTests: XCTestCase {
         let intervalTime: TimeInterval = 300 // 5 minutes
         let intervals = 4
 
-        viewModel.configure(duration: duration, intervalTime: intervalTime, numberOfIntervals: intervals)
+        viewModel.configure(totalDuration: duration, intervalDuration: intervalTime, intervals: intervals)
 
         XCTAssertEqual(viewModel.duration, duration)
         XCTAssertEqual(viewModel.testHooks.totalDuration, duration)
@@ -61,14 +61,14 @@ final class TimerViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
 
-        viewModel.configure(duration: 1500, intervalTime: 300, numberOfIntervals: 4)
+        viewModel.configure(totalDuration: 1500, intervalDuration: 300, intervals: 4)
         viewModel.startTimer()
 
         waitForExpectations(timeout: 2.0)
     }
 
     func test_pauseTimer_expectTimerIsPaused() {
-        viewModel.configure(duration: 1500, intervalTime: 300, numberOfIntervals: 4)
+        viewModel.configure(totalDuration: 1500, intervalDuration: 300, intervals: 4)
         viewModel.startTimer()
         viewModel.pauseTimer()
 
@@ -77,7 +77,7 @@ final class TimerViewModelTests: XCTestCase {
     }
 
     func test_resumeTimer_expectTimerResumesPlaying() {
-        viewModel.configure(duration: 1500, intervalTime: 300, numberOfIntervals: 4)
+        viewModel.configure(totalDuration: 1500, intervalDuration: 300, intervals: 4)
         viewModel.startTimer()
         viewModel.pauseTimer()
         viewModel.resumeTimer()
@@ -87,7 +87,7 @@ final class TimerViewModelTests: XCTestCase {
     }
 
     func test_stopTimer_expectTimerResets() {
-        viewModel.configure(duration: 1500, intervalTime: 300, numberOfIntervals: 4)
+        viewModel.configure(totalDuration: 1500, intervalDuration: 300, intervals: 4)
         viewModel.startTimer()
         viewModel.stopTimer()
 
@@ -101,7 +101,7 @@ final class TimerViewModelTests: XCTestCase {
         preferencesMock.sound = "finishSound"
         viewModel.playFinishSound()
 
-        XCTAssertEqual(audioManagerMock.playedFileName, "finishSound")
+        XCTAssertEqual(audioManagerMock.playedFileName, "cat_meow_regular")
         XCTAssertEqual(audioManagerMock.playedFileExtension, "mp3")
     }
 }

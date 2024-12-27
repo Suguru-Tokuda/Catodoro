@@ -15,11 +15,12 @@ protocol TimerViewControllerDelegate: AnyObject {
 class TimerViewController: UIViewController {
     weak var delegate: TimerViewControllerDelegate?
     private var cancellables: Set<AnyCancellable> = .init()
-    private var vm: TimerViewModel
-    private lazy var timerView = TimerView(frame: .zero)
+    private var viewModel: TimerViewModel
+    private var timerView: TimerView
 
     init(preferences: CatodoroPreferencesProtocol?) {
-        vm = .init(preferences: preferences)
+        viewModel = .init(preferences: preferences)
+        timerView = .init(frame: .zero, strokeColor: ColorOptions(preferences?.color ?? "").color)
         super.init(nibName: nil, bundle: nil)
         addSubscripitons()
     }
@@ -38,7 +39,7 @@ class TimerViewController: UIViewController {
     }
 
     func addSubscripitons() {
-        vm.timerSubject
+        viewModel.timerSubject
             .subscribe(on: DispatchQueue.global(qos: .userInteractive))
             .receive(on: DispatchQueue.main)
             .sink { [weak self] timerLabelValue in
@@ -47,7 +48,7 @@ class TimerViewController: UIViewController {
             }
             .store(in: &cancellables)
 
-        vm.timerStatusSubject
+        viewModel.timerStatusSubject
             .subscribe(on: DispatchQueue.global(qos: .userInteractive))
             .receive(on: DispatchQueue.main)
             .sink { [weak self] timerStatus in
@@ -56,7 +57,7 @@ class TimerViewController: UIViewController {
             }
             .store(in: &cancellables)
 
-        vm.timerActionSubject
+        viewModel.timerActionSubject
             .subscribe(on: DispatchQueue.global(qos: .userInteractive))
             .receive(on: DispatchQueue.main)
             .sink { [weak self] timerAction in
@@ -67,16 +68,16 @@ class TimerViewController: UIViewController {
                 case .stop:
                     timerView.stopTimer()
                 case .start:
-                    timerView.startTimer(duration: vm.duration)
+                    timerView.startTimer(duration: viewModel.duration)
                 case .resume:
                     timerView.resumeTimer()
                 case .finish:
-                    vm.playFinishSound()
+                    viewModel.playFinishSound()
                 }
             }
             .store(in: &cancellables)
 
-        vm.timerLabelSubject
+        viewModel.timerLabelSubject
             .subscribe(on: DispatchQueue.global(qos: .userInteractive))
             .receive(on: DispatchQueue.main)
             .sink { [weak self] timerNameStr in
@@ -86,10 +87,10 @@ class TimerViewController: UIViewController {
             .store(in: &cancellables)
     }
 
-    func configure(viewModel: TimerConfigViewModel) {
-        vm.configure(duration: viewModel.timerModel.mainTimer.duration,
-                     intervalTime: viewModel.timerModel.interval.duration,
-                     numberOfIntervals: viewModel.timerModel.intervals)
+    func configure(timerConfigViewModel: TimerConfigViewModel) {
+        viewModel.configure(totalDuration: timerConfigViewModel.timerModel.mainTimer.duration,
+                            intervalDuration: timerConfigViewModel.timerModel.interval.duration,
+                            intervals: timerConfigViewModel.timerModel.intervals)
     }
 
     private func setupSubviews() {
@@ -117,14 +118,14 @@ extension TimerViewController {
     private func handlePlayPauseButtonTapped() {
         timerView.onPlayPauseButtonTap = { [weak self] in
             guard let self else { return }
-            vm.handlePlayPauseButtonTap()
+            viewModel.handlePlayPauseButtonTap()
         }
     }
     
     private func handleStopButton() {
         timerView.onStopButtonTap = { [weak self] in
             guard let self else { return }
-            vm.stopTimer()
+            viewModel.stopTimer()
             timerView.stopTimer()
             delegate?.timerViewControllerDidFinish(self)
         }

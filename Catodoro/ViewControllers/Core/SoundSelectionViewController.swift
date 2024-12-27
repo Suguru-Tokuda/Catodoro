@@ -15,8 +15,8 @@ class SoundSelectionViewController: BaseOptionSelectionViewController {
     weak var delegate: SoundSelectionViewControllerDelegate?
     var viewModel: OptionSelectionViewModel
 
-    init(vm: OptionSelectionViewModel, titleLabelText: String) {
-        self.viewModel = vm
+    init(viewModel: OptionSelectionViewModel, titleLabelText: String) {
+        self.viewModel = viewModel
         super.init(titleLabelText: titleLabelText)
     }
     

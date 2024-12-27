@@ -20,8 +20,10 @@ protocol AudioManaging {
     func stop() throws
 }
 
-class AudioManager: AudioManaging {
+class AudioManager: NSObject, AudioManaging {
     private var audioPlayer: AVAudioPlayer?
+    var playTimer: Timer?
+    let loopDelay = 1.0
 
     func setPlayer(fileName: String, fileExtension: String) throws {
         do {
@@ -31,12 +33,15 @@ class AudioManager: AudioManaging {
             throw AudioError.setup
         }
         try audioPlayer = getAudioPlayer(fileName: fileName, fileExtension: fileExtension)
-        audioPlayer?.numberOfLoops = -1
+        audioPlayer?.numberOfLoops = 0
     }
 
     func play() throws {
         if let audioPlayer {
             audioPlayer.prepareToPlay()
+            audioPlayer.delegate = self
+            playTimer?.invalidate()
+            playTimer = nil
             audioPlayer.play()
         } else {
             throw AudioError.playerNotSet
@@ -52,6 +57,8 @@ class AudioManager: AudioManaging {
     }
     
     func stop() throws {
+        playTimer?.invalidate()
+        playTimer = nil
         if let audioPlayer {
             audioPlayer.stop()
         } else {
@@ -64,5 +71,16 @@ class AudioManager: AudioManaging {
             throw AudioError.fileNotFound
         }
         return try AVAudioPlayer(contentsOf: url)
+    }
+}
+
+extension AudioManager: AVAudioPlayerDelegate {
+    
+    func audioPlayerDidFinishPlaying(_ audioPlayer: AVAudioPlayer, successfully flag: Bool) {
+        playTimer = Timer.scheduledTimer(withTimeInterval: loopDelay, repeats: false) { [weak self] _ in
+            guard self != nil else { return }
+            audioPlayer.currentTime = 0
+            audioPlayer.play()
+        }
     }
 }

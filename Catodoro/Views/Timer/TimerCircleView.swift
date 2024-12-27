@@ -15,8 +15,10 @@ class TimerCircleView: UIView {
     var paursedTime: CFTimeInterval = 0
     let timerAnimationKey = "timerAnimation"
     var animation: CABasicAnimation?
+    let strokeColor: UIColor
 
-    override init(frame: CGRect) {
+    init(frame: CGRect = .zero, strokeColor: UIColor = ColorOptions.neonBlue.color) {
+        self.strokeColor = strokeColor
         super.init(frame: frame)
         setupCircleLayers()
     }
@@ -51,7 +53,7 @@ class TimerCircleView: UIView {
                                      endAngle: endAngle,
                                      clockwise: true)
         shapeLayer.path = shapePath.cgPath
-        shapeLayer.strokeColor = UIColor.systemBlue.cgColor
+        shapeLayer.strokeColor = strokeColor.cgColor
         shapeLayer.lineWidth = lineWidth
         shapeLayer.fillColor = UIColor.clear.cgColor
         shapeLayer.lineCap = .square

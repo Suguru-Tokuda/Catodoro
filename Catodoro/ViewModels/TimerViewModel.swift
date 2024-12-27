@@ -99,12 +99,12 @@ class TimerViewModel {
         }
     }
 
-    func configure(duration: TimeInterval, intervalTime: TimeInterval, numberOfIntervals: Int) {
-        self.duration = duration
-        self.totalDuration = duration
-        self.currentTimerValue = duration
-        self.intervalDuration = intervalTime
-        self.intervals = numberOfIntervals
+    func configure(totalDuration: TimeInterval, intervalDuration: TimeInterval, intervals: Int) {
+        self.duration = totalDuration
+        self.totalDuration = totalDuration
+        self.currentTimerValue = totalDuration
+        self.intervalDuration = intervalDuration
+        self.intervals = intervals
         self.timerType = .main
         interval = 1
         DispatchQueue.main.async {
@@ -193,7 +193,7 @@ class TimerViewModel {
     }
     
     func playFinishSound() {
-        let fileName = preferences?.sound ?? SoundOptions.meowRegular.rawValue
+        let fileName = SoundOptions(preferences?.sound ?? "").fileName
         try? audioManager.setPlayer(fileName: fileName, fileExtension: "mp3")
         try? audioManager.play()
     }

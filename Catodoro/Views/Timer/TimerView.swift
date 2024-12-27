@@ -46,8 +46,9 @@ class TimerView: UIView {
     private lazy var playPauseButton: PlayPauseButton = .init()
     private lazy var stopButton: StopButton = .init()
 
-    override init(frame: CGRect) {
-        timerCircleView = .init(frame: .init(x: 0, y: 0, width: timerCircleDiameter, height: timerCircleDiameter))
+    init(frame: CGRect, strokeColor: UIColor = ColorOptions.neonBlue.color) {
+        timerCircleView = .init(frame: .init(x: 0, y: 0, width: timerCircleDiameter, height: timerCircleDiameter),
+                                strokeColor: strokeColor)
         super.init(frame: frame)
         setupActionHandlers()
         setupSubviews()
