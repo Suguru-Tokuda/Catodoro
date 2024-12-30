@@ -35,6 +35,8 @@
 		BB516E472CAB94D70004B95C /* TimerConfigViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB516E462CAB94D70004B95C /* TimerConfigViewModel.swift */; };
 		BB516E4B2CAB97B90004B95C /* TimerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB516E4A2CAB97B90004B95C /* TimerModel.swift */; };
 		BB516E4E2CAB98930004B95C /* TimerConfigModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB516E4D2CAB98930004B95C /* TimerConfigModel.swift */; };
+		BB5818F72D21271400F6A846 /* silent.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BB5818F62D21271400F6A846 /* silent.mp3 */; };
+		BB5818F92D2129D700F6A846 /* DismissButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB5818F82D2129D700F6A846 /* DismissButton.swift */; };
 		BB6C851D2D1A5825005C4D0B /* CatodoroUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB6C851C2D1A5825005C4D0B /* CatodoroUITests.swift */; };
 		BB6C851F2D1A5825005C4D0B /* CatodoroUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB6C851E2D1A5825005C4D0B /* CatodoroUITestsLaunchTests.swift */; };
 		BB6C852E2D1A666F005C4D0B /* TimerViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB6C852D2D1A666F005C4D0B /* TimerViewModelTests.swift */; };
@@ -60,6 +62,7 @@
 		BBA3CDA22C866749002A3E7B /* UIStackView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA3CDA12C866749002A3E7B /* UIStackView+Extensions.swift */; };
 		BBA3CDA42C866A3F002A3E7B /* UIImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA3CDA32C866A3F002A3E7B /* UIImage+Extensions.swift */; };
 		BBA3CDA62C868CA6002A3E7B /* TimeInterval+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA3CDA52C868CA6002A3E7B /* TimeInterval+Extensions.swift */; };
+		BBCB91382D205ED7007C82B5 /* NowPlayingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCB91372D205ED7007C82B5 /* NowPlayingManager.swift */; };
 		BBEA02C12D1C6AE300922951 /* StopButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02C02D1C6AE300922951 /* StopButtonTests.swift */; };
 		BBEA02C32D1C6B5700922951 /* TimePickerViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02C22D1C6B5700922951 /* TimePickerViewTests.swift */; };
 		BBEA02C52D1C6C5300922951 /* TimerCircleViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02C42D1C6C5300922951 /* TimerCircleViewTests.swift */; };
@@ -144,6 +147,8 @@
 		BB516E462CAB94D70004B95C /* TimerConfigViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerConfigViewModel.swift; sourceTree = "<group>"; };
 		BB516E4A2CAB97B90004B95C /* TimerModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerModel.swift; sourceTree = "<group>"; };
 		BB516E4D2CAB98930004B95C /* TimerConfigModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerConfigModel.swift; sourceTree = "<group>"; };
+		BB5818F62D21271400F6A846 /* silent.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = silent.mp3; sourceTree = "<group>"; };
+		BB5818F82D2129D700F6A846 /* DismissButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DismissButton.swift; sourceTree = "<group>"; };
 		BB6C850D2D1A5807005C4D0B /* CatodoroTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CatodoroTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB6C851A2D1A5825005C4D0B /* CatodoroUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CatodoroUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB6C851C2D1A5825005C4D0B /* CatodoroUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatodoroUITests.swift; sourceTree = "<group>"; };
@@ -171,6 +176,7 @@
 		BBA3CDA12C866749002A3E7B /* UIStackView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIStackView+Extensions.swift"; sourceTree = "<group>"; };
 		BBA3CDA32C866A3F002A3E7B /* UIImage+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Extensions.swift"; sourceTree = "<group>"; };
 		BBA3CDA52C868CA6002A3E7B /* TimeInterval+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeInterval+Extensions.swift"; sourceTree = "<group>"; };
+		BBCB91372D205ED7007C82B5 /* NowPlayingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowPlayingManager.swift; sourceTree = "<group>"; };
 		BBEA02C02D1C6AE300922951 /* StopButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopButtonTests.swift; sourceTree = "<group>"; };
 		BBEA02C22D1C6B5700922951 /* TimePickerViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimePickerViewTests.swift; sourceTree = "<group>"; };
 		BBEA02C42D1C6C5300922951 /* TimerCircleViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerCircleViewTests.swift; sourceTree = "<group>"; };
@@ -284,6 +290,7 @@
 		BB1817B52C7EB1EA00BF8DA8 /* Timer */ = {
 			isa = PBXGroup;
 			children = (
+				BB5818F82D2129D700F6A846 /* DismissButton.swift */,
 				BB479AC52CC9D228000CBE6D /* PawButton.swift */,
 				BB1817BA2C7EB31800BF8DA8 /* PlayPauseButton.swift */,
 				BB0B25D02C9CF5F000487314 /* StopButton.swift */,
@@ -324,17 +331,19 @@
 				BB8D284E2CE15EE6001D73B1 /* cat_meow_regular.mp3 */,
 				BB479ABF2CC88164000CBE6D /* hungry_cat.mp3 */,
 				BB8D284F2CE15EE6001D73B1 /* kitty_meow.mp3 */,
+				BB5818F62D21271400F6A846 /* silent.mp3 */,
 			);
 			path = VoiceFiles;
 			sourceTree = "<group>";
 		};
-		BB479AC22CC883BF000CBE6D /* Helpers */ = {
+		BB479AC22CC883BF000CBE6D /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
 				BB479AC32CC883D1000CBE6D /* AudioManager.swift */,
 				BB49DC632D08CC3A001E3CDC /* CatodoroPreferences.swift */,
+				BBCB91372D205ED7007C82B5 /* NowPlayingManager.swift */,
 			);
-			path = Helpers;
+			path = Utilities;
 			sourceTree = "<group>";
 		};
 		BB49DC652D08D158001E3CDC /* Enums */ = {
@@ -457,8 +466,8 @@
 				BBF4F48F2C76D3900079448E /* CoreData */,
 				BB49DC652D08D158001E3CDC /* Enums */,
 				BBF4F47A2C7646BA0079448E /* Extensions */,
-				BB479AC22CC883BF000CBE6D /* Helpers */,
 				BB516E4C2CAB97CA0004B95C /* Models */,
+				BB479AC22CC883BF000CBE6D /* Utilities */,
 				BBF4F46D2C7642ED0079448E /* ViewControllers */,
 				BBF4F46C2C7642940079448E /* ViewModels */,
 				BBF4F46E2C7643790079448E /* Views */,
@@ -686,6 +695,7 @@
 				BB479AC02CC88164000CBE6D /* hungry_cat.mp3 in Resources */,
 				BB8D28502CE15EE6001D73B1 /* cat_meow_regular.mp3 in Resources */,
 				BB8D28512CE15EE6001D73B1 /* cat_meow_loud.mp3 in Resources */,
+				BB5818F72D21271400F6A846 /* silent.mp3 in Resources */,
 				BB8D28522CE15EE6001D73B1 /* kitty_meow.mp3 in Resources */,
 				BB8D28532CE15EE6001D73B1 /* angry_cat.mp3 in Resources */,
 				BBF4F4642C763FF90079448E /* Base in Resources */,
@@ -769,6 +779,8 @@
 				BBF4F4822C7648820079448E /* SettingsViewController.swift in Sources */,
 				BB1817BE2C7EB57B00BF8DA8 /* UIView+Extensions.swift in Sources */,
 				BB516E472CAB94D70004B95C /* TimerConfigViewModel.swift in Sources */,
+				BBCB91382D205ED7007C82B5 /* NowPlayingManager.swift in Sources */,
+				BB5818F92D2129D700F6A846 /* DismissButton.swift in Sources */,
 				BBF4F48A2C76B5E10079448E /* PresetsCoordinator.swift in Sources */,
 				BB479AC42CC883D1000CBE6D /* AudioManager.swift in Sources */,
 				BBA3CDA42C866A3F002A3E7B /* UIImage+Extensions.swift in Sources */,

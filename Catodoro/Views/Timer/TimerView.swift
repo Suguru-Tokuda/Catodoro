@@ -10,6 +10,7 @@ import UIKit
 class TimerView: UIView {
     var onPlayPauseButtonTap: (() -> Void)?
     var onStopButtonTap: (() -> Void)?
+    var onDismissButtonTap: (() -> Void)?
 
     // MARK: - Class properties
     private let timerCircleDiameter: CGFloat = 250
@@ -45,6 +46,11 @@ class TimerView: UIView {
     private var timerCircleView: TimerCircleView
     private lazy var playPauseButton: PlayPauseButton = .init()
     private lazy var stopButton: StopButton = .init()
+    private lazy var dismissButton: DismissButton = {
+        let button = DismissButton()
+        button.isHidden = true
+        return button
+    }()
 
     init(frame: CGRect, strokeColor: UIColor = ColorOptions.neonBlue.color) {
         timerCircleView = .init(frame: .init(x: 0, y: 0, width: timerCircleDiameter, height: timerCircleDiameter),
@@ -65,7 +71,8 @@ class TimerView: UIView {
             timerCircleView,
             stackView,
             playPauseButton,
-            stopButton
+            stopButton,
+            dismissButton
         ])
 
         stackView.addArrangedSubviews([
@@ -100,16 +107,28 @@ class TimerView: UIView {
             stopButton.trailingAnchor.constraint(equalTo: timerCircleView.trailingAnchor),
             stopButton.heightAnchor.constraint(equalToConstant: buttonSize),
             stopButton.widthAnchor.constraint(equalToConstant: buttonSize),
+
+            dismissButton.topAnchor.constraint(equalTo: timerCircleView.bottomAnchor),
+            dismissButton.trailingAnchor.constraint(equalTo: timerCircleView.trailingAnchor),
+            dismissButton.heightAnchor.constraint(equalToConstant: buttonSize),
+            dismissButton.widthAnchor.constraint(equalToConstant: buttonSize),
         ])
     }
 
     private func setupActionHandlers() {
-        playPauseButton.onButtonTap = {
-            self.onPlayPauseButtonTap?()
+        playPauseButton.onButtonTap = { [weak self] in
+            guard let self else { return }
+            onPlayPauseButtonTap?()
         }
 
-        stopButton.onButtonTap = {
-            self.onStopButtonTap?()
+        stopButton.onButtonTap = { [weak self] in
+            guard let self else { return }
+            onStopButtonTap?()
+        }
+
+        dismissButton.onButtonTap = { [weak self] in
+            guard let self else { return }
+            onDismissButtonTap?()
         }
     }
 }
@@ -141,6 +160,11 @@ extension TimerView {
 
     func resumeTimer() {
         timerCircleView.resumeTimer()
+    }
+
+    func setupStopDimissButtons(showStopButton: Bool) {
+        stopButton.isHidden = !showStopButton
+        dismissButton.isHidden = showStopButton
     }
 }
 

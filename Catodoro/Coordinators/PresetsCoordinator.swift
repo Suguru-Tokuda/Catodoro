@@ -43,7 +43,7 @@ extension PresetsCoordinator: PresetsViewControllerDelegate {
     
     func presetsViewControllerDidTapAddButton(_ viewController: PresetsViewController, onFinish: @escaping(() -> Void)) {
         navigateToAddPreset { [weak self] in
-            guard let self else { return }
+            guard self != nil else { return }
             onFinish()
         }
     }

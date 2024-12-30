@@ -29,6 +29,7 @@ class PresetsViewController: UIViewController {
         let tableView = UITableView()
         tableView.register(PresetListViewCell.self,
                            forCellReuseIdentifier: PresetListViewCell.reuseIdentifier)
+        tableView.separatorInset = .init(top: 0, left: 0, bottom: 0, right: 0)
         return tableView
     }()
 
@@ -42,6 +43,10 @@ class PresetsViewController: UIViewController {
         setupConstraints()
         setupAddButton()
         addSubscriptions()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         Task(priority: .utility) {
             await viewModel.loadPresets()
         }

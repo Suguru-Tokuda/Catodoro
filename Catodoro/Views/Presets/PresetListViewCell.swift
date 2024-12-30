@@ -20,8 +20,7 @@ class PresetListViewCell: UITableViewCell {
 
     let timerLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 32, weight: .regular)
-        label.numberOfLines = 0
+        label.font = .systemFont(ofSize: 40, weight: .regular)
         label.isAccessibilityElement = true
         label.accessibilityLabel = "Timer"
         label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
@@ -57,7 +56,7 @@ class PresetListViewCell: UITableViewCell {
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.alignment = .center
-        stackView.distribution = .equalSpacing
+        stackView.distribution = .fillProportionally
         return stackView
     }()
 
@@ -95,7 +94,7 @@ class PresetListViewCell: UITableViewCell {
 
         playButton.addTarget(self, action: #selector(handlePlayButtonTap), for: .touchUpInside)
     }
-    
+
     private func setupConstraints() {
         NSLayoutConstraint.activate([
             horizontalStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),

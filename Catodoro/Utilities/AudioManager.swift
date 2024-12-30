@@ -13,14 +13,25 @@ enum AudioError: Error {
          setup
 }
 
+enum AudioState {
+    case playing
+    case paused
+    case stopped
+}
+
 protocol AudioManaging {
+    var audioState: AudioState { get }
     func setPlayer(fileName: String, fileExtension: String) throws
-    func play() throws
+    func play(numberOfLoops: Int) throws
     func pause() throws
     func stop() throws
 }
 
 class AudioManager: NSObject, AudioManaging {
+    private var _audioStatte: AudioState = .stopped
+    var audioState: AudioState {
+        _audioStatte
+    }
     private var audioPlayer: AVAudioPlayer?
     var playTimer: Timer?
     let loopDelay = 1.0
@@ -36,13 +47,15 @@ class AudioManager: NSObject, AudioManaging {
         audioPlayer?.numberOfLoops = 0
     }
 
-    func play() throws {
+    func play(numberOfLoops: Int = 0) throws {
         if let audioPlayer {
             audioPlayer.prepareToPlay()
             audioPlayer.delegate = self
+            audioPlayer.numberOfLoops = numberOfLoops
             playTimer?.invalidate()
             playTimer = nil
             audioPlayer.play()
+            _audioStatte = .playing
         } else {
             throw AudioError.playerNotSet
         }
@@ -51,6 +64,7 @@ class AudioManager: NSObject, AudioManaging {
     func pause() throws {
         if let audioPlayer {
             audioPlayer.pause()
+            _audioStatte = .paused
         } else {
             throw AudioError.playerNotSet
         }
@@ -59,6 +73,7 @@ class AudioManager: NSObject, AudioManaging {
     func stop() throws {
         playTimer?.invalidate()
         playTimer = nil
+        _audioStatte = .stopped
         if let audioPlayer {
             audioPlayer.stop()
         } else {
@@ -75,7 +90,6 @@ class AudioManager: NSObject, AudioManaging {
 }
 
 extension AudioManager: AVAudioPlayerDelegate {
-    
     func audioPlayerDidFinishPlaying(_ audioPlayer: AVAudioPlayer, successfully flag: Bool) {
         playTimer = Timer.scheduledTimer(withTimeInterval: loopDelay, repeats: false) { [weak self] _ in
             guard self != nil else { return }

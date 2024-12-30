@@ -9,6 +9,8 @@ import Foundation
 @testable import Catodoro
 
 final class MockAudioManager: AudioManaging {
+    var audioState: Catodoro.AudioState = .stopped
+    
     var playedFileName: String?
     var playedFileExtension: String?
     var isPlaying: Bool = false
@@ -20,7 +22,7 @@ final class MockAudioManager: AudioManaging {
         playedFileExtension = fileExtension
     }
 
-    func play() throws {
+    func play(numberOfLoops: Int) throws {
         isPlaying = true
         isPaused = false
     }
