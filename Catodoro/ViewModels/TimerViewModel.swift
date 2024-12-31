@@ -88,8 +88,9 @@ class TimerViewModel {
                         case .main, .none:
                             duration = totalDuration
                         }
-                        DispatchQueue.main.async {
-                            self.startTimer()
+                        DispatchQueue.main.async { [weak self] in
+                            guard let self else { return }
+                            startTimer()
                         }
                     }
                 }
@@ -195,7 +196,8 @@ class TimerViewModel {
         self.intervals = intervals
         self.timerType = .main
         interval = 1
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
             self.startTimer()
         }
     }
@@ -390,10 +392,11 @@ extension TimerViewModel {
                                   repeating: backgroundTimerInterval)
         backgroundTimer?.setEventHandler { [weak self] in
             guard let self else { return }
-            DispatchQueue.main.async {
-                self.startBackgroundTask()
-                self.updateNowPlayingInfo()
-                self.endBackgroundTask()
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                startBackgroundTask()
+                updateNowPlayingInfo()
+                endBackgroundTask()
             }
         }
         backgroundTimer?.resume()

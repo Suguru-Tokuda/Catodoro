@@ -104,7 +104,11 @@ final class AddPresetViewControllerTests: XCTestCase {
         // When
         viewController.testHooks.timerConfigView.onStartButtonTap?()
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            guard let self else {
+                XCTFail("self is nil")
+                return
+            }
             expectation.fulfill()
             // Then
             XCTAssertTrue(didCallAddPreset, "The addPreset method should be called when the start button is tapped.")
