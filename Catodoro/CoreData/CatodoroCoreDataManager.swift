@@ -22,8 +22,14 @@ protocol CatodoroCoreDataManaging {
 }
 
 class CatodoroCoreDataManager: CatodoroCoreDataManaging {
+    private let persistentContainer: NSPersistentContainer
+
+    init(container: NSPersistentContainer = CatodoroPersistentController.shared.container) {
+        persistentContainer = container
+    }
+
     func getPreset(id: String) async throws -> PresetModel? {
-        return try await CatodoroPersistentController.shared.container.performBackgroundTask { context in
+        return try await persistentContainer.performBackgroundTask { context in
             let request: NSFetchRequest<PresetEntity> = PresetEntity.fetchRequest()
             request.predicate = NSPredicate(format: "id == %@", id)
 
@@ -39,7 +45,7 @@ class CatodoroCoreDataManager: CatodoroCoreDataManaging {
     }
 
     func getPresets() async throws -> [PresetModel] {
-        return try await CatodoroPersistentController.shared.container.performBackgroundTask { context in
+        return try await persistentContainer.performBackgroundTask { context in
             let request: NSFetchRequest<PresetEntity> = PresetEntity.fetchRequest()
 
             do {
@@ -52,7 +58,7 @@ class CatodoroCoreDataManager: CatodoroCoreDataManaging {
     }
 
     func savePreset(_ preset: PresetModel) async throws {
-        try await CatodoroPersistentController.shared.container.performBackgroundTask { context in
+        try await persistentContainer.performBackgroundTask { context in
             let request: NSFetchRequest<PresetEntity> = PresetEntity.fetchRequest()
             request.predicate = NSPredicate(format: "id == %@", preset.id.uuidString)
 
@@ -71,7 +77,7 @@ class CatodoroCoreDataManager: CatodoroCoreDataManaging {
     }
 
     func deletePreset(_ id: String) async throws {
-        try await CatodoroPersistentController.shared.container.performBackgroundTask { context in
+        try await persistentContainer.performBackgroundTask { context in
             let request: NSFetchRequest<PresetEntity> = PresetEntity.fetchRequest()
             request.predicate = NSPredicate(format: "id == %@", id)
 
