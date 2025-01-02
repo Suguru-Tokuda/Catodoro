@@ -7,7 +7,7 @@
 
 import UIKit
 
-class OptionSelectionViewCell: UITableViewCell {
+class OptionSelectionViewCell: BaseTableViewCell {
     static let reuseIdentifier = "OptionSelectionViewCell"
 
     private var optionLabel: UILabel = {
@@ -31,24 +31,12 @@ class OptionSelectionViewCell: UITableViewCell {
         return stackView
     }()
 
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setupSubviews()
-        setupConstraints()
-    }
-    
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupSubviews()
-        setupConstraints()
-    }
-
-    private func setupSubviews() {
+    override func setupSubviews() {
         contentView.addAutolayoutSubview(stackView)
         stackView.addArrangedSubviews([optionLabel, selectedIcon])
     }
 
-    private func setupConstraints() {
+    override func setupConstraints() {
         NSLayoutConstraint.activate([
             selectedIcon.widthAnchor.constraint(equalToConstant: 24),
             selectedIcon.heightAnchor.constraint(equalToConstant: 24),

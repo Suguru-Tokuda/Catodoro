@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PresetListViewCell: UITableViewCell {
+class PresetListViewCell: BaseTableViewCell {
     static let reuseIdentifier = "PresetListViewCell"
     var onPlayButtonTapped: (() -> Void)?
     var model: PresetModel? {
@@ -68,19 +68,7 @@ class PresetListViewCell: UITableViewCell {
         return stackView
     }()
 
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setupSubviews()
-        setupConstraints()
-    }
-    
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupSubviews()
-        setupConstraints()
-    }
-
-    private func setupSubviews() {
+    override func setupSubviews() {
         contentView.addAutolayoutSubview(horizontalStackView)
         horizontalStackView.addArrangedSubviews([
             verticalStackView,
@@ -95,7 +83,7 @@ class PresetListViewCell: UITableViewCell {
         playButton.addTarget(self, action: #selector(handlePlayButtonTap), for: .touchUpInside)
     }
 
-    private func setupConstraints() {
+    override func setupConstraints() {
         NSLayoutConstraint.activate([
             horizontalStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
             horizontalStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),

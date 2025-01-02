@@ -24,7 +24,7 @@ class TimerCircleViewTests: XCTestCase {
 
     func test_setupCircleLayers_shouldConfigureLayersCorrectly() {
         // Arrange & Act
-        timerCircleView.setupCircleLayers()
+        timerCircleView.setupSubviews()
 
         // Assert
         XCTAssertEqual(timerCircleView.layer.sublayers?.count, 2, "There should be two sublayers added.")

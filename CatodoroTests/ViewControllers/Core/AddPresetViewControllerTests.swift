@@ -105,7 +105,7 @@ final class AddPresetViewControllerTests: XCTestCase {
         viewController.testHooks.timerConfigView.onStartButtonTap?()
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-            guard let self else {
+            guard self != nil else {
                 XCTFail("self is nil")
                 return
             }
@@ -117,4 +117,3 @@ final class AddPresetViewControllerTests: XCTestCase {
         waitForExpectations(timeout: 1.0)
     }
 }
-

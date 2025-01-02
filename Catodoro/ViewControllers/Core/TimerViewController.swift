@@ -12,7 +12,7 @@ protocol TimerViewControllerDelegate: AnyObject {
     func timerViewControllerDidFinish(_ controller: TimerViewController)
 }
 
-class TimerViewController: UIViewController {
+class TimerViewController: BaseViewController {
     weak var delegate: TimerViewControllerDelegate?
     private var cancellables: Set<AnyCancellable> = .init()
     private var viewModel: TimerViewModel
@@ -31,9 +31,6 @@ class TimerViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
-        setupSubviews()
-        setupConstraints()
         setActionHandlers()
         navigationItem.setHidesBackButton(true, animated: false)
     }
@@ -99,11 +96,13 @@ class TimerViewController: UIViewController {
                             intervals: timerConfigViewModel.timerModel.intervals)
     }
 
-    private func setupSubviews() {
+    override func setupSubviews() {
+        super.setupSubviews()
         view.addAutolayoutSubview(timerView)
     }
 
-    private func setupConstraints() {
+    override func setupConstraints() {
+        super.setupConstraints()
         NSLayoutConstraint.activate([
             timerView.topAnchor.constraint(equalTo: view.topAnchor),
             timerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),

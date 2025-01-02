@@ -13,7 +13,7 @@ protocol PresetsViewControllerDelegate: AnyObject {
     func presetsViewControllerDidTapAddButton(_ viewController: PresetsViewController, onFinish: @escaping(() -> Void))
 }
 
-class PresetsViewController: UIViewController {
+class PresetsViewController: BaseViewController {
     weak var delegate: PresetsViewControllerDelegate?
     private var viewModel: PresetsViewModelProtocol = PresetsViewModel()
     private var cancellables: Set<AnyCancellable> = .init()
@@ -52,7 +52,8 @@ class PresetsViewController: UIViewController {
         }
     }
 
-    private func setupSubviews() {
+    override func setupSubviews() {
+        super.setupSubviews()
         presetsTableView.delegate = self
         presetsTableView.dataSource = self
         presetsTableView.allowsSelection = false
@@ -62,7 +63,8 @@ class PresetsViewController: UIViewController {
         ])
     }
 
-    private func setupConstraints() {
+    override func setupConstraints() {
+        super.setupSubviews()
         NSLayoutConstraint.activate([
             label.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             label.centerXAnchor.constraint(equalTo: view.centerXAnchor),

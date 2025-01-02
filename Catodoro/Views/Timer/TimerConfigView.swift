@@ -7,7 +7,7 @@
 
 import UIKit
 
-class TimerConfigView: UIView {
+class TimerConfigView: BaseView {
     struct Model {
         let startLabelText: String
         let color: UIColor
@@ -58,17 +58,7 @@ class TimerConfigView: UIView {
     }()
     private lazy var scrollView: UIScrollView = .init()
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setupSubviews()
-        setupConstraints()
-    }
-    
-    required init?(coder: NSCoder) {
-        nil
-    }
-
-    private func setupSubviews() {
+    override func setupSubviews() {
         addAutolayoutSubview(scrollView)
         scrollView.addAutolayoutSubviews([stackView])
         intervalStackView.addArrangedSubviews([intervalPicker, UIView(), UIView()])
@@ -84,7 +74,7 @@ class TimerConfigView: UIView {
         applyModel()
     }
 
-    private func setupConstraints() {
+    override func setupConstraints() {
         NSLayoutConstraint.activate([
             // scrollView constraints
             scrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: .init(16)),

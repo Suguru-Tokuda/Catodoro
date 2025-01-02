@@ -77,7 +77,7 @@
 		BBEA02D72D1D011500922951 /* SettingSubtitleLabelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02D62D1D011500922951 /* SettingSubtitleLabelTests.swift */; };
 		BBEA02DB2D1D01BF00922951 /* BaseOptionSelectionViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02DA2D1D01BF00922951 /* BaseOptionSelectionViewControllerTests.swift */; };
 		BBEA02DD2D1D01EF00922951 /* MockCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02DC2D1D01EF00922951 /* MockCoordinator.swift */; };
-		BBEA02DF2D1D02D400922951 /* CustomNavigationControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02DE2D1D02D400922951 /* CustomNavigationControllerTests.swift */; };
+		BBEA02DF2D1D02D400922951 /* BaseNavigationControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02DE2D1D02D400922951 /* BaseNavigationControllerTests.swift */; };
 		BBEA02E12D1D035900922951 /* AddPresetViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02E02D1D035900922951 /* AddPresetViewControllerTests.swift */; };
 		BBEA02E32D1D07C200922951 /* MockTimerConfigViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02E22D1D07C200922951 /* MockTimerConfigViewModel.swift */; };
 		BBEA02E52D1D07FC00922951 /* PresetsViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02E42D1D07FC00922951 /* PresetsViewControllerTests.swift */; };
@@ -88,7 +88,7 @@
 		BBF4F4642C763FF90079448E /* Base in Resources */ = {isa = PBXBuildFile; fileRef = BBF4F4632C763FF90079448E /* Base */; };
 		BBF4F4702C76441F0079448E /* Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F46F2C76441F0079448E /* Coordinator.swift */; };
 		BBF4F4722C7644A20079448E /* TabCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F4712C7644A20079448E /* TabCoordinator.swift */; };
-		BBF4F4762C7644FB0079448E /* CustomNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F4752C7644FB0079448E /* CustomNavigationController.swift */; };
+		BBF4F4762C7644FB0079448E /* BaseNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F4752C7644FB0079448E /* BaseNavigationController.swift */; };
 		BBF4F47C2C7646EE0079448E /* NSObject+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F47B2C7646EE0079448E /* NSObject+Extensions.swift */; };
 		BBF4F4802C7648510079448E /* TimerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F47F2C7648510079448E /* TimerViewController.swift */; };
 		BBF4F4822C7648820079448E /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F4812C7648820079448E /* SettingsViewController.swift */; };
@@ -99,6 +99,9 @@
 		BBF4F48C2C76B61A0079448E /* PresetsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F48B2C76B61A0079448E /* PresetsViewController.swift */; };
 		BBF4F48E2C76D2C90079448E /* TimerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F48D2C76D2C90079448E /* TimerViewModel.swift */; };
 		BBF4F4912C76D3B10079448E /* CatodoroPersistentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4F4902C76D3B10079448E /* CatodoroPersistentController.swift */; };
+		BBFE8DE92D2617D600F898B0 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBFE8DE82D2617D600F898B0 /* BaseViewController.swift */; };
+		BBFE8DED2D261BF100F898B0 /* BaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBFE8DEB2D261B8800F898B0 /* BaseView.swift */; };
+		BBFE8DEF2D261CDB00F898B0 /* BaseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBFE8DEE2D261CDB00F898B0 /* BaseTableViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -191,7 +194,7 @@
 		BBEA02D62D1D011500922951 /* SettingSubtitleLabelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingSubtitleLabelTests.swift; sourceTree = "<group>"; };
 		BBEA02DA2D1D01BF00922951 /* BaseOptionSelectionViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseOptionSelectionViewControllerTests.swift; sourceTree = "<group>"; };
 		BBEA02DC2D1D01EF00922951 /* MockCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCoordinator.swift; sourceTree = "<group>"; };
-		BBEA02DE2D1D02D400922951 /* CustomNavigationControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNavigationControllerTests.swift; sourceTree = "<group>"; };
+		BBEA02DE2D1D02D400922951 /* BaseNavigationControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseNavigationControllerTests.swift; sourceTree = "<group>"; };
 		BBEA02E02D1D035900922951 /* AddPresetViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPresetViewControllerTests.swift; sourceTree = "<group>"; };
 		BBEA02E22D1D07C200922951 /* MockTimerConfigViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockTimerConfigViewModel.swift; sourceTree = "<group>"; };
 		BBEA02E42D1D07FC00922951 /* PresetsViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetsViewControllerTests.swift; sourceTree = "<group>"; };
@@ -204,7 +207,7 @@
 		BBF4F4652C763FF90079448E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BBF4F46F2C76441F0079448E /* Coordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinator.swift; sourceTree = "<group>"; };
 		BBF4F4712C7644A20079448E /* TabCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabCoordinator.swift; sourceTree = "<group>"; };
-		BBF4F4752C7644FB0079448E /* CustomNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNavigationController.swift; sourceTree = "<group>"; };
+		BBF4F4752C7644FB0079448E /* BaseNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseNavigationController.swift; sourceTree = "<group>"; };
 		BBF4F47B2C7646EE0079448E /* NSObject+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSObject+Extensions.swift"; sourceTree = "<group>"; };
 		BBF4F47F2C7648510079448E /* TimerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerViewController.swift; sourceTree = "<group>"; };
 		BBF4F4812C7648820079448E /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
@@ -215,6 +218,9 @@
 		BBF4F48B2C76B61A0079448E /* PresetsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetsViewController.swift; sourceTree = "<group>"; };
 		BBF4F48D2C76D2C90079448E /* TimerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerViewModel.swift; sourceTree = "<group>"; };
 		BBF4F4902C76D3B10079448E /* CatodoroPersistentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatodoroPersistentController.swift; sourceTree = "<group>"; };
+		BBFE8DE82D2617D600F898B0 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
+		BBFE8DEB2D261B8800F898B0 /* BaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseView.swift; sourceTree = "<group>"; };
+		BBFE8DEE2D261CDB00F898B0 /* BaseTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseTableViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -369,10 +375,10 @@
 		BB6C85252D1A5853005C4D0B /* CatodoroTests */ = {
 			isa = PBXGroup;
 			children = (
-				BB07847E2D1BBBF5004BF908 /* Views */,
 				BB6C852F2D1A66EC005C4D0B /* Helper */,
-				BB6C852C2D1A6647005C4D0B /* ViewModels */,
 				BB6C852B2D1A663D005C4D0B /* ViewControllers */,
+				BB6C852C2D1A6647005C4D0B /* ViewModels */,
+				BB07847E2D1BBBF5004BF908 /* Views */,
 			);
 			path = CatodoroTests;
 			sourceTree = "<group>";
@@ -428,8 +434,8 @@
 		BBEA02D92D1D015B00922951 /* General */ = {
 			isa = PBXGroup;
 			children = (
+				BBEA02DE2D1D02D400922951 /* BaseNavigationControllerTests.swift */,
 				BBEA02DA2D1D01BF00922951 /* BaseOptionSelectionViewControllerTests.swift */,
-				BBEA02DE2D1D02D400922951 /* CustomNavigationControllerTests.swift */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -513,6 +519,7 @@
 		BBF4F46E2C7643790079448E /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				BBFE8DEA2D261B7D00F898B0 /* General */,
 				BB1817B62C7EB1F100BF8DA8 /* Presets */,
 				BB1817B72C7EB20000BF8DA8 /* Settings */,
 				BB1817B52C7EB1EA00BF8DA8 /* Timer */,
@@ -523,8 +530,9 @@
 		BBF4F4732C7644C70079448E /* General */ = {
 			isa = PBXGroup;
 			children = (
+				BBF4F4752C7644FB0079448E /* BaseNavigationController.swift */,
 				BB49DC722D08F859001E3CDC /* BaseOptionSelectionViewController.swift */,
-				BBF4F4752C7644FB0079448E /* CustomNavigationController.swift */,
+				BBFE8DE82D2617D600F898B0 /* BaseViewController.swift */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -566,6 +574,15 @@
 				BB07847B2D1B293E004BF908 /* CatodoroCoreData.xcdatamodeld */,
 			);
 			path = CoreData;
+			sourceTree = "<group>";
+		};
+		BBFE8DEA2D261B7D00F898B0 /* General */ = {
+			isa = PBXGroup;
+			children = (
+				BBFE8DEB2D261B8800F898B0 /* BaseView.swift */,
+				BBFE8DEE2D261CDB00F898B0 /* BaseTableViewCell.swift */,
+			);
+			path = General;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -711,7 +728,7 @@
 			files = (
 				BB0784862D1BC57B004BF908 /* PlayPauseButtonTests.swift in Sources */,
 				BBEA02D52D1D006900922951 /* SettingOptionsViewCellTests.swift in Sources */,
-				BBEA02DF2D1D02D400922951 /* CustomNavigationControllerTests.swift in Sources */,
+				BBEA02DF2D1D02D400922951 /* BaseNavigationControllerTests.swift in Sources */,
 				BBEA02DD2D1D01EF00922951 /* MockCoordinator.swift in Sources */,
 				BB0784842D1BBC60004BF908 /* PawButtonTests.swift in Sources */,
 				BBEA02D32D1CFF0100922951 /* OptionSelectionViewCellTests.swift in Sources */,
@@ -750,7 +767,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BBF4F4762C7644FB0079448E /* CustomNavigationController.swift in Sources */,
+				BBF4F4762C7644FB0079448E /* BaseNavigationController.swift in Sources */,
 				BB516E4E2CAB98930004B95C /* TimerConfigModel.swift in Sources */,
 				BB0B25D12C9CF5F000487314 /* StopButton.swift in Sources */,
 				BBF4F4862C7673ED0079448E /* MainCoordinator.swift in Sources */,
@@ -803,10 +820,13 @@
 				BB49DC6D2D08EFE2001E3CDC /* OptionSelectionViewCell.swift in Sources */,
 				BBA3CDA62C868CA6002A3E7B /* TimeInterval+Extensions.swift in Sources */,
 				BB6C85372D1B19DB005C4D0B /* AddPresetViewController.swift in Sources */,
+				BBFE8DED2D261BF100F898B0 /* BaseView.swift in Sources */,
 				BB516E4B2CAB97B90004B95C /* TimerModel.swift in Sources */,
 				BBF4F4722C7644A20079448E /* TabCoordinator.swift in Sources */,
 				BB479AB92CC87A1C000CBE6D /* UIButton+Extensions.swift in Sources */,
+				BBFE8DEF2D261CDB00F898B0 /* BaseTableViewCell.swift in Sources */,
 				BBF4F45A2C763FF80079448E /* SceneDelegate.swift in Sources */,
+				BBFE8DE92D2617D600F898B0 /* BaseViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

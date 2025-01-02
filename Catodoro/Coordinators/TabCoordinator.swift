@@ -33,7 +33,7 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
 
     var preferences: CatodoroPreferences?
 
-    required init(_ navigationController: UINavigationController = CustomNavigationController(),
+    required init(_ navigationController: UINavigationController = BaseNavigationController(),
                   preferences: CatodoroPreferences?) {
         self.navigationController = navigationController
         self.preferences = preferences
@@ -54,6 +54,7 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
         case .timer:
             timerCoordinator = .init()
             timerCoordinator?.preferences = preferences
+            timerCoordinator?.delegate = self
             if let timerCoordinator {
                 timerCoordinator.start()
                 navController = timerCoordinator.navigationController
@@ -134,5 +135,15 @@ extension TabCoordinator: PresetsCoordinatorDelegate {
                 timerCoordinator.navigateToTimerView(viewModel: .init(timerModel: timerConfig))
             }
         }
+    }
+}
+
+extension TabCoordinator: TimerCoordiantorDelegate {
+    func onTimerStarted() {
+        tabBarController.tabBar.isHidden = true
+    }
+    
+    func onTimerFinished() {
+        tabBarController.tabBar.isHidden = false
     }
 }

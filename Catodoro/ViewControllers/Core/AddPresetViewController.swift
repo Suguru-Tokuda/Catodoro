@@ -12,7 +12,7 @@ protocol AddPresetViewControllerDelegate: AnyObject {
     func onFinish()
 }
 
-class AddPresetViewController: UIViewController {
+class AddPresetViewController: BaseViewController {
     weak var delegate: AddPresetViewControllerDelegate?
     private var viewModel: TimerConfigViewModelProtocol = TimerConfigViewModel()
     private weak var preferences: CatodoroPreferencesProtocol?
@@ -33,12 +33,10 @@ class AddPresetViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupSubviews()
-        setupConstraints()
         setupEventHandlers()
     }
 
-    private func setupSubviews() {
+    override func setupSubviews() {
         view.backgroundColor = .systemBackground
         navigationItem.title = "Add Preset"
         timerConfigView.model = .init(startLabelText: "Save",
@@ -46,7 +44,7 @@ class AddPresetViewController: UIViewController {
         view.addAutolayoutSubview(timerConfigView)
     }
 
-    private func setupConstraints() {
+    override func setupConstraints() {
         NSLayoutConstraint.activate([
             timerConfigView.topAnchor.constraint(equalTo: view.topAnchor),
             timerConfigView.bottomAnchor.constraint(equalTo: view.bottomAnchor),

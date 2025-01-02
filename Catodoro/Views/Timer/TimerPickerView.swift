@@ -7,7 +7,7 @@
 
 import UIKit
 
-class TimerPickerView: UIView {
+class TimerPickerView: BaseView {
     var onSelect: ((Int, Int, Int) -> Void)?
     var hours: Int?
     var minutes: Int?
@@ -63,8 +63,6 @@ class TimerPickerView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setupSubviews()
-        setupConstraints()
         setupEventHandlers()
     }
     
@@ -72,7 +70,7 @@ class TimerPickerView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupSubviews() {
+    override func setupSubviews() {
         addAutolayoutSubview(outerStackView)
 
         outerStackView.addArrangedSubviews([
@@ -93,7 +91,7 @@ class TimerPickerView: UIView {
         ])
     }
 
-    private func setupConstraints() {
+    override func setupConstraints() {
         NSLayoutConstraint.activate([
             outerStackView.topAnchor.constraint(equalTo: topAnchor),
             outerStackView.leadingAnchor.constraint(equalTo: leadingAnchor),

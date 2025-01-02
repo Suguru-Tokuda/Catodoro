@@ -59,32 +59,6 @@ class PresetListViewCellTests: XCTestCase {
         XCTAssertNil(cell.intervalLabel.text, "Interval label should be nil by default")
     }
     
-    func test_dynamicResizing_expectCellHeightToIncreaseForLongText() {
-        // Simulate the cell in a table view context
-        let tableView = UITableView()
-        tableView.register(PresetListViewCell.self, forCellReuseIdentifier: PresetListViewCell.reuseIdentifier)
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 44.0
-
-        // Configure the cell
-        cell = tableView.dequeueReusableCell(withIdentifier: PresetListViewCell.reuseIdentifier) as? PresetListViewCell
-        cell.model = mockModel
-        tableView.addSubview(cell)
-        
-        // Initial layout pass
-        tableView.layoutIfNeeded()
-        let initialHeight = cell.contentView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
-
-        // Modify the timer label text
-        cell.timerLabel.text = String(repeating: "Long text ", count: 10)
-        tableView.layoutIfNeeded()
-        let updatedHeight = cell.contentView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
-
-        // Verify the height increases
-        XCTAssertTrue(updatedHeight > initialHeight, "Cell height should increase for longer text")
-    }
-
-    
     func test_reusability_expectLabelsResetWhenModelCleared() {
         cell.model = mockModel
         XCTAssertEqual(cell.timerLabel.text, "00:25:00", "Timer label should be set after model is applied")

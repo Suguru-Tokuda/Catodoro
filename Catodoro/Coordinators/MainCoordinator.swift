@@ -70,7 +70,7 @@ class MainCoordinator: MainCoordinatorProtocol {
     var type: CoordinatorType { .app }
     var preferences: CatodoroPreferences?
 
-    required init(_ navigationController: UINavigationController = CustomNavigationController(),
+    required init(_ navigationController: UINavigationController = BaseNavigationController(),
                   preferences: CatodoroPreferences?) {
         self.navigationController = navigationController
         self.preferences = preferences

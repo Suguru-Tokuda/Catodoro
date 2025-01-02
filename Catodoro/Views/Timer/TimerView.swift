@@ -7,7 +7,7 @@
 
 import UIKit
 
-class TimerView: UIView {
+class TimerView: BaseView {
     var onPlayPauseButtonTap: (() -> Void)?
     var onStopButtonTap: (() -> Void)?
     var onDismissButtonTap: (() -> Void)?
@@ -57,15 +57,13 @@ class TimerView: UIView {
                                 strokeColor: strokeColor)
         super.init(frame: frame)
         setupActionHandlers()
-        setupSubviews()
-        setupConstraints()
     }
     
     required init?(coder: NSCoder) {
         nil
     }
 
-    private func setupSubviews() {
+    override func setupSubviews() {
         addAutolayoutSubviews([
             timerNameLabel,
             timerCircleView,
@@ -78,11 +76,9 @@ class TimerView: UIView {
         stackView.addArrangedSubviews([
             timerLabel
         ])
-
-        timerCircleView.setupCircleLayers()
     }
 
-    private func setupConstraints() {
+    override func setupConstraints() {
         NSLayoutConstraint.activate([
             timerNameLabel.bottomAnchor.constraint(equalTo: timerCircleView.topAnchor, constant: -8),
             timerNameLabel.leadingAnchor.constraint(equalTo: leadingAnchor),

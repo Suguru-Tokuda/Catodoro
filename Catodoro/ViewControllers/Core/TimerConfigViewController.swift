@@ -12,7 +12,7 @@ protocol TimerConfigViewControllerDelegate: AnyObject {
     func didFinishConfiguring(viewModel: TimerConfigViewModel)
 }
 
-class TimerConfigViewController: UIViewController {
+class TimerConfigViewController: BaseViewController {
     weak var delegate: TimerConfigViewControllerDelegate?
     private var viewModel: TimerConfigViewModel = .init()
     private weak var preferences: CatodoroPreferencesProtocol?
@@ -36,18 +36,18 @@ class TimerConfigViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupSubviews()
-        setupConstraints()
         setupEventHandlers()
         setupBackButtonTitle()
         addSubscriptions()
     }
 
-    private func setupSubviews() {
+    override func setupSubviews() {
+        super.setupSubviews()
         view.addAutolayoutSubview(timerConfigView)
     }
 
-    private func setupConstraints() {
+    override func setupConstraints() {
+        super.setupConstraints()
         NSLayoutConstraint.activate([
             timerConfigView.topAnchor.constraint(equalTo: view.topAnchor),
             timerConfigView.bottomAnchor.constraint(equalTo: view.bottomAnchor),

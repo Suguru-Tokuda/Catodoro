@@ -11,7 +11,7 @@ protocol SettingsViewControllerDelegate: AnyObject {
     func onSettingMenuSelected(settingOption: SettingOptions)
 }
 
-class SettingsViewController: UIViewController {
+class SettingsViewController: BaseViewController {
     weak var delegate: SettingsViewControllerDelegate?
     var preferences: CatodoroPreferencesProtocol?
     private var viewModel: SettingsViewModel = .init()
@@ -34,22 +34,22 @@ class SettingsViewController: UIViewController {
         super.viewDidLoad()
         optionTableView.delegate = self
         optionTableView.dataSource = self
-        setupSubviewss()
-        setupConstraints()
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
     }
 
-    private func setupSubviewss() {
+    override func setupSubviews() {
+        super.setupSubviews()
         view.addAutolayoutSubviews([
             label,
             optionTableView
         ])
     }
 
-    private func setupConstraints() {
+    override func setupConstraints() {
+        super.setupConstraints()
         NSLayoutConstraint.activate([
             label.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             label.centerXAnchor.constraint(equalTo: view.centerXAnchor),

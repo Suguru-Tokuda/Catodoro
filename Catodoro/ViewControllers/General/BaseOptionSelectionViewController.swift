@@ -7,7 +7,7 @@
 
 import UIKit
 
-class BaseOptionSelectionViewController: UIViewController {
+class BaseOptionSelectionViewController: BaseViewController {
     // MARK: UI Components
     lazy var titleLabel: UILabel = {
         let label = UILabel()
@@ -30,22 +30,15 @@ class BaseOptionSelectionViewController: UIViewController {
     required init?(coder: NSCoder) {
         nil
     }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .systemBackground
-        setupSubviewss()
-        setupConstraints()
-    }
 
-    private func setupSubviewss() {
+    override func setupSubviews() {
         view.addAutolayoutSubviews([
             titleLabel,
             optionTableView
         ])
     }
 
-    private func setupConstraints() {
+    override func setupConstraints() {
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),

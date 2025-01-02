@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SettingOptionsViewCell: UITableViewCell {
+class SettingOptionsViewCell: BaseTableViewCell {
     static let reuseIdentifier: String = "SettingOptionsViewCell"
     private lazy var icon: UIImageView = {
         let imageView = UIImageView()
@@ -23,23 +23,11 @@ class SettingOptionsViewCell: UITableViewCell {
         return label
     }()
 
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setupSubviews()
-        setupConstraints()
-    }
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupSubviews()
-        setupConstraints()
-    }
-
-    private func setupSubviews() {
+    override func setupSubviews() {
         contentView.addAutolayoutSubviews([icon, settingLabel])
     }
 
-    private func setupConstraints() {
+    override func setupConstraints() {
         let bottomConstraint = settingLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16)
         bottomConstraint.priority = .defaultHigh
 

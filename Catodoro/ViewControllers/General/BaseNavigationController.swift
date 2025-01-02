@@ -1,5 +1,5 @@
 //
-//  CustomNavigationController.swift
+//  BaseNavigationController.swift
 //  Catodoro
 //
 //  Created by Suguru Tokuda on 8/21/24.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class CustomNavigationController: UINavigationController {
+class BaseNavigationController: UINavigationController {
     var isNewViewControllerBeingAdded: Bool = false
 
     override func viewDidLoad() {
@@ -27,7 +27,7 @@ class CustomNavigationController: UINavigationController {
     }
 }
 
-extension CustomNavigationController: UINavigationControllerDelegate {
+extension BaseNavigationController: UINavigationControllerDelegate {
     func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
         self.isNewViewControllerBeingAdded = false
     }

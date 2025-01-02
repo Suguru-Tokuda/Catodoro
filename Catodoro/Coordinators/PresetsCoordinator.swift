@@ -19,7 +19,7 @@ class PresetsCoordinator: Coordinator {
     var navigationController: UINavigationController
     weak var preferences: CatodoroPreferences?
 
-    init(navigationController: UINavigationController = CustomNavigationController()) {
+    init(navigationController: UINavigationController = BaseNavigationController()) {
         self.navigationController = navigationController
     }
 

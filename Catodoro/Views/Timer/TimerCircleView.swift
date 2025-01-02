@@ -7,7 +7,7 @@
 
 import UIKit
 
-class TimerCircleView: UIView {
+class TimerCircleView: BaseView {
     private let shapeLayer = CAShapeLayer()
     private let trackLayer = CAShapeLayer()
     
@@ -20,14 +20,14 @@ class TimerCircleView: UIView {
     init(frame: CGRect = .zero, strokeColor: UIColor = ColorOptions.neonBlue.color) {
         self.strokeColor = strokeColor
         super.init(frame: frame)
-        setupCircleLayers()
     }
 
     required init?(coder: NSCoder) {
         nil
     }
 
-    func setupCircleLayers() {
+    override func setupSubviews() {
+        super.setupSubviews()
         let center = CGPoint(x: frame.size.width / 2, y: frame.size.height / 2)
         let radius = min(frame.size.width, frame.size.height) / 2 - 10
         let startAngle: CGFloat = -.pi / 2

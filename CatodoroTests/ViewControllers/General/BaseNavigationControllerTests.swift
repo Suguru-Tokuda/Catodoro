@@ -1,5 +1,5 @@
 //
-//  CustomNavigationControllerTests.swift
+//  BaseNavigationControllerTests.swift
 //  CatodoroTests
 //
 //  Created by Suguru Tokuda on 12/25/24.
@@ -8,14 +8,14 @@
 import XCTest
 @testable import Catodoro
 
-final class CustomNavigationControllerTests: XCTestCase {
+final class BaseNavigationControllerTests: XCTestCase {
 
-    var navigationController: CustomNavigationController!
+    var navigationController: BaseNavigationController!
 
     override func setUp() {
         super.setUp()
         // Create an instance of CustomNavigationController
-        navigationController = CustomNavigationController()
+        navigationController = BaseNavigationController()
         
         // Load the view hierarchy
         _ = navigationController.view
@@ -31,7 +31,7 @@ final class CustomNavigationControllerTests: XCTestCase {
         _ = navigationController.view // Trigger viewDidLoad
         
         // Then
-        XCTAssertEqual(navigationController.delegate as? CustomNavigationController, navigationController, "The navigation controller's delegate should be set to itself.")
+        XCTAssertEqual(navigationController.delegate as? BaseNavigationController, navigationController, "The navigation controller's delegate should be set to itself.")
     }
 
     func test_contains_withValidViewController_returnsTrue() {

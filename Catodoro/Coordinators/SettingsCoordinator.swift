@@ -14,7 +14,7 @@ class SettingsCoordinator: Coordinator {
     var navigationController: UINavigationController
     var preferences: CatodoroPreferencesProtocol?
 
-    init(navigationController: UINavigationController = CustomNavigationController()) {
+    init(navigationController: UINavigationController = BaseNavigationController()) {
         self.navigationController = navigationController
     }
 
