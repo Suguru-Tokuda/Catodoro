@@ -68,6 +68,7 @@ class TimerViewController: BaseViewController {
                     timerView.stopTimer()
                     timerView.setupStopDimissButtons(showStopButton: viewModel.audioState == .stopped ? true : false)
                 case .start:
+                    timerView.stopTimer()
                     timerView.startTimer(duration: viewModel.duration)
                     timerView.setupStopDimissButtons(showStopButton: true)
                 case .resume:

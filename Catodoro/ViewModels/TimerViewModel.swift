@@ -42,8 +42,10 @@ class TimerViewModel {
     var timerActionSubject: CurrentValueSubject<TimerActions, Never> = .init(.stop)
     var timerLabelSubject: PassthroughSubject<String, Never> = .init()
     var timerIntervalSubject: PassthroughSubject<TimeInterval, Never> = .init()
+    private var intermediateSoundDuration = 2.0
     private var interval: Int = 1
     private var timer: Timer?
+    private var intermediateSoundTimer: Timer?
     private var timerType: TimerType?
     private var cancellables: Set<AnyCancellable> = .init()
     private var audioManager: AudioManaging
@@ -77,7 +79,7 @@ class TimerViewModel {
                         interval += 1
                     }
                     
-                    if interval == (intervals + 1) {
+                    if interval >= intervals && timerType == .main {
                         timerActionSubject.send(.finish)
                         finishTimer()
                     } else {
@@ -88,6 +90,9 @@ class TimerViewModel {
                         case .main, .none:
                             duration = totalDuration
                         }
+                        
+                        playIntermediateSound()
+                        
                         DispatchQueue.main.async { [weak self] in
                             guard let self else { return }
                             startTimer()
@@ -239,7 +244,9 @@ class TimerViewModel {
         playSilentSound()
         timerStatus = .playing
         timerActionSubject.send(.start)
-        try? audioManager.stop()
+        if intermediateSoundTimer == nil {
+            stopSound()
+        }
     }
 
     func pauseTimer() {
@@ -309,9 +316,28 @@ class TimerViewModel {
         try? audioManager.play(numberOfLoops: 0)
     }
 
+    func playIntermediateSound() {
+        intermediateSoundTimer?.invalidate()
+        stopSound()
+
+        let fileName = SoundOptions(preferences?.sound ?? "").fileName
+        try? audioManager.setPlayer(fileName: fileName, fileExtension: "mp3")
+        try? audioManager.play(numberOfLoops: 0)
+
+        intermediateSoundTimer = Timer.scheduledTimer(withTimeInterval: intermediateSoundDuration,
+                                                      repeats: false) { [weak self] _ in
+            guard let self else { return }
+            stopSound()
+            intermediateSoundTimer?.invalidate()
+            intermediateSoundTimer = nil
+        }
+    }
+
     func playSilentSound() {
-        try? audioManager.setPlayer(fileName: "silent", fileExtension: "mp3")
-        try? audioManager.play(numberOfLoops: -1)
+        if intermediateSoundTimer == nil {
+            try? audioManager.setPlayer(fileName: "silent", fileExtension: "mp3")
+            try? audioManager.play(numberOfLoops: -1)
+        }
     }
 
     func stopSound() {
