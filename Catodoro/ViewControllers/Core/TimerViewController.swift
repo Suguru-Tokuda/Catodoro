@@ -18,8 +18,8 @@ class TimerViewController: BaseViewController {
     private var viewModel: TimerViewModel
     private var timerView: TimerView
 
-    init(preferences: CatodoroPreferencesProtocol?) {
-        viewModel = .init(preferences: preferences)
+    init(preferences: CatodoroPreferencesProtocol?, liveActivityManager: LiveActivityManaging?) {
+        viewModel = .init(preferences: preferences, liveActivityManager: liveActivityManager)
         timerView = .init(frame: .zero, strokeColor: ColorOptions(preferences?.color ?? "").color)
         super.init(nibName: nil, bundle: nil)
         addSubscripitons()

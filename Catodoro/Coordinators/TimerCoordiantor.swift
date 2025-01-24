@@ -17,7 +17,8 @@ class TimerCoordiantor: Coordinator {
     var type: CoordinatorType { .feature }
     var childCoordinators: [Coordinator] = []
     var navigationController: UINavigationController
-    var preferences: CatodoroPreferencesProtocol?
+    weak var preferences: CatodoroPreferencesProtocol?
+    weak var liveActivityManager: LiveActivityManaging?
     weak var delegate: TimerCoordiantorDelegate?
 
     init(navigationController: UINavigationController = BaseNavigationController()) {
@@ -31,7 +32,8 @@ class TimerCoordiantor: Coordinator {
     }
 
     func navigateToTimerView(viewModel: TimerConfigViewModel) {
-        let viewController = TimerViewController(preferences: preferences)
+        let viewController = TimerViewController(preferences: preferences,
+                                                 liveActivityManager: liveActivityManager)
         viewController.delegate = self
         viewController.configure(timerConfigViewModel: viewModel)
         delegate?.onTimerStarted()

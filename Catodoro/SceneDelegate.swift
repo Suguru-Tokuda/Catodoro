@@ -11,11 +11,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     var mainCoordinator: Coordinator?
     var preferences: CatodoroPreferences = .init()
+    var liveActivityManager: LiveActivityManaging = LiveActivityManager()
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(frame: windowScene.coordinateSpace.bounds)
-        mainCoordinator = MainCoordinator(preferences: preferences)
+        mainCoordinator = MainCoordinator(preferences: preferences, liveActivityManager: liveActivityManager)
         mainCoordinator?.start()
         window?.windowScene = windowScene
         window?.rootViewController = mainCoordinator?.navigationController
@@ -29,6 +30,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
+        liveActivityManager.endLiveActivity()
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {

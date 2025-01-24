@@ -38,7 +38,9 @@ class AudioManager: NSObject, AudioManaging {
 
     func setPlayer(fileName: String, fileExtension: String) throws {
         do {
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setCategory(.playback,
+                                                            mode: .default,
+                                                            options: [])
             try AVAudioSession.sharedInstance().setActive(true)
         } catch {
             throw AudioError.setup

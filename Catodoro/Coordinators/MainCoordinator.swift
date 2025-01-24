@@ -68,12 +68,15 @@ class MainCoordinator: MainCoordinatorProtocol {
     var navigationController: UINavigationController
     var childCoordinators = [Coordinator]()
     var type: CoordinatorType { .app }
-    var preferences: CatodoroPreferences?
+    weak var preferences: CatodoroPreferences?
+    weak var liveActivityManager: LiveActivityManaging?
 
     required init(_ navigationController: UINavigationController = BaseNavigationController(),
-                  preferences: CatodoroPreferences?) {
+                  preferences: CatodoroPreferences?,
+                  liveActivityManager: LiveActivityManaging?) {
         self.navigationController = navigationController
         self.preferences = preferences
+        self.liveActivityManager = liveActivityManager
         navigationController.setNavigationBarHidden(true, animated: false)
     }
 
@@ -83,7 +86,8 @@ class MainCoordinator: MainCoordinatorProtocol {
 
     func showMainFlow() {
         let tabCoordinator = TabCoordinator.init(navigationController,
-                                                 preferences: preferences)
+                                                 preferences: preferences,
+                                                 liveActivityManager: liveActivityManager)
         tabCoordinator.finishDelegate = self
         tabCoordinator.start()
         childCoordinators.append(tabCoordinator)

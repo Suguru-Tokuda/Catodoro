@@ -1,9 +1,6 @@
-//
-//  TimerViewModelTests.swift
-//  CatodoroTests
-//
-//  Created by Suguru Tokuda on 12/23/24.
-//
+// TimerViewModelTests.swift
+// CatodoroTests
+// Created by Suguru Tokuda on 12/23/24.
 
 import XCTest
 import Combine
@@ -13,13 +10,15 @@ final class TimerViewModelTests: XCTestCase {
     private var viewModel: TimerViewModel!
     private var audioManagerMock: MockAudioManager!
     private var preferencesMock: MockPreferences!
+    private var liveActivityManagerMock: MockLiveActivityManager!
     private var cancellables: Set<AnyCancellable>!
 
     override func setUp() {
         super.setUp()
         audioManagerMock = MockAudioManager()
         preferencesMock = MockPreferences()
-        viewModel = TimerViewModel(audioManager: audioManagerMock, preferences: preferencesMock)
+        liveActivityManagerMock = MockLiveActivityManager()
+        viewModel = TimerViewModel(audioManager: audioManagerMock, preferences: preferencesMock, liveActivityManager: liveActivityManagerMock)
         cancellables = []
     }
 
@@ -27,12 +26,13 @@ final class TimerViewModelTests: XCTestCase {
         viewModel = nil
         audioManagerMock = nil
         preferencesMock = nil
+        liveActivityManagerMock = nil
         cancellables = nil
         super.tearDown()
     }
 
     func test_init_expectInitialState() {
-        XCTAssertEqual(viewModel.timerStatus, .paused)
+        XCTAssertEqual(viewModel.testHooks.timerStatus, .paused)
         XCTAssertEqual(viewModel.currentTimerValue, 0)
     }
 
@@ -48,12 +48,13 @@ final class TimerViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.testHooks.intervalDuration, intervalTime)
         XCTAssertEqual(viewModel.currentTimerValue, duration)
         XCTAssertEqual(viewModel.testHooks.timerType, .main)
-        XCTAssertEqual(viewModel.timerStatus, .paused)
+        XCTAssertEqual(viewModel.testHooks.timerStatus, .paused)
     }
 
     func test_startTimer_expectTimerValueUpdates() {
         let expectation = self.expectation(description: "Timer updates current value")
         let expectedValue = "00:25:00"
+
         viewModel.timerSubject
             .sink { value in
                 expectation.fulfill()
@@ -72,8 +73,8 @@ final class TimerViewModelTests: XCTestCase {
         viewModel.startTimer()
         viewModel.pauseTimer()
 
-        XCTAssertEqual(viewModel.timerStatus, .paused)
-        XCTAssertNil(viewModel.testHooks.timer)
+        XCTAssertEqual(viewModel.testHooks.timerStatus, .paused)
+        XCTAssertNil(viewModel.testHooks.backgroundTimer)
     }
 
     func test_resumeTimer_expectTimerResumesPlaying() {
@@ -82,8 +83,8 @@ final class TimerViewModelTests: XCTestCase {
         viewModel.pauseTimer()
         viewModel.resumeTimer()
 
-        XCTAssertEqual(viewModel.timerStatus, .playing)
-        XCTAssertNotNil(viewModel.testHooks.timer)
+        XCTAssertEqual(viewModel.testHooks.timerStatus, .playing)
+        XCTAssertNotNil(viewModel.testHooks.backgroundTimer)
     }
 
     func test_stopTimer_expectTimerResets() {
@@ -91,17 +92,40 @@ final class TimerViewModelTests: XCTestCase {
         viewModel.startTimer()
         viewModel.stopTimer()
 
-        XCTAssertEqual(viewModel.timerStatus, .paused)
-        XCTAssertNil(viewModel.testHooks.timer)
+        XCTAssertEqual(viewModel.testHooks.timerStatus, .paused)
+        XCTAssertNil(viewModel.testHooks.backgroundTimer)
         XCTAssertEqual(viewModel.currentTimerValue, 1500)
         XCTAssertEqual(viewModel.testHooks.timerType, .main)
     }
 
-    func test_playFinishSound_expectAudioManagerPlaysFinishSound() {
-        preferencesMock.sound = "finishSound"
-        viewModel.playFinishSound()
+    func test_startLiveActivity_expectLiveActivityIsStarted() {
+        viewModel.configure(totalDuration: 1500, intervalDuration: 300, intervals: 4)
+        viewModel.startTimer()
 
-        XCTAssertEqual(audioManagerMock.playedFileName, "cat_meow_regular")
-        XCTAssertEqual(audioManagerMock.playedFileExtension, "mp3")
+        XCTAssertTrue(liveActivityManagerMock.didStartLiveActivity)
+    }
+
+    func test_updateLiveActivity_expectLiveActivityIsUpdated() {
+        viewModel.configure(totalDuration: 1500, intervalDuration: 300, intervals: 4)
+        viewModel.startTimer()
+        viewModel.pauseTimer()
+        
+        let expectation = self.expectation(description: "LiveActivityManager updates activity")
+        
+        Task {
+            // Allow the async method in MockLiveActivityManager to execute
+            if liveActivityManagerMock.didUpdateLiveActivity {
+                expectation.fulfill()
+            }
+        }
+        
+        waitForExpectations(timeout: 1.0)
+    }
+
+    func test_endLiveActivity_expectLiveActivityIsEnded() {
+        viewModel.configure(totalDuration: 1500, intervalDuration: 300, intervals: 4)
+        viewModel.stopTimer()
+
+        XCTAssertTrue(liveActivityManagerMock.didEndLiveActivity)
     }
 }

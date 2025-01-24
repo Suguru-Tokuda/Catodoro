@@ -31,12 +31,15 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
     var presetsCoordiantor: PresetsCoordinator?
     var settingsCoordinator: SettingsCoordinator?
 
-    var preferences: CatodoroPreferences?
+    weak var preferences: CatodoroPreferences?
+    weak var liveActivityManager: LiveActivityManaging?
 
     required init(_ navigationController: UINavigationController = BaseNavigationController(),
-                  preferences: CatodoroPreferences?) {
+                  preferences: CatodoroPreferences?,
+                  liveActivityManager: LiveActivityManaging?) {
         self.navigationController = navigationController
         self.preferences = preferences
+        self.liveActivityManager = liveActivityManager
         self.tabBarController = .init()
     }
 
@@ -54,6 +57,7 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
         case .timer:
             timerCoordinator = .init()
             timerCoordinator?.preferences = preferences
+            timerCoordinator?.liveActivityManager = liveActivityManager
             timerCoordinator?.delegate = self
             if let timerCoordinator {
                 timerCoordinator.start()

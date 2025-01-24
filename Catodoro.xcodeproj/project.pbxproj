@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -30,12 +30,21 @@
 		BB49DC712D08F33D001E3CDC /* OptionSelectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB49DC702D08F33D001E3CDC /* OptionSelectionViewModel.swift */; };
 		BB49DC732D08F859001E3CDC /* BaseOptionSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB49DC722D08F859001E3CDC /* BaseOptionSelectionViewController.swift */; };
 		BB49DC752D08FA37001E3CDC /* SoundSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB49DC742D08FA37001E3CDC /* SoundSelectionViewController.swift */; };
+		BB4CF75C2D3466DF00B0946C /* CatodoroSharedPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4CF75B2D3466DF00B0946C /* CatodoroSharedPreferences.swift */; };
+		BB4CF7622D34A41100B0946C /* LiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4CF7612D34A41100B0946C /* LiveActivityManager.swift */; };
+		BB4CF7762D35986100B0946C /* CatodoroShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB4CF76C2D35986000B0946C /* CatodoroShared.framework */; };
+		BB4CF7812D35986100B0946C /* CatodoroShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB4CF76C2D35986000B0946C /* CatodoroShared.framework */; };
+		BB4CF7822D35986100B0946C /* CatodoroShared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BB4CF76C2D35986000B0946C /* CatodoroShared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BB4E43432D191B2300C34D04 /* CatodoroCoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4E43422D191B2300C34D04 /* CatodoroCoreDataManager.swift */; };
 		BB516E452CAB933C0004B95C /* TimerConfigViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB516E442CAB933C0004B95C /* TimerConfigViewController.swift */; };
 		BB516E472CAB94D70004B95C /* TimerConfigViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB516E462CAB94D70004B95C /* TimerConfigViewModel.swift */; };
 		BB516E4B2CAB97B90004B95C /* TimerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB516E4A2CAB97B90004B95C /* TimerModel.swift */; };
 		BB516E4E2CAB98930004B95C /* TimerConfigModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB516E4D2CAB98930004B95C /* TimerConfigModel.swift */; };
-		BB5818F72D21271400F6A846 /* silent.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BB5818F62D21271400F6A846 /* silent.mp3 */; };
+		BB522A4A2D40AB4E0064F9DC /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BBFE8DF62D2F6CEB00F898B0 /* WidgetKit.framework */; };
+		BB522A4B2D40AB4E0064F9DC /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BBFE8DF82D2F6CEB00F898B0 /* SwiftUI.framework */; };
+		BB522A582D40AB4F0064F9DC /* CatodoroWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = BB522A492D40AB4E0064F9DC /* CatodoroWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		BB522A632D40ACFF0064F9DC /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB522A622D40ACFF0064F9DC /* ActivityKit.framework */; };
+		BB522A642D40AD160064F9DC /* CatodoroShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB4CF76C2D35986000B0946C /* CatodoroShared.framework */; };
 		BB5818F92D2129D700F6A846 /* DismissButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB5818F82D2129D700F6A846 /* DismissButton.swift */; };
 		BB6C851D2D1A5825005C4D0B /* CatodoroUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB6C851C2D1A5825005C4D0B /* CatodoroUITests.swift */; };
 		BB6C851F2D1A5825005C4D0B /* CatodoroUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB6C851E2D1A5825005C4D0B /* CatodoroUITestsLaunchTests.swift */; };
@@ -62,7 +71,7 @@
 		BBA3CDA22C866749002A3E7B /* UIStackView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA3CDA12C866749002A3E7B /* UIStackView+Extensions.swift */; };
 		BBA3CDA42C866A3F002A3E7B /* UIImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA3CDA32C866A3F002A3E7B /* UIImage+Extensions.swift */; };
 		BBA3CDA62C868CA6002A3E7B /* TimeInterval+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA3CDA52C868CA6002A3E7B /* TimeInterval+Extensions.swift */; };
-		BBCB91382D205ED7007C82B5 /* NowPlayingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCB91372D205ED7007C82B5 /* NowPlayingManager.swift */; };
+		BBD7253F2D43E5FC00FCF62E /* MockLiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBD7253E2D43E5FC00FCF62E /* MockLiveActivityManager.swift */; };
 		BBEA02C12D1C6AE300922951 /* StopButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02C02D1C6AE300922951 /* StopButtonTests.swift */; };
 		BBEA02C32D1C6B5700922951 /* TimePickerViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02C22D1C6B5700922951 /* TimePickerViewTests.swift */; };
 		BBEA02C52D1C6C5300922951 /* TimerCircleViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA02C42D1C6C5300922951 /* TimerCircleViewTests.swift */; };
@@ -105,6 +114,34 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		BB4CF7772D35986100B0946C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BBF4F44C2C763FF80079448E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BB4CF76B2D35986000B0946C;
+			remoteInfo = CatodoroShared;
+		};
+		BB4CF7792D35986100B0946C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BBF4F44C2C763FF80079448E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BBF4F4532C763FF80079448E;
+			remoteInfo = Catodoro;
+		};
+		BB4CF77F2D35986100B0946C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BBF4F44C2C763FF80079448E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BB4CF76B2D35986000B0946C;
+			remoteInfo = CatodoroShared;
+		};
+		BB522A562D40AB4F0064F9DC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BBF4F44C2C763FF80079448E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BB522A482D40AB4E0064F9DC;
+			remoteInfo = CatodoroWidgetExtension;
+		};
 		BB6C85112D1A5808005C4D0B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BBF4F44C2C763FF80079448E /* Project object */;
@@ -120,6 +157,31 @@
 			remoteInfo = Catodoro;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		BB4CF7872D35986100B0946C /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 12;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				BB4CF7822D35986100B0946C /* CatodoroShared.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BBFE8E0D2D2F6CEC00F898B0 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 12;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				BB522A582D40AB4F0064F9DC /* CatodoroWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		BB07847C2D1B293E004BF908 /* CatodoroCoreData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CatodoroCoreData.xcdatamodel; sourceTree = "<group>"; };
@@ -145,12 +207,19 @@
 		BB49DC702D08F33D001E3CDC /* OptionSelectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionSelectionViewModel.swift; sourceTree = "<group>"; };
 		BB49DC722D08F859001E3CDC /* BaseOptionSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseOptionSelectionViewController.swift; sourceTree = "<group>"; };
 		BB49DC742D08FA37001E3CDC /* SoundSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundSelectionViewController.swift; sourceTree = "<group>"; };
+		BB4CF7592D34662700B0946C /* Catodoro.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Catodoro.entitlements; sourceTree = "<group>"; };
+		BB4CF75A2D34666100B0946C /* CatodoroWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CatodoroWidgetExtension.entitlements; sourceTree = "<group>"; };
+		BB4CF75B2D3466DF00B0946C /* CatodoroSharedPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatodoroSharedPreferences.swift; sourceTree = "<group>"; };
+		BB4CF7612D34A41100B0946C /* LiveActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityManager.swift; sourceTree = "<group>"; };
+		BB4CF76C2D35986000B0946C /* CatodoroShared.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CatodoroShared.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB4CF7752D35986100B0946C /* CatodoroSharedTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CatodoroSharedTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB4E43422D191B2300C34D04 /* CatodoroCoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatodoroCoreDataManager.swift; sourceTree = "<group>"; };
 		BB516E442CAB933C0004B95C /* TimerConfigViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerConfigViewController.swift; sourceTree = "<group>"; };
 		BB516E462CAB94D70004B95C /* TimerConfigViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerConfigViewModel.swift; sourceTree = "<group>"; };
 		BB516E4A2CAB97B90004B95C /* TimerModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerModel.swift; sourceTree = "<group>"; };
 		BB516E4D2CAB98930004B95C /* TimerConfigModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerConfigModel.swift; sourceTree = "<group>"; };
-		BB5818F62D21271400F6A846 /* silent.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = silent.mp3; sourceTree = "<group>"; };
+		BB522A492D40AB4E0064F9DC /* CatodoroWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = CatodoroWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB522A622D40ACFF0064F9DC /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ActivityKit.framework; path = System/Library/Frameworks/ActivityKit.framework; sourceTree = SDKROOT; };
 		BB5818F82D2129D700F6A846 /* DismissButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DismissButton.swift; sourceTree = "<group>"; };
 		BB6C850D2D1A5807005C4D0B /* CatodoroTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CatodoroTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB6C851A2D1A5825005C4D0B /* CatodoroUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CatodoroUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -179,7 +248,7 @@
 		BBA3CDA12C866749002A3E7B /* UIStackView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIStackView+Extensions.swift"; sourceTree = "<group>"; };
 		BBA3CDA32C866A3F002A3E7B /* UIImage+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Extensions.swift"; sourceTree = "<group>"; };
 		BBA3CDA52C868CA6002A3E7B /* TimeInterval+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeInterval+Extensions.swift"; sourceTree = "<group>"; };
-		BBCB91372D205ED7007C82B5 /* NowPlayingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowPlayingManager.swift; sourceTree = "<group>"; };
+		BBD7253E2D43E5FC00FCF62E /* MockLiveActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockLiveActivityManager.swift; sourceTree = "<group>"; };
 		BBEA02C02D1C6AE300922951 /* StopButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopButtonTests.swift; sourceTree = "<group>"; };
 		BBEA02C22D1C6B5700922951 /* TimePickerViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimePickerViewTests.swift; sourceTree = "<group>"; };
 		BBEA02C42D1C6C5300922951 /* TimerCircleViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerCircleViewTests.swift; sourceTree = "<group>"; };
@@ -221,9 +290,69 @@
 		BBFE8DE82D2617D600F898B0 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		BBFE8DEB2D261B8800F898B0 /* BaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseView.swift; sourceTree = "<group>"; };
 		BBFE8DEE2D261CDB00F898B0 /* BaseTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseTableViewCell.swift; sourceTree = "<group>"; };
+		BBFE8DF62D2F6CEB00F898B0 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		BBFE8DF82D2F6CEB00F898B0 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		BB4CF7832D35986100B0946C /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			publicHeaders = (
+				CatodoroShared.h,
+			);
+			target = BB4CF76B2D35986000B0946C /* CatodoroShared */;
+		};
+		BB522A592D40AB4F0064F9DC /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = BB522A482D40AB4E0064F9DC /* CatodoroWidgetExtension */;
+		};
+		BB522A612D40AC200064F9DC /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Intents/PlayTimerIntent.swift,
+				Intents/StopTimerIntent.swift,
+				Views/CircleButtonView.swift,
+			);
+			target = BBF4F4532C763FF80079448E /* Catodoro */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		BB4CF76D2D35986000B0946C /* CatodoroShared */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (BB4CF7832D35986100B0946C /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = CatodoroShared; sourceTree = "<group>"; };
+		BB4CF77B2D35986100B0946C /* CatodoroSharedTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = CatodoroSharedTests; sourceTree = "<group>"; };
+		BB522A4C2D40AB4E0064F9DC /* CatodoroWidget */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (BB522A612D40AC200064F9DC /* PBXFileSystemSynchronizedBuildFileExceptionSet */, BB522A592D40AB4F0064F9DC /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = CatodoroWidget; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
+		BB4CF7692D35986000B0946C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB4CF7722D35986100B0946C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB4CF7762D35986100B0946C /* CatodoroShared.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB522A462D40AB4E0064F9DC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB522A642D40AD160064F9DC /* CatodoroShared.framework in Frameworks */,
+				BB522A632D40ACFF0064F9DC /* ActivityKit.framework in Frameworks */,
+				BB522A4B2D40AB4E0064F9DC /* SwiftUI.framework in Frameworks */,
+				BB522A4A2D40AB4E0064F9DC /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BB6C850A2D1A5807005C4D0B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -242,6 +371,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BB4CF7812D35986100B0946C /* CatodoroShared.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -337,7 +467,6 @@
 				BB8D284E2CE15EE6001D73B1 /* cat_meow_regular.mp3 */,
 				BB479ABF2CC88164000CBE6D /* hungry_cat.mp3 */,
 				BB8D284F2CE15EE6001D73B1 /* kitty_meow.mp3 */,
-				BB5818F62D21271400F6A846 /* silent.mp3 */,
 			);
 			path = VoiceFiles;
 			sourceTree = "<group>";
@@ -347,7 +476,8 @@
 			children = (
 				BB479AC32CC883D1000CBE6D /* AudioManager.swift */,
 				BB49DC632D08CC3A001E3CDC /* CatodoroPreferences.swift */,
-				BBCB91372D205ED7007C82B5 /* NowPlayingManager.swift */,
+				BB4CF75B2D3466DF00B0946C /* CatodoroSharedPreferences.swift */,
+				BB4CF7612D34A41100B0946C /* LiveActivityManager.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -418,6 +548,7 @@
 				BB6C85302D1A66FA005C4D0B /* MockPreferences.swift */,
 				BBEA02E22D1D07C200922951 /* MockTimerConfigViewModel.swift */,
 				BBEA02E62D1D0ADB00922951 /* MockPresetsViewModel.swift */,
+				BBD7253E2D43E5FC00FCF62E /* MockLiveActivityManager.swift */,
 			);
 			path = Helper;
 			sourceTree = "<group>";
@@ -443,9 +574,14 @@
 		BBF4F44B2C763FF80079448E = {
 			isa = PBXGroup;
 			children = (
+				BB4CF75A2D34666100B0946C /* CatodoroWidgetExtension.entitlements */,
 				BBF4F4562C763FF80079448E /* Catodoro */,
 				BB6C85252D1A5853005C4D0B /* CatodoroTests */,
 				BB6C85262D1A586D005C4D0B /* CatodoroUITests */,
+				BB4CF76D2D35986000B0946C /* CatodoroShared */,
+				BB4CF77B2D35986100B0946C /* CatodoroSharedTests */,
+				BB522A4C2D40AB4E0064F9DC /* CatodoroWidget */,
+				BBFE8DF52D2F6CEB00F898B0 /* Frameworks */,
 				BBF4F4552C763FF80079448E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -456,6 +592,9 @@
 				BBF4F4542C763FF80079448E /* Catodoro.app */,
 				BB6C850D2D1A5807005C4D0B /* CatodoroTests.xctest */,
 				BB6C851A2D1A5825005C4D0B /* CatodoroUITests.xctest */,
+				BB4CF76C2D35986000B0946C /* CatodoroShared.framework */,
+				BB4CF7752D35986100B0946C /* CatodoroSharedTests.xctest */,
+				BB522A492D40AB4E0064F9DC /* CatodoroWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -463,6 +602,7 @@
 		BBF4F4562C763FF80079448E /* Catodoro */ = {
 			isa = PBXGroup;
 			children = (
+				BB4CF7592D34662700B0946C /* Catodoro.entitlements */,
 				BBF4F4652C763FF90079448E /* Info.plist */,
 				BBF4F4572C763FF80079448E /* AppDelegate.swift */,
 				BBF4F4592C763FF80079448E /* SceneDelegate.swift */,
@@ -585,9 +725,98 @@
 			path = General;
 			sourceTree = "<group>";
 		};
+		BBFE8DF52D2F6CEB00F898B0 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				BB522A622D40ACFF0064F9DC /* ActivityKit.framework */,
+				BBFE8DF62D2F6CEB00F898B0 /* WidgetKit.framework */,
+				BBFE8DF82D2F6CEB00F898B0 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		BB4CF7672D35986000B0946C /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
+		BB4CF76B2D35986000B0946C /* CatodoroShared */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB4CF7842D35986100B0946C /* Build configuration list for PBXNativeTarget "CatodoroShared" */;
+			buildPhases = (
+				BB4CF7672D35986000B0946C /* Headers */,
+				BB4CF7682D35986000B0946C /* Sources */,
+				BB4CF7692D35986000B0946C /* Frameworks */,
+				BB4CF76A2D35986000B0946C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				BB4CF76D2D35986000B0946C /* CatodoroShared */,
+			);
+			name = CatodoroShared;
+			packageProductDependencies = (
+			);
+			productName = CatodoroShared;
+			productReference = BB4CF76C2D35986000B0946C /* CatodoroShared.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		BB4CF7742D35986100B0946C /* CatodoroSharedTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB4CF7882D35986100B0946C /* Build configuration list for PBXNativeTarget "CatodoroSharedTests" */;
+			buildPhases = (
+				BB4CF7712D35986100B0946C /* Sources */,
+				BB4CF7722D35986100B0946C /* Frameworks */,
+				BB4CF7732D35986100B0946C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BB4CF7782D35986100B0946C /* PBXTargetDependency */,
+				BB4CF77A2D35986100B0946C /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				BB4CF77B2D35986100B0946C /* CatodoroSharedTests */,
+			);
+			name = CatodoroSharedTests;
+			packageProductDependencies = (
+			);
+			productName = CatodoroSharedTests;
+			productReference = BB4CF7752D35986100B0946C /* CatodoroSharedTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		BB522A482D40AB4E0064F9DC /* CatodoroWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB522A5A2D40AB4F0064F9DC /* Build configuration list for PBXNativeTarget "CatodoroWidgetExtension" */;
+			buildPhases = (
+				BB522A452D40AB4E0064F9DC /* Sources */,
+				BB522A462D40AB4E0064F9DC /* Frameworks */,
+				BB522A472D40AB4E0064F9DC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				BB522A4C2D40AB4E0064F9DC /* CatodoroWidget */,
+			);
+			name = CatodoroWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = CatodoroWidgetExtension;
+			productReference = BB522A492D40AB4E0064F9DC /* CatodoroWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		BB6C850C2D1A5807005C4D0B /* CatodoroTests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = BB6C85132D1A5808005C4D0B /* Build configuration list for PBXNativeTarget "CatodoroTests" */;
@@ -635,10 +864,14 @@
 				BBF4F4502C763FF80079448E /* Sources */,
 				BBF4F4512C763FF80079448E /* Frameworks */,
 				BBF4F4522C763FF80079448E /* Resources */,
+				BBFE8E0D2D2F6CEC00F898B0 /* Embed Foundation Extensions */,
+				BB4CF7872D35986100B0946C /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				BB4CF7802D35986100B0946C /* PBXTargetDependency */,
+				BB522A572D40AB4F0064F9DC /* PBXTargetDependency */,
 			);
 			name = Catodoro;
 			productName = Catodoro;
@@ -653,8 +886,18 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1620;
-				LastUpgradeCheck = 1540;
+				LastUpgradeCheck = 1620;
 				TargetAttributes = {
+					BB4CF76B2D35986000B0946C = {
+						CreatedOnToolsVersion = 16.2;
+					};
+					BB4CF7742D35986100B0946C = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = BBF4F4532C763FF80079448E;
+					};
+					BB522A482D40AB4E0064F9DC = {
+						CreatedOnToolsVersion = 16.2;
+					};
 					BB6C850C2D1A5807005C4D0B = {
 						CreatedOnToolsVersion = 16.2;
 						LastSwiftMigration = 1620;
@@ -685,11 +928,35 @@
 				BBF4F4532C763FF80079448E /* Catodoro */,
 				BB6C850C2D1A5807005C4D0B /* CatodoroTests */,
 				BB6C85192D1A5825005C4D0B /* CatodoroUITests */,
+				BB4CF76B2D35986000B0946C /* CatodoroShared */,
+				BB4CF7742D35986100B0946C /* CatodoroSharedTests */,
+				BB522A482D40AB4E0064F9DC /* CatodoroWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		BB4CF76A2D35986000B0946C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB4CF7732D35986100B0946C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB522A472D40AB4E0064F9DC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BB6C850B2D1A5807005C4D0B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -712,7 +979,6 @@
 				BB479AC02CC88164000CBE6D /* hungry_cat.mp3 in Resources */,
 				BB8D28502CE15EE6001D73B1 /* cat_meow_regular.mp3 in Resources */,
 				BB8D28512CE15EE6001D73B1 /* cat_meow_loud.mp3 in Resources */,
-				BB5818F72D21271400F6A846 /* silent.mp3 in Resources */,
 				BB8D28522CE15EE6001D73B1 /* kitty_meow.mp3 in Resources */,
 				BB8D28532CE15EE6001D73B1 /* angry_cat.mp3 in Resources */,
 				BBF4F4642C763FF90079448E /* Base in Resources */,
@@ -722,6 +988,27 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		BB4CF7682D35986000B0946C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB4CF7712D35986100B0946C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB522A452D40AB4E0064F9DC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BB6C85092D1A5807005C4D0B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -734,6 +1021,7 @@
 				BBEA02D32D1CFF0100922951 /* OptionSelectionViewCellTests.swift in Sources */,
 				BBEA02C52D1C6C5300922951 /* TimerCircleViewTests.swift in Sources */,
 				BBEA02C72D1C6ED700922951 /* TimerConfigSubTitleTests.swift in Sources */,
+				BBD7253F2D43E5FC00FCF62E /* MockLiveActivityManager.swift in Sources */,
 				BBEA02C92D1C6F0200922951 /* TimerConfigViewTests.swift in Sources */,
 				BB6C85352D1A8B57005C4D0B /* OptionSelectionViewModelTests.swift in Sources */,
 				BBEA02CB2D1C784800922951 /* TimerPickerViewTests.swift in Sources */,
@@ -796,7 +1084,6 @@
 				BBF4F4822C7648820079448E /* SettingsViewController.swift in Sources */,
 				BB1817BE2C7EB57B00BF8DA8 /* UIView+Extensions.swift in Sources */,
 				BB516E472CAB94D70004B95C /* TimerConfigViewModel.swift in Sources */,
-				BBCB91382D205ED7007C82B5 /* NowPlayingManager.swift in Sources */,
 				BB5818F92D2129D700F6A846 /* DismissButton.swift in Sources */,
 				BBF4F48A2C76B5E10079448E /* PresetsCoordinator.swift in Sources */,
 				BB479AC42CC883D1000CBE6D /* AudioManager.swift in Sources */,
@@ -815,6 +1102,7 @@
 				BBF4F4842C7654A10079448E /* TimerCoordiantor.swift in Sources */,
 				BB479AB12CB487E7000CBE6D /* TimerPickerView.swift in Sources */,
 				BB8D28572CE18E4B001D73B1 /* TimerConfigView.swift in Sources */,
+				BB4CF7622D34A41100B0946C /* LiveActivityManager.swift in Sources */,
 				BB7AFB3A2D0B436600801CAA /* PresetModel.swift in Sources */,
 				BB49DC712D08F33D001E3CDC /* OptionSelectionViewModel.swift in Sources */,
 				BB49DC6D2D08EFE2001E3CDC /* OptionSelectionViewCell.swift in Sources */,
@@ -822,6 +1110,7 @@
 				BB6C85372D1B19DB005C4D0B /* AddPresetViewController.swift in Sources */,
 				BBFE8DED2D261BF100F898B0 /* BaseView.swift in Sources */,
 				BB516E4B2CAB97B90004B95C /* TimerModel.swift in Sources */,
+				BB4CF75C2D3466DF00B0946C /* CatodoroSharedPreferences.swift in Sources */,
 				BBF4F4722C7644A20079448E /* TabCoordinator.swift in Sources */,
 				BB479AB92CC87A1C000CBE6D /* UIButton+Extensions.swift in Sources */,
 				BBFE8DEF2D261CDB00F898B0 /* BaseTableViewCell.swift in Sources */,
@@ -833,6 +1122,26 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		BB4CF7782D35986100B0946C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BB4CF76B2D35986000B0946C /* CatodoroShared */;
+			targetProxy = BB4CF7772D35986100B0946C /* PBXContainerItemProxy */;
+		};
+		BB4CF77A2D35986100B0946C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BBF4F4532C763FF80079448E /* Catodoro */;
+			targetProxy = BB4CF7792D35986100B0946C /* PBXContainerItemProxy */;
+		};
+		BB4CF7802D35986100B0946C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BB4CF76B2D35986000B0946C /* CatodoroShared */;
+			targetProxy = BB4CF77F2D35986100B0946C /* PBXContainerItemProxy */;
+		};
+		BB522A572D40AB4F0064F9DC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BB522A482D40AB4E0064F9DC /* CatodoroWidgetExtension */;
+			targetProxy = BB522A562D40AB4F0064F9DC /* PBXContainerItemProxy */;
+		};
 		BB6C85122D1A5808005C4D0B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = BBF4F4532C763FF80079448E /* Catodoro */;
@@ -857,6 +1166,176 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		BB4CF7852D35986100B0946C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = FVEGF5DQ7U;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = com.sugurutokuda.CatodoroShared;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		BB4CF7862D35986100B0946C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = FVEGF5DQ7U;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = com.sugurutokuda.CatodoroShared;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		BB4CF7892D35986100B0946C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FVEGF5DQ7U;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sugurutokuda.CatodoroSharedTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Catodoro.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Catodoro";
+			};
+			name = Debug;
+		};
+		BB4CF78A2D35986100B0946C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FVEGF5DQ7U;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sugurutokuda.CatodoroSharedTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Catodoro.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Catodoro";
+			};
+			name = Release;
+		};
+		BB522A5B2D40AB4F0064F9DC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = CatodoroWidgetExtension.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KJ5YZSV7FU;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CatodoroWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = CatodoroWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sugurutokuda.Catodoro.CatodoroWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		BB522A5C2D40AB4F0064F9DC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = CatodoroWidgetExtension.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KJ5YZSV7FU;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CatodoroWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = CatodoroWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sugurutokuda.Catodoro.CatodoroWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		BB6C85142D1A5808005C4D0B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -868,7 +1347,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = sugurutokuda.CatodoroTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sugurutokuda.CatodoroTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -889,7 +1368,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = sugurutokuda.CatodoroTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sugurutokuda.CatodoroTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
@@ -907,7 +1386,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = sugurutokuda.CatodoroUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sugurutokuda.CatodoroUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
@@ -925,7 +1404,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = sugurutokuda.CatodoroUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sugurutokuda.CatodoroUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
@@ -1058,12 +1537,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Catodoro/Catodoro.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = FVEGF5DQ7U;
+				DEVELOPMENT_TEAM = KJ5YZSV7FU;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Catodoro/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIStatusBarStyle = "";
@@ -1074,8 +1556,9 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = sugurutokuda.Catodoro;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sugurutokuda.Catodoro;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1087,12 +1570,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Catodoro/Catodoro.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = FVEGF5DQ7U;
+				DEVELOPMENT_TEAM = KJ5YZSV7FU;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Catodoro/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIStatusBarStyle = "";
@@ -1103,8 +1589,9 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = sugurutokuda.Catodoro;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sugurutokuda.Catodoro;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1114,6 +1601,33 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		BB4CF7842D35986100B0946C /* Build configuration list for PBXNativeTarget "CatodoroShared" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB4CF7852D35986100B0946C /* Debug */,
+				BB4CF7862D35986100B0946C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BB4CF7882D35986100B0946C /* Build configuration list for PBXNativeTarget "CatodoroSharedTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB4CF7892D35986100B0946C /* Debug */,
+				BB4CF78A2D35986100B0946C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BB522A5A2D40AB4F0064F9DC /* Build configuration list for PBXNativeTarget "CatodoroWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB522A5B2D40AB4F0064F9DC /* Debug */,
+				BB522A5C2D40AB4F0064F9DC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		BB6C85132D1A5808005C4D0B /* Build configuration list for PBXNativeTarget "CatodoroTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
