@@ -15,30 +15,32 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Catodoro" translatesAutoresizingMaskIntoConstraints="NO" id="oZ3-ye-0ne">
-                                <rect key="frame" x="0.0" y="158" width="393" height="333"/>
-                            </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Catodoro" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="W4o-Jb-nCK">
-                                <rect key="frame" x="109.66666666666667" y="509" width="173.66666666666663" height="48"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="173.66999999999999" id="cx8-EK-Z4E"/>
-                                    <constraint firstAttribute="height" constant="48" id="n4O-fq-9H0"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="40"/>
-                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <nil key="highlightedColor"/>
-                            </label>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="Kdf-lo-Uzf">
+                                <rect key="frame" x="32.666666666666657" y="294.66666666666669" width="328" height="263.00000000000006"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Catodoro" translatesAutoresizingMaskIntoConstraints="NO" id="oZ3-ye-0ne">
+                                        <rect key="frame" x="0.0" y="0.0" width="328" height="199"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="oZ3-ye-0ne" secondAttribute="height" multiplier="328:199" id="JJv-3B-KyT"/>
+                                            <constraint firstAttribute="width" constant="328" id="Kv5-Uo-KTO"/>
+                                            <constraint firstAttribute="width" secondItem="oZ3-ye-0ne" secondAttribute="height" multiplier="131:111" id="Vzg-Vh-GUY"/>
+                                            <constraint firstAttribute="height" constant="199" id="ref-aj-V5A"/>
+                                        </constraints>
+                                    </imageView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Catodoro" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="W4o-Jb-nCK">
+                                        <rect key="frame" x="0.0" y="215" width="328" height="48"/>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="40"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="W4o-Jb-nCK" firstAttribute="top" secondItem="oZ3-ye-0ne" secondAttribute="bottom" constant="18" id="AR9-1N-5dR"/>
-                            <constraint firstItem="oZ3-ye-0ne" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="CHC-Wl-aWQ"/>
-                            <constraint firstItem="oZ3-ye-0ne" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="99" id="L4M-FF-oji"/>
-                            <constraint firstItem="W4o-Jb-nCK" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="dR0-j1-48X"/>
-                            <constraint firstItem="oZ3-ye-0ne" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="nyp-h6-ZaQ"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="W4o-Jb-nCK" secondAttribute="bottom" constant="261" id="xD8-ug-ZKD"/>
-                            <constraint firstItem="oZ3-ye-0ne" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="xp7-bW-OuP"/>
+                            <constraint firstItem="Kdf-lo-Uzf" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="3Dq-uN-Gmg"/>
+                            <constraint firstItem="Kdf-lo-Uzf" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="uzU-Fz-VVI"/>
                         </constraints>
                     </view>
                 </viewController>
