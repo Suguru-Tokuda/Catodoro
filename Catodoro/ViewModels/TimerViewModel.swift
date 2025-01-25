@@ -111,6 +111,7 @@ class TimerViewModel {
         timerStatus = .playing
         timerActionSubject.send(.start)
         startLiveActivity()
+        UIApplication.shared.isIdleTimerDisabled = true
     }
 
     func pauseTimer() {
@@ -119,6 +120,7 @@ class TimerViewModel {
         timerStatus = .paused
         timerActionSubject.send(.pause)
         updateLiveActivity()
+        UIApplication.shared.isIdleTimerDisabled = false
     }
 
     func resumeTimer() {
@@ -134,6 +136,7 @@ class TimerViewModel {
         timerStatus = .playing
         timerActionSubject.send(.resume)
         updateLiveActivity()
+        UIApplication.shared.isIdleTimerDisabled = true
     }
 
     func finishTimer() {
@@ -141,6 +144,7 @@ class TimerViewModel {
         playFinishSound()
         timerStatus = .paused
         endLiveActivity()
+        UIApplication.shared.isIdleTimerDisabled = false
     }
 
     func stopTimer() {
@@ -148,6 +152,7 @@ class TimerViewModel {
         timerLabelSubject.send(timerNameString)
         timerActionSubject.send(.stop)
         endLiveActivity()
+        UIApplication.shared.isIdleTimerDisabled = false
     }
 
     func resetTimer() {
