@@ -12,16 +12,12 @@ import Foundation
 protocol LiveActivityManaging: AnyObject {
     func startLiveActivity(name: String,
                            currentTimerValue: TimeInterval,
-                           totalDuration: TimeInterval,
-                           intervalDuration: TimeInterval,
                            intervals: Int,
                            interval: Int,
                            timerType: TimerType,
                            timerStatus: TimerStatus) throws
 
     func updateLiveActivity(currentTimerValue: TimeInterval,
-                            totalDuration: TimeInterval,
-                            intervalDuration: TimeInterval,
                             intervals: Int,
                             interval: Int,
                             timerType: TimerType,
@@ -40,8 +36,6 @@ class LiveActivityManager: LiveActivityManaging {
     
     func startLiveActivity(name: String,
                            currentTimerValue: TimeInterval,
-                           totalDuration: TimeInterval,
-                           intervalDuration: TimeInterval,
                            intervals: Int,
                            interval: Int,
                            timerType: TimerType,
@@ -49,21 +43,17 @@ class LiveActivityManager: LiveActivityManaging {
         Task {
             guard currentActivity == nil else {
                 await updateLiveActivity(currentTimerValue: currentTimerValue,
-                                   totalDuration: totalDuration,
-                                   intervalDuration: intervalDuration,
-                                   intervals: intervals,
-                                   interval: interval,
-                                   timerType: timerType,
-                                   timerStatus: timerStatus)
+                                         intervals: intervals,
+                                         interval: interval,
+                                         timerType: timerType,
+                                         timerStatus: timerStatus)
                 return
             }
             if let currentActivity {
                 await currentActivity.end(nil)
             }
             let attributes = TimerAttributes(name: name)
-            let initialState = TimerAttributes.ContentState(totalDuration: totalDuration,
-                                                            intervalDuration: intervalDuration,
-                                                            currentTimerValue: currentTimerValue,
+            let initialState = TimerAttributes.ContentState(currentTimerValue: currentTimerValue,
                                                             intervals: intervals,
                                                             interval: interval,
                                                             timerType: timerType,
@@ -81,16 +71,12 @@ class LiveActivityManager: LiveActivityManaging {
     }
     
     func updateLiveActivity(currentTimerValue: TimeInterval,
-                            totalDuration: TimeInterval,
-                            intervalDuration: TimeInterval,
                             intervals: Int,
                             interval: Int,
                             timerType: TimerType,
                             timerStatus: TimerStatus) async {
         guard let currentActivity else { return }
-        let updatedState = TimerAttributes.ContentState(totalDuration: totalDuration,
-                                                        intervalDuration: intervalDuration,
-                                                        currentTimerValue: currentTimerValue,
+        let updatedState = TimerAttributes.ContentState(currentTimerValue: currentTimerValue,
                                                         intervals: intervals,
                                                         interval: interval,
                                                         timerType: timerType,
@@ -102,6 +88,9 @@ class LiveActivityManager: LiveActivityManaging {
         guard let currentActivity else { return }
         let semaphore = DispatchSemaphore(value: 0)
         Task {
+            for activity in Activity<TimerAttributes>.activities {
+                await activity.end(nil)
+            }
             await currentActivity.end(nil, dismissalPolicy: .immediate)
             semaphore.signal()
         }

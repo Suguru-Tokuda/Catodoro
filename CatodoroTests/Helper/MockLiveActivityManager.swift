@@ -16,8 +16,6 @@ final class MockLiveActivityManager: LiveActivityManaging {
 
     func startLiveActivity(name: String,
                            currentTimerValue: TimeInterval,
-                           totalDuration: TimeInterval,
-                           intervalDuration: TimeInterval,
                            intervals: Int,
                            interval: Int,
                            timerType: TimerType,
@@ -26,8 +24,6 @@ final class MockLiveActivityManager: LiveActivityManaging {
     }
 
     func updateLiveActivity(currentTimerValue: TimeInterval,
-                            totalDuration: TimeInterval,
-                            intervalDuration: TimeInterval,
                             intervals: Int,
                             interval: Int,
                             timerType: TimerType,

@@ -313,6 +313,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Intents/PlayTimerIntent.swift,
+				Intents/RepeatTimerIntent.swift,
 				Intents/StopTimerIntent.swift,
 				Views/CircleButtonView.swift,
 			);

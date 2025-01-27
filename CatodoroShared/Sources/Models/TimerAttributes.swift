@@ -11,6 +11,7 @@ import Foundation
 public enum TimerStatus: String, Codable {
     case paused
     case playing
+    case finished
 }
 
 public enum TimerType: String, Codable {
@@ -20,23 +21,17 @@ public enum TimerType: String, Codable {
 
 public struct TimerAttributes: ActivityAttributes {
     public struct ContentState: Codable, Hashable {
-        public let totalDuration: TimeInterval
-        public let intervalDuration: TimeInterval
         public let currentTimerValue: TimeInterval
         public let intervals: Int
         public let interval: Int // Indicates the current interval position
         public let timerType: TimerType
         public let timerStatus: TimerStatus
 
-        public init(totalDuration: TimeInterval,
-                    intervalDuration: TimeInterval,
-                    currentTimerValue: TimeInterval,
+        public init(currentTimerValue: TimeInterval,
                     intervals: Int,
                     interval: Int,
                     timerType: TimerType,
                     timerStatus: TimerStatus) {
-            self.totalDuration = totalDuration
-            self.intervalDuration = intervalDuration
             self.currentTimerValue = currentTimerValue
             self.intervals = intervals
             self.interval = interval

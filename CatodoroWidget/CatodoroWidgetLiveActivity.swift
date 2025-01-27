@@ -16,7 +16,8 @@ struct CatodoroWidgetLiveActivity: Widget {
             let timerLabelText = context.state.currentTimerValue.getTimerLabelValue()
             VStack(spacing: 4) {
                 HStack {
-                    Text("\(context.state.timerType.rawValue) \(context.state.interval)")
+                    let timerStatusText = context.state.timerStatus == .finished ? "Done" : "\(context.state.timerType.rawValue) \(context.state.interval)"
+                    Text(timerStatusText)
                         .font(.system(size: 16, weight: .medium))
                     Spacer()
                 }
@@ -25,23 +26,35 @@ struct CatodoroWidgetLiveActivity: Widget {
                         .font(.system(size: 48, weight: .light))
                     Spacer()
                     HStack(alignment: .center, spacing: 4) {
-                        Button(intent: PlayTimerIntent()) {
-                            CircleButtonView(imageSystemName: context.state.timerStatus == .paused ? "play.fill" : "pause.fill",
-                                             foregroundColor: .white,
-                                             backgroundColor: .green,
-                                             size: 40,
-                                             padding: 8)
+                        if context.state.timerStatus == .finished {
+                            Button(intent: PlayTimerIntent()) {
+                                CircleButtonView(imageSystemName: context.state.timerStatus == .paused ? "play.fill" : "arrow.trianglehead.clockwise",
+                                                 foregroundColor: .white,
+                                                 backgroundColor: .green,
+                                                 size: 40,
+                                                 padding: 8)
+                            }
+                            .buttonStyle(.plain)
+                        } else {
+                            Button(intent: PlayTimerIntent()) {
+                                CircleButtonView(imageSystemName: context.state.timerStatus == .paused ? "play.fill" : "pause.fill",
+                                                 foregroundColor: .white,
+                                                 backgroundColor: .green,
+                                                 size: 40,
+                                                 padding: 8)
+                            }
+                            .buttonStyle(.plain)
+                            
+                            Button(intent: StopTimerIntent()) {
+                                CircleButtonView(imageSystemName: "stop.fill",
+                                                 foregroundColor: .white,
+                                                 backgroundColor: .red,
+                                                 size: 40,
+                                                 padding: 8)
+                            }
+                            .buttonStyle(.plain)
+
                         }
-                        .buttonStyle(.plain)
-                        
-                        Button(intent: StopTimerIntent()) {
-                            CircleButtonView(imageSystemName: "stop.fill",
-                                             foregroundColor: .white,
-                                             backgroundColor: .red,
-                                             size: 40,
-                                             padding: 8)
-                        }
-                        .buttonStyle(.plain)
                     }
                 }
             }
@@ -80,13 +93,19 @@ extension TimerAttributes {
 
 extension TimerAttributes {
     fileprivate static var defaultValue: TimerAttributes.ContentState {
-        TimerAttributes.ContentState(totalDuration: 0,
-                                     intervalDuration: 0,
-                                     currentTimerValue: 0,
+        TimerAttributes.ContentState(currentTimerValue: 0,
                                      intervals: 0,
                                      interval: 0,
                                      timerType: .main,
                                      timerStatus: .paused)
+    }
+
+    fileprivate static var finishValue: TimerAttributes.ContentState {
+        TimerAttributes.ContentState(currentTimerValue: 0,
+                                     intervals: 0,
+                                     interval: 0,
+                                     timerType: .main,
+                                     timerStatus: .finished)
     }
 }
 
@@ -94,4 +113,10 @@ extension TimerAttributes {
     CatodoroWidgetLiveActivity()
 } contentStates: {
     TimerAttributes.defaultValue
+}
+
+#Preview("Notification", as: .content, using: TimerAttributes.preview) {
+    CatodoroWidgetLiveActivity()
+} contentStates: {
+    TimerAttributes.finishValue
 }
