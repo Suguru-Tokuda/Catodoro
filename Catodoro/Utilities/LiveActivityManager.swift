@@ -12,16 +12,19 @@ import Foundation
 protocol LiveActivityManaging: AnyObject {
     func startLiveActivity(name: String,
                            currentTimerValue: TimeInterval,
+                           endTime: Date,
                            intervals: Int,
                            interval: Int,
                            timerType: TimerType,
                            timerStatus: TimerStatus) throws
 
     func updateLiveActivity(currentTimerValue: TimeInterval,
+                            endTime: Date,
                             intervals: Int,
                             interval: Int,
                             timerType: TimerType,
-                            timerStatus: TimerStatus) async
+                            timerStatus: TimerStatus,
+                            soundName: String?) async
     func endLiveActivity()
 
     func hasLiveActivity() -> Bool
@@ -36,6 +39,7 @@ class LiveActivityManager: LiveActivityManaging {
     
     func startLiveActivity(name: String,
                            currentTimerValue: TimeInterval,
+                           endTime: Date,
                            intervals: Int,
                            interval: Int,
                            timerType: TimerType,
@@ -43,17 +47,20 @@ class LiveActivityManager: LiveActivityManaging {
         Task {
             guard currentActivity == nil else {
                 await updateLiveActivity(currentTimerValue: currentTimerValue,
+                                         endTime: endTime,
                                          intervals: intervals,
                                          interval: interval,
                                          timerType: timerType,
-                                         timerStatus: timerStatus)
+                                         timerStatus: timerStatus,
+                                         soundName: nil)
                 return
             }
             if let currentActivity {
                 await currentActivity.end(nil)
             }
-            let attributes = TimerAttributes(name: name)
+            let timer = TimerAttributes(name: name)
             let initialState = TimerAttributes.ContentState(currentTimerValue: currentTimerValue,
+                                                            endTime: endTime,
                                                             intervals: intervals,
                                                             interval: interval,
                                                             timerType: timerType,
@@ -62,26 +69,42 @@ class LiveActivityManager: LiveActivityManaging {
             
             do {
                 currentActivity = try Activity<TimerAttributes>
-                    .request(attributes: attributes,
+                    .request(attributes: timer,
                              content: content)
             } catch {
                 throw error
             }
         }
     }
-    
+
+    @MainActor
     func updateLiveActivity(currentTimerValue: TimeInterval,
+                            endTime: Date,
                             intervals: Int,
                             interval: Int,
                             timerType: TimerType,
-                            timerStatus: TimerStatus) async {
+                            timerStatus: TimerStatus,
+                            soundName: String?
+    ) async {
         guard let currentActivity else { return }
         let updatedState = TimerAttributes.ContentState(currentTimerValue: currentTimerValue,
+                                                        endTime: endTime,
                                                         intervals: intervals,
                                                         interval: interval,
                                                         timerType: timerType,
                                                         timerStatus: timerStatus)
-        await currentActivity.update(ActivityContent(state: updatedState, staleDate: nil))
+        var alertConfig: AlertConfiguration?
+
+        if let soundName {
+            alertConfig = .init(title: timerStatus == .finished ? "Finished" : "\(timerType.rawValue) \(interval)",
+                                body: "",
+                                sound: .named("\(soundName).mp3"))
+        }
+
+        await currentActivity.update(
+            ActivityContent(state: updatedState, staleDate: nil),
+            alertConfiguration: alertConfig
+        )
     }
     
     func endLiveActivity() {
@@ -95,6 +118,7 @@ class LiveActivityManager: LiveActivityManaging {
             semaphore.signal()
         }
         semaphore.wait()
+        self.currentActivity = nil
     }
 
     func hasLiveActivity() -> Bool {

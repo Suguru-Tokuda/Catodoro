@@ -18,7 +18,6 @@
 		BB479AB12CB487E7000CBE6D /* TimerPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB479AB02CB487E7000CBE6D /* TimerPickerView.swift */; };
 		BB479AB72CB49013000CBE6D /* TimePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB479AB62CB49013000CBE6D /* TimePickerView.swift */; };
 		BB479AB92CC87A1C000CBE6D /* UIButton+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB479AB82CC87A1C000CBE6D /* UIButton+Extensions.swift */; };
-		BB479AC02CC88164000CBE6D /* hungry_cat.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BB479ABF2CC88164000CBE6D /* hungry_cat.mp3 */; };
 		BB479AC42CC883D1000CBE6D /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB479AC32CC883D1000CBE6D /* AudioManager.swift */; };
 		BB479AC62CC9D228000CBE6D /* PawButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB479AC52CC9D228000CBE6D /* PawButton.swift */; };
 		BB49DC5E2D07AE14001E3CDC /* SettingOptionsViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB49DC5D2D07AE14001E3CDC /* SettingOptionsViewCell.swift */; };
@@ -62,10 +61,6 @@
 		BB8D28432CE1559D001D73B1 /* TimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8D28422CE1559D001D73B1 /* TimerView.swift */; };
 		BB8D28452CE1595E001D73B1 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8D28442CE1595E001D73B1 /* SettingsViewModel.swift */; };
 		BB8D28472CE1597E001D73B1 /* ColorOptionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8D28462CE1597E001D73B1 /* ColorOptionModel.swift */; };
-		BB8D28502CE15EE6001D73B1 /* cat_meow_regular.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BB8D284E2CE15EE6001D73B1 /* cat_meow_regular.mp3 */; };
-		BB8D28512CE15EE6001D73B1 /* cat_meow_loud.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BB8D284D2CE15EE6001D73B1 /* cat_meow_loud.mp3 */; };
-		BB8D28522CE15EE6001D73B1 /* kitty_meow.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BB8D284F2CE15EE6001D73B1 /* kitty_meow.mp3 */; };
-		BB8D28532CE15EE6001D73B1 /* angry_cat.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BB8D284C2CE15EE6001D73B1 /* angry_cat.mp3 */; };
 		BB8D28572CE18E4B001D73B1 /* TimerConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8D28562CE18E4B001D73B1 /* TimerConfigView.swift */; };
 		BB8D28592CE18E73001D73B1 /* TimerConfigSubTitle.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8D28582CE18E73001D73B1 /* TimerConfigSubTitle.swift */; };
 		BBA3CDA22C866749002A3E7B /* UIStackView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA3CDA12C866749002A3E7B /* UIStackView+Extensions.swift */; };
@@ -195,7 +190,6 @@
 		BB479AB02CB487E7000CBE6D /* TimerPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerPickerView.swift; sourceTree = "<group>"; };
 		BB479AB62CB49013000CBE6D /* TimePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimePickerView.swift; sourceTree = "<group>"; };
 		BB479AB82CC87A1C000CBE6D /* UIButton+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+Extensions.swift"; sourceTree = "<group>"; };
-		BB479ABF2CC88164000CBE6D /* hungry_cat.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = hungry_cat.mp3; sourceTree = "<group>"; };
 		BB479AC32CC883D1000CBE6D /* AudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
 		BB479AC52CC9D228000CBE6D /* PawButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PawButton.swift; sourceTree = "<group>"; };
 		BB49DC5D2D07AE14001E3CDC /* SettingOptionsViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingOptionsViewCell.swift; sourceTree = "<group>"; };
@@ -239,10 +233,6 @@
 		BB8D28422CE1559D001D73B1 /* TimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerView.swift; sourceTree = "<group>"; };
 		BB8D28442CE1595E001D73B1 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		BB8D28462CE1597E001D73B1 /* ColorOptionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorOptionModel.swift; sourceTree = "<group>"; };
-		BB8D284C2CE15EE6001D73B1 /* angry_cat.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = angry_cat.mp3; sourceTree = "<group>"; };
-		BB8D284D2CE15EE6001D73B1 /* cat_meow_loud.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = cat_meow_loud.mp3; sourceTree = "<group>"; };
-		BB8D284E2CE15EE6001D73B1 /* cat_meow_regular.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = cat_meow_regular.mp3; sourceTree = "<group>"; };
-		BB8D284F2CE15EE6001D73B1 /* kitty_meow.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = kitty_meow.mp3; sourceTree = "<group>"; };
 		BB8D28562CE18E4B001D73B1 /* TimerConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerConfigView.swift; sourceTree = "<group>"; };
 		BB8D28582CE18E73001D73B1 /* TimerConfigSubTitle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerConfigSubTitle.swift; sourceTree = "<group>"; };
 		BBA3CDA12C866749002A3E7B /* UIStackView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIStackView+Extensions.swift"; sourceTree = "<group>"; };
@@ -316,6 +306,7 @@
 				Intents/RepeatTimerIntent.swift,
 				Intents/StopTimerIntent.swift,
 				Views/CircleButtonView.swift,
+				Views/TimerLiveActivityView.swift,
 			);
 			target = BBF4F4532C763FF80079448E /* Catodoro */;
 		};
@@ -325,6 +316,7 @@
 		BB4CF76D2D35986000B0946C /* CatodoroShared */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (BB4CF7832D35986100B0946C /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = CatodoroShared; sourceTree = "<group>"; };
 		BB4CF77B2D35986100B0946C /* CatodoroSharedTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = CatodoroSharedTests; sourceTree = "<group>"; };
 		BB522A4C2D40AB4E0064F9DC /* CatodoroWidget */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (BB522A612D40AC200064F9DC /* PBXFileSystemSynchronizedBuildFileExceptionSet */, BB522A592D40AB4F0064F9DC /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = CatodoroWidget; sourceTree = "<group>"; };
+		BB648B962D49F6DE0068BC40 /* Library */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Library; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -460,18 +452,6 @@
 			path = Settings;
 			sourceTree = "<group>";
 		};
-		BB479ABE2CC8813E000CBE6D /* VoiceFiles */ = {
-			isa = PBXGroup;
-			children = (
-				BB8D284C2CE15EE6001D73B1 /* angry_cat.mp3 */,
-				BB8D284D2CE15EE6001D73B1 /* cat_meow_loud.mp3 */,
-				BB8D284E2CE15EE6001D73B1 /* cat_meow_regular.mp3 */,
-				BB479ABF2CC88164000CBE6D /* hungry_cat.mp3 */,
-				BB8D284F2CE15EE6001D73B1 /* kitty_meow.mp3 */,
-			);
-			path = VoiceFiles;
-			sourceTree = "<group>";
-		};
 		BB479AC22CC883BF000CBE6D /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
@@ -603,6 +583,7 @@
 		BBF4F4562C763FF80079448E /* Catodoro */ = {
 			isa = PBXGroup;
 			children = (
+				BB648B962D49F6DE0068BC40 /* Library */,
 				BB4CF7592D34662700B0946C /* Catodoro.entitlements */,
 				BBF4F4652C763FF90079448E /* Info.plist */,
 				BBF4F4572C763FF80079448E /* AppDelegate.swift */,
@@ -618,7 +599,6 @@
 				BBF4F46D2C7642ED0079448E /* ViewControllers */,
 				BBF4F46C2C7642940079448E /* ViewModels */,
 				BBF4F46E2C7643790079448E /* Views */,
-				BB479ABE2CC8813E000CBE6D /* VoiceFiles */,
 			);
 			path = Catodoro;
 			sourceTree = "<group>";
@@ -874,6 +854,9 @@
 				BB4CF7802D35986100B0946C /* PBXTargetDependency */,
 				BB522A572D40AB4F0064F9DC /* PBXTargetDependency */,
 			);
+			fileSystemSynchronizedGroups = (
+				BB648B962D49F6DE0068BC40 /* Library */,
+			);
 			name = Catodoro;
 			productName = Catodoro;
 			productReference = BBF4F4542C763FF80079448E /* Catodoro.app */;
@@ -977,11 +960,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				BBF4F4612C763FF90079448E /* Assets.xcassets in Resources */,
-				BB479AC02CC88164000CBE6D /* hungry_cat.mp3 in Resources */,
-				BB8D28502CE15EE6001D73B1 /* cat_meow_regular.mp3 in Resources */,
-				BB8D28512CE15EE6001D73B1 /* cat_meow_loud.mp3 in Resources */,
-				BB8D28522CE15EE6001D73B1 /* kitty_meow.mp3 in Resources */,
-				BB8D28532CE15EE6001D73B1 /* angry_cat.mp3 in Resources */,
 				BBF4F4642C763FF90079448E /* Base in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1560,9 +1538,13 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.sugurutokuda.Catodoro;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -1593,9 +1575,13 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.sugurutokuda.Catodoro;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

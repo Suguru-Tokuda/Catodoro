@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 8/21/24.
 //
 
+import Combine
 import UIKit
 
 protocol TabCoordinatorProtocol: Coordinator {
@@ -34,6 +35,8 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
     weak var preferences: CatodoroPreferences?
     weak var liveActivityManager: LiveActivityManaging?
 
+    private var subscriptions: Set<AnyCancellable> = .init()
+
     required init(_ navigationController: UINavigationController = BaseNavigationController(),
                   preferences: CatodoroPreferences?,
                   liveActivityManager: LiveActivityManaging?) {
@@ -41,6 +44,28 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
         self.preferences = preferences
         self.liveActivityManager = liveActivityManager
         self.tabBarController = .init()
+        super.init()
+        self.addSubscriptions()
+    }
+
+    private func addSubscriptions() {
+        preferences?
+            .colorPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] color in
+                guard let self else { return }
+                if let color {
+                    let colorOption = ColorOptions(color)
+                    tabBarController.tabBar.tintColor = colorOption.color
+                } else {
+                    tabBarController.tabBar.tintColor = ColorOptions.neonBlue.color
+                }
+            }
+            .store(in: &subscriptions)
+    }
+
+    private func removeSubscriptions() {
+        subscriptions.removeAll()
     }
 
     func start() {
@@ -83,8 +108,8 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
         navController?.setNavigationBarHidden(false, animated: false)
 
         navController?.tabBarItem = UITabBarItem.init(title: page.tabTitle,
-                                                     image: page.tabImage,
-                                                     tag: page.tabOrderNumber)
+                                                      image: page.tabImage,
+                                                      tag: page.tabOrderNumber)
         return navController
     }
     
@@ -115,6 +140,10 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
 
     func currentPage() -> TabBarPage? {
         .init(index: tabBarController.selectedIndex)
+    }
+
+    deinit {
+        removeSubscriptions()
     }
 }
 

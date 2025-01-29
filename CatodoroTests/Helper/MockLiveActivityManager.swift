@@ -16,6 +16,7 @@ final class MockLiveActivityManager: LiveActivityManaging {
 
     func startLiveActivity(name: String,
                            currentTimerValue: TimeInterval,
+                           endTime: Date,
                            intervals: Int,
                            interval: Int,
                            timerType: TimerType,
@@ -24,10 +25,12 @@ final class MockLiveActivityManager: LiveActivityManaging {
     }
 
     func updateLiveActivity(currentTimerValue: TimeInterval,
+                            endTime: Date,
                             intervals: Int,
                             interval: Int,
-                            timerType: TimerType,
-                            timerStatus: TimerStatus) async {
+                            timerType: CatodoroShared.TimerType,
+                            timerStatus: CatodoroShared.TimerStatus,
+                            soundName: String?) async {
         didUpdateLiveActivity = true
     }
 

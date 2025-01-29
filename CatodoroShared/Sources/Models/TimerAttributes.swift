@@ -22,17 +22,20 @@ public enum TimerType: String, Codable {
 public struct TimerAttributes: ActivityAttributes {
     public struct ContentState: Codable, Hashable {
         public let currentTimerValue: TimeInterval
+        public let endTime: Date
         public let intervals: Int
         public let interval: Int // Indicates the current interval position
         public let timerType: TimerType
         public let timerStatus: TimerStatus
 
         public init(currentTimerValue: TimeInterval,
+                    endTime: Date,
                     intervals: Int,
                     interval: Int,
                     timerType: TimerType,
                     timerStatus: TimerStatus) {
             self.currentTimerValue = currentTimerValue
+            self.endTime = endTime
             self.intervals = intervals
             self.interval = interval
             self.timerType = timerType

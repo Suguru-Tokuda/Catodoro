@@ -28,6 +28,10 @@ class TimerViewModel {
     private var intervals: Int = 0
     var duration: TimeInterval = 0
 
+    private var endTime: Date {
+        return Date.now + currentTimerValue
+    }
+
     // MARK: Publishers
     /// Used to send updated string representation of
     /// timer value for timer label
@@ -42,8 +46,6 @@ class TimerViewModel {
     private var intermediateSoundTimer: Timer?
     private var timerType: TimerType?
     private var cancellables: Set<AnyCancellable> = .init()
-
-    private var lastTimerLabelDisplayed: String?
 
     // MARK: extra properties
     private var backgroundEntryTime: Date?
@@ -157,22 +159,9 @@ class TimerViewModel {
 
     func startTimer() {
         currentTimerValue = duration
-        if backgroundTimer == nil {
-            setupBackgroundTimer()
-            
-            backgroundTimer?.setEventHandler { [weak self] in
-                guard let self else { return }
-                currentTimerValue = max(0, currentTimerValue - timerInterval)
-                timerSubject.send(currentTimerValue.getTimerLabelValue())
-                timerIntervalSubject.send(currentTimerValue)
-            }
-
-            backgroundTimer?.resume()
-        }
-
+        setupBackgroundTimer()
         timerStatus = .playing
-        timerActionSubject.send(.start)
-        
+        timerActionSubject.send(.start)        
         startLiveActivity()
     }
 
@@ -187,29 +176,16 @@ class TimerViewModel {
     func resumeTimer() {
         guard timerStatus == .paused else { return }
         cancelBackgroundTimer()
-
         setupBackgroundTimer()
-        backgroundTimer?.setEventHandler { [weak self] in
-            guard let self else { return }
-            currentTimerValue = max(0, currentTimerValue - timerInterval)
-
-            DispatchQueue.main.async { [weak self] in
-                guard let self else { return }
-                timerIntervalSubject.send(currentTimerValue)
-                timerSubject.send(currentTimerValue.getTimerLabelValue())
-            }
-        }
-
-        backgroundTimer?.resume()
         timerStatus = .playing
         timerActionSubject.send(.resume)
         updateLiveActivity()
     }
 
     func finishTimer() {
-        playFinishSound()
         timerStatus = .finished
-        updateLiveActivity()
+        updateLiveActivity(with: SoundOptions(preferences?.sound ?? "").fileName)
+//        playFinishSound()
     }
 
     func stopTimer() {
@@ -223,9 +199,11 @@ class TimerViewModel {
         resetTimer()
         timerLabelSubject.send(timerNameString)
         startTimer()
+        updateLiveActivity()
     }
 
     func resetTimer() {
+        stopSound()
         cancelBackgroundTimer()
         timerType = .main
         duration = totalDuration
@@ -252,16 +230,22 @@ class TimerViewModel {
     }
     
     func playFinishSound() {
-        try? audioManager.play(numberOfLoops: 0)
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            try? audioManager.play(numberOfLoops: 0)
+        }
     }
 
     func playIntermediateSound() {
-        try? audioManager.play(numberOfLoops: 0)
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + intermediateSoundDuration) { [weak self] in
+        DispatchQueue.global(qos: .background).async { [weak self] in
             guard let self else { return }
-            guard timerStatus != .finished else { return }
-            self.stopSound()
+            try? audioManager.play(numberOfLoops: 0)
+
+            DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + intermediateSoundDuration) { [weak self] in
+                guard let self else { return }
+                guard timerStatus != .finished else { return }
+                self.stopSound()
+            }
         }
     }
 
@@ -283,6 +267,7 @@ class TimerViewModel {
                 if timerStatus != .finished {
                     timerActionSubject.send(.finish)
                     finishTimer()
+                    cancelBackgroundTimer()
                 }
             } else {
                 timerType = timerType == .main ? .interval : .main
@@ -295,18 +280,14 @@ class TimerViewModel {
                     break
                 }
 
-                playIntermediateSound()
                 startTimer()
+                updateLiveActivity(with: SoundOptions(preferences?.sound ?? "").fileName)
+//                playIntermediateSound()
             }
         }
 
         if timerActionSubject.value != .finish {
             timerLabelSubject.send(timerNameString)
-        }
-        // to prevent excessive activity updating
-        if lastTimerLabelDisplayed != currentTimerValue.getTimerLabelValue() {
-            updateLiveActivity()
-            lastTimerLabelDisplayed = currentTimerValue.getTimerLabelValue()
         }
     }
 
@@ -321,11 +302,20 @@ extension TimerViewModel {
         let timerQueue = DispatchQueue(label: "com.catodoro.timerQueue", qos: .userInitiated)
         backgroundTimer = DispatchSource.makeTimerSource(queue: timerQueue)
         backgroundTimer?.schedule(deadline: .now(), repeating: timerInterval)
+
+        backgroundTimer?.setEventHandler { [weak self] in
+            guard let self else { return }
+            currentTimerValue = max(0, currentTimerValue - timerInterval)
+            timerIntervalSubject.send(currentTimerValue)
+            timerSubject.send(currentTimerValue.getTimerLabelValue())
+        }
+
+        backgroundTimer?.resume()
     }
 
     private func cancelBackgroundTimer() {
         backgroundTimer?.cancel()
-        self.backgroundTimer = nil
+        backgroundTimer = nil
     }
 }
 
@@ -380,6 +370,7 @@ extension TimerViewModel {
         do {
             try liveActivityManager.startLiveActivity(name: "Catodoro Timer",
                                                       currentTimerValue: currentTimerValue,
+                                                      endTime: endTime,
                                                       intervals: intervals,
                                                       interval: interval,
                                                       timerType: timerType ?? .main,
@@ -390,15 +381,17 @@ extension TimerViewModel {
         }
     }
 
-    private func updateLiveActivity() {
+    private func updateLiveActivity(with sound: String? = nil) {
         guard let liveActivityManager else { return }
         Task { [weak self] in
             guard let self else { return }
             await liveActivityManager.updateLiveActivity(currentTimerValue: currentTimerValue,
+                                                         endTime: endTime,
                                                          intervals: intervals,
                                                          interval: interval,
                                                          timerType: timerType ?? .main,
-                                                         timerStatus: timerStatus)
+                                                         timerStatus: timerStatus,
+                                                         soundName: sound)
         }
     }
 
