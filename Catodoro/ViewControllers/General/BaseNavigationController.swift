@@ -16,19 +16,19 @@ class BaseNavigationController: UINavigationController {
     }
 
     func contains(viewController: UIViewController) -> Bool {
-        return self.viewControllers.map { $0.className }.contains(viewController.className)
+        return viewControllers.map { $0.className }.contains(viewController.className)
     }
 
     override func pushViewController(_ viewController: UIViewController, animated: Bool) {
-        if (!self.isNewViewControllerBeingAdded && !self.contains(viewController: viewController)) {
-            self.isNewViewControllerBeingAdded = true
-            super.pushViewController(viewController, animated: true)
+        if (!isNewViewControllerBeingAdded && !contains(viewController: viewController)) {
+            isNewViewControllerBeingAdded = true
+            super.pushViewController(viewController, animated: animated)
         }
     }
 }
 
 extension BaseNavigationController: UINavigationControllerDelegate {
     func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
-        self.isNewViewControllerBeingAdded = false
+        isNewViewControllerBeingAdded = false
     }
 }
