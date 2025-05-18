@@ -128,8 +128,8 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
     }
 
     func selectPage(_ page: TabBarPage) {
-        UIView.performWithoutAnimation {
-            tabBarController.selectedIndex = page.tabOrderNumber
+        UIView.performWithoutAnimation { [weak self] in
+            self?.tabBarController.selectedIndex = page.tabOrderNumber
         }
     }
 
