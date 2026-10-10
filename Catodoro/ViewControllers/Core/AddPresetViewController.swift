@@ -37,7 +37,7 @@ class AddPresetViewController: BaseViewController {
     }
 
     override func setupSubviews() {
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = CatTheme.background
         navigationItem.title = "Add Preset"
         timerConfigView.model = .init(startLabelText: "Save",
                                       color: ColorOptions(preferences?.color ?? ColorOptions.neonBlue.code).color)

@@ -6,7 +6,7 @@ final class TimerConfigSubTitleTests: XCTestCase {
     func test_initWithText_shouldSetTextAndFont() {
         // Arrange
         let expectedText = "Test Subtitle"
-        let expectedFont = UIFont.systemFont(ofSize: 26, weight: .bold)
+        let expectedFont = CatTheme.font(.title2, weight: .bold)
         
         // Act
         let subtitle = TimerConfigSubTitle(text: expectedText)
@@ -18,7 +18,7 @@ final class TimerConfigSubTitleTests: XCTestCase {
     
     func test_initWithFrame_shouldSetDefaultFont() {
         // Arrange
-        let expectedFont = UIFont.systemFont(ofSize: 26, weight: .bold)
+        let expectedFont = CatTheme.font(.title2, weight: .bold)
         
         // Act
         let subtitle = TimerConfigSubTitle(frame: .zero)

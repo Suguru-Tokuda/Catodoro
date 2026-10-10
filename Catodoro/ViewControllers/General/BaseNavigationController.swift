@@ -13,6 +13,16 @@ class BaseNavigationController: UINavigationController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.delegate = self
+        view.backgroundColor = CatTheme.background
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = CatTheme.background
+        appearance.shadowColor = .clear
+        appearance.titleTextAttributes = [.foregroundColor: CatTheme.text, .font: CatTheme.font(.headline, weight: .bold)]
+        navigationBar.standardAppearance = appearance
+        navigationBar.scrollEdgeAppearance = appearance
+        navigationBar.compactAppearance = appearance
+        navigationBar.tintColor = ColorOptions.neonBlue.color
     }
 
     func contains(viewController: UIViewController) -> Bool {

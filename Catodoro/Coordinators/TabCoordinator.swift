@@ -121,6 +121,16 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
         /// Let set index
         tabBarController.selectedIndex = TabBarPage.timer.tabOrderNumber
         /// Styling
+        let appearance = UITabBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = CatTheme.background
+        appearance.shadowColor = .clear
+        tabBarController.tabBar.standardAppearance = appearance
+        tabBarController.tabBar.scrollEdgeAppearance = appearance
+        tabBarController.tabBar.unselectedItemTintColor = CatTheme.secondaryText
+        tabBarController.tabBar.tintColor = ColorOptions(preferences?.color ?? "").color
+        tabBarController.view.backgroundColor = CatTheme.background
+        tabBarController.tabBar.backgroundColor = CatTheme.background
         tabBarController.tabBar.isTranslucent = false
 
         /// In this step, we attach tabBarController to navigation controller associated with this coordiantor

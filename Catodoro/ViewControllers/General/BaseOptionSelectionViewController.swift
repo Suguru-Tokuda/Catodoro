@@ -17,6 +17,8 @@ class BaseOptionSelectionViewController: BaseViewController {
     }()
     lazy var optionTableView: UITableView = {
        let tableView = UITableView()
+        tableView.backgroundColor = CatTheme.background
+        tableView.separatorColor = CatTheme.separator
         tableView.register(OptionSelectionViewCell.self,
                            forCellReuseIdentifier: OptionSelectionViewCell.reuseIdentifier)
         return tableView

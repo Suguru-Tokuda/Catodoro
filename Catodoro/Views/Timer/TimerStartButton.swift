@@ -29,7 +29,9 @@ class TimerStartButton: UIButton {
 
     private let buttonLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 28, weight: .bold)
+        label.font = CatTheme.font(.title2, weight: .bold)
+        label.adjustsFontForContentSizeCategory = true
+        label.textColor = CatTheme.onAccent
         return label
     }()
 
@@ -57,8 +59,8 @@ class TimerStartButton: UIButton {
     }
 
     private func setupUI() {
-        leadingImageView.tintColor = .white
-        trailingImageView.tintColor = .white
+        leadingImageView.tintColor = CatTheme.onAccent
+        trailingImageView.tintColor = CatTheme.onAccent
 
         stackView.addArrangedSubviews([
             leadingImageView,
@@ -77,9 +79,9 @@ class TimerStartButton: UIButton {
 
         backgroundColor = ColorOptions.neonBlue.color
         setBackgroundColor(ColorOptions.neonBlue.color, for: .normal)
-        setBackgroundColor(.lightGray, for: .disabled)
+        setBackgroundColor(CatTheme.disabled, for: .disabled)
         clipsToBounds = true
-        layer.cornerRadius = 16
+        layer.cornerRadius = CatTheme.controlRadius
         isEnabled = false
     }
 
@@ -95,12 +97,22 @@ class TimerStartButton: UIButton {
         ])
     }
 
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            applyModel()
+        }
+    }
+
     private func applyModel() {
         guard let model else { return }
         buttonLabel.text = model.buttonLabelText
+        accessibilityLabel = model.buttonLabelText
         backgroundColor = model.color
-        setBackgroundColor(model.color, for: .normal)
-        setBackgroundColor(.lightGray, for: .disabled)
+        traitCollection.performAsCurrent {
+            setBackgroundColor(model.color, for: .normal)
+            setBackgroundColor(CatTheme.disabled, for: .disabled)
+        }
     }
 }
 

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CA7000000000000000000012 /* CatIllustrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7000000000000000000002 /* CatIllustrationView.swift */; };
+		CA7000000000000000000011 /* CatTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7000000000000000000001 /* CatTheme.swift */; };
 		BB07847D2D1B293E004BF908 /* CatodoroCoreData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = BB07847B2D1B293E004BF908 /* CatodoroCoreData.xcdatamodeld */; };
 		BB0784842D1BBC60004BF908 /* PawButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0784832D1BBC60004BF908 /* PawButtonTests.swift */; };
 		BB0784862D1BC57B004BF908 /* PlayPauseButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0784852D1BC57B004BF908 /* PlayPauseButtonTests.swift */; };
@@ -179,6 +181,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CA7000000000000000000002 /* CatIllustrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatIllustrationView.swift; sourceTree = "<group>"; };
+		CA7000000000000000000001 /* CatTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatTheme.swift; sourceTree = "<group>"; };
 		BB07847C2D1B293E004BF908 /* CatodoroCoreData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CatodoroCoreData.xcdatamodel; sourceTree = "<group>"; };
 		BB0784832D1BBC60004BF908 /* PawButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PawButtonTests.swift; sourceTree = "<group>"; };
 		BB0784852D1BC57B004BF908 /* PlayPauseButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayPauseButtonTests.swift; sourceTree = "<group>"; };
@@ -700,6 +704,8 @@
 		BBFE8DEA2D261B7D00F898B0 /* General */ = {
 			isa = PBXGroup;
 			children = (
+				CA7000000000000000000001 /* CatTheme.swift */,
+				CA7000000000000000000002 /* CatIllustrationView.swift */,
 				BBFE8DEB2D261B8800F898B0 /* BaseView.swift */,
 				BBFE8DEE2D261CDB00F898B0 /* BaseTableViewCell.swift */,
 			);
@@ -1087,6 +1093,8 @@
 				BB49DC6D2D08EFE2001E3CDC /* OptionSelectionViewCell.swift in Sources */,
 				BBA3CDA62C868CA6002A3E7B /* TimeInterval+Extensions.swift in Sources */,
 				BB6C85372D1B19DB005C4D0B /* AddPresetViewController.swift in Sources */,
+				CA7000000000000000000011 /* CatTheme.swift in Sources */,
+				CA7000000000000000000012 /* CatIllustrationView.swift in Sources */,
 				BBFE8DED2D261BF100F898B0 /* BaseView.swift in Sources */,
 				BB516E4B2CAB97B90004B95C /* TimerModel.swift in Sources */,
 				BB4CF75C2D3466DF00B0946C /* CatodoroSharedPreferences.swift in Sources */,

@@ -21,12 +21,16 @@ class PresetsViewController: BaseViewController {
     private lazy var label: UILabel = {
         let label = UILabel()
         label.text = "Presets"
-        label.font = .systemFont(ofSize: 24, weight: .bold)
+        label.font = CatTheme.font(.title2, weight: .bold)
+        label.textColor = CatTheme.text
+        label.adjustsFontForContentSizeCategory = true
         label.textAlignment = .center
         return label
     }()
     private lazy var presetsTableView: UITableView = {
         let tableView = UITableView()
+        tableView.backgroundColor = CatTheme.background
+        tableView.separatorColor = CatTheme.separator
         tableView.register(PresetListViewCell.self,
                            forCellReuseIdentifier: PresetListViewCell.reuseIdentifier)
         tableView.separatorInset = .init(top: 0, left: 0, bottom: 0, right: 0)

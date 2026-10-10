@@ -22,7 +22,7 @@ class BaseTableViewCell: UITableViewCell {
         setupConstraints()
     }
 
-    func setupView() {}
+    func setupView() { backgroundColor = CatTheme.card }
     func setupSubviews() {}
     func setupConstraints() {}
 }

@@ -43,6 +43,9 @@ class TimerView: BaseView {
         return label
     }()
 
+    private let companion = CatIllustrationView(pose: .focus)
+    private let artworkContainer = UIView()
+    private let artworkMask = CAShapeLayer()
     private var timerCircleView: TimerCircleView
     private lazy var playPauseButton: PlayPauseButton = .init()
     private lazy var stopButton: StopButton = .init()
@@ -66,12 +69,17 @@ class TimerView: BaseView {
     override func setupSubviews() {
         addAutolayoutSubviews([
             timerNameLabel,
+            artworkContainer,
             timerCircleView,
             stackView,
             playPauseButton,
             stopButton,
             dismissButton
         ])
+
+        artworkContainer.isUserInteractionEnabled = false
+        artworkContainer.layer.mask = artworkMask
+        artworkContainer.addAutolayoutSubview(companion)
 
         stackView.addArrangedSubviews([
             timerLabel
@@ -90,7 +98,15 @@ class TimerView: BaseView {
             timerCircleView.heightAnchor.constraint(equalToConstant: timerCircleDiameter),
             
             stackView.centerXAnchor.constraint(equalTo: centerXAnchor),
-            stackView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            stackView.centerYAnchor.constraint(equalTo: timerCircleView.centerYAnchor, constant: -24),
+            artworkContainer.leadingAnchor.constraint(equalTo: timerCircleView.leadingAnchor),
+            artworkContainer.trailingAnchor.constraint(equalTo: timerCircleView.trailingAnchor),
+            artworkContainer.topAnchor.constraint(equalTo: timerCircleView.topAnchor),
+            artworkContainer.bottomAnchor.constraint(equalTo: timerCircleView.bottomAnchor),
+            companion.centerXAnchor.constraint(equalTo: artworkContainer.centerXAnchor),
+            companion.bottomAnchor.constraint(equalTo: artworkContainer.bottomAnchor, constant: 30),
+            companion.widthAnchor.constraint(equalTo: artworkContainer.widthAnchor, constant: 20),
+            companion.heightAnchor.constraint(equalToConstant: 150),
 
             timerLabel.widthAnchor.constraint(equalToConstant: 200),
 
@@ -109,6 +125,14 @@ class TimerView: BaseView {
             dismissButton.heightAnchor.constraint(equalToConstant: buttonSize),
             dismissButton.widthAnchor.constraint(equalToConstant: buttonSize),
         ])
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        // Match the inner edge of the progress ring; only the illustration is clipped.
+        let inset = 10 + timerCircleView.lineWidth / 2
+        artworkMask.frame = artworkContainer.bounds
+        artworkMask.path = UIBezierPath(ovalIn: artworkContainer.bounds.insetBy(dx: inset, dy: inset)).cgPath
     }
 
     private func setupActionHandlers() {
@@ -130,6 +154,10 @@ class TimerView: BaseView {
 }
 
 extension TimerView {
+    func setCompanion(isBreak: Bool) {
+        companion.pose = isBreak ? .timerBreak : .focus
+    }
+
     func setTimerLabelText(labelText: String) {
         timerLabel.text = labelText
     }
@@ -173,6 +201,9 @@ extension TimerView {
     struct TestHooks {
         let target: TimerView
 
+        var artworkMask: CAShapeLayer { target.artworkMask }
+        var companion: CatIllustrationView { target.companion }
+        var artworkContainer: UIView { target.artworkContainer }
         var timerNameLabel: UILabel { target.timerNameLabel }
         var timerLabel: UILabel { target.timerLabel }
         var stackView: UIStackView { target.stackView }
