@@ -51,20 +51,5 @@ enum ColorOptions: String, CaseIterable {
         }
     }
 
-    var color: UIColor {
-        switch self {
-        case .neonBlue:
-            .neonBlue
-        case .neonGreen:
-            .neonGreen
-        case .neonOrange:
-            .neonOrange
-        case .neonPink:
-            .neonPink
-        case .neonPurple:
-            .neonPurple
-        case .neonYellow:
-            .neonYellow
-        }
-    }
+    var color: UIColor { CatTheme.accent(self) }
 }

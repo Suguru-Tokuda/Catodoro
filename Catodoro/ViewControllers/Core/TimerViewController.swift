@@ -87,6 +87,7 @@ class TimerViewController: BaseViewController {
             .sink { [weak self] timerNameStr in
                 guard let self else { return }
                 timerView.setTimerNameLabelText(labelText: timerNameStr)
+                timerView.setCompanion(isBreak: viewModel.isBreak)
             }
             .store(in: &cancellables)
     }

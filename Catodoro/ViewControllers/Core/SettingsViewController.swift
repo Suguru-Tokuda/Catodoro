@@ -18,13 +18,17 @@ class SettingsViewController: BaseViewController {
     private var label: UILabel = {
         let label = UILabel()
         label.text = "Settings"
-        label.font = .systemFont(ofSize: 24, weight: .bold)
+        label.font = CatTheme.font(.title2, weight: .bold)
+        label.textColor = CatTheme.text
+        label.adjustsFontForContentSizeCategory = true
         label.textAlignment = .center
         return label
     }()
     private var colorOptionSubTitle: SettingSubtitleLabel = .init(labelText: "Color")
     private var optionTableView: UITableView = {
         let tableView = UITableView()
+        tableView.backgroundColor = CatTheme.background
+        tableView.separatorColor = CatTheme.separator
         tableView.register(SettingOptionsViewCell.self,
                            forCellReuseIdentifier: SettingOptionsViewCell.reuseIdentifier)
         return tableView

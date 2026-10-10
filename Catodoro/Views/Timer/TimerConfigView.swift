@@ -58,11 +58,15 @@ class TimerConfigView: BaseView {
     }()
     private lazy var scrollView: UIScrollView = .init()
 
+    private let companion = CatIllustrationView(pose: .sitting)
+
     override func setupSubviews() {
+        backgroundColor = CatTheme.background
         addAutolayoutSubview(scrollView)
         scrollView.addAutolayoutSubviews([stackView])
         intervalStackView.addArrangedSubviews([intervalPicker, UIView(), UIView()])
         stackView.addArrangedSubviews([
+            companion,
             totalDurationLabel,
             totalDurationPicker,
             intervalDurationLabel,
@@ -76,6 +80,7 @@ class TimerConfigView: BaseView {
 
     override func setupConstraints() {
         NSLayoutConstraint.activate([
+            companion.heightAnchor.constraint(equalToConstant: 140),
             // scrollView constraints
             scrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: .init(16)),
             scrollView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: .init(16)),

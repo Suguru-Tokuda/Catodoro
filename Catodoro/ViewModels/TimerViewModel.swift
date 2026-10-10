@@ -213,6 +213,8 @@ class TimerViewModel {
         interval = 1
     }
 
+    var isBreak: Bool { timerType == .interval }
+
     var timerNameString: String {
         switch timerType {
         case .main, .none:

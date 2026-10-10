@@ -16,13 +16,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(frame: windowScene.coordinateSpace.bounds)
+        window?.backgroundColor = CatTheme.background
         mainCoordinator = MainCoordinator(preferences: preferences, liveActivityManager: liveActivityManager)
         mainCoordinator?.start()
         window?.windowScene = windowScene
         window?.rootViewController = mainCoordinator?.navigationController
         window?.makeKeyAndVisible()
 
-        window?.overrideUserInterfaceStyle = .dark
+        window?.overrideUserInterfaceStyle = .unspecified
 
         UINavigationBar.appearance().tintColor = .white
 

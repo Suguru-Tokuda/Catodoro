@@ -118,3 +118,21 @@ class TimerViewTests: XCTestCase {
         XCTAssertNotNil(timerView.testHooks.playPauseButton.currentImage)
     }
 }
+
+
+extension TimerViewTests {
+    func test_artworkIsClippedInsideRingAndSwitchesForBreak() {
+        let view = TimerView(frame: CGRect(x: 0, y: 0, width: 375, height: 667))
+        view.layoutIfNeeded()
+        let hooks = view.testHooks
+        XCTAssertEqual(hooks.artworkContainer.frame, hooks.timerCircleView.frame)
+        let path = hooks.artworkMask.path!
+        XCTAssertTrue(path.contains(CGPoint(x: 125, y: 125)))
+        XCTAssertFalse(path.contains(CGPoint(x: 0, y: 250)))
+        XCTAssertLessThan(path.boundingBox.maxY, hooks.artworkContainer.bounds.maxY)
+        view.setCompanion(isBreak: true)
+        XCTAssertEqual(hooks.companion.pose, .timerBreak)
+        view.setCompanion(isBreak: false)
+        XCTAssertEqual(hooks.companion.pose, .focus)
+    }
+}
