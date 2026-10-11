@@ -77,7 +77,7 @@ final class DurationSelectionView: RoutineSelectionView {
             let selected = selectedShortcut == shortcut.minutes
             shortcut.button.isSelected = selected
             shortcut.button.configuration?.baseBackgroundColor = selected
-                ? ColorOptions.neonBlue.color : CatTheme.color(0xF1E8DC, 0x39333D)
+                ? tintColor : CatTheme.color(0xF1E8DC, 0x39333D)
             shortcut.button.configuration?.baseForegroundColor = selected ? CatTheme.onAccent : CatTheme.text
             shortcut.button.accessibilityTraits = selected ? [.button, .selected] : .button
         }

@@ -11,6 +11,12 @@ final class PresetListViewCell: BaseTableViewCell {
     static let reuseIdentifier = "PresetListViewCell"
     var onPlayButtonTapped: (() -> Void)?
 
+    var accent: UIColor = ColorOptions.neonBlue.color {
+        didSet {
+            playButton.configuration?.baseBackgroundColor = accent
+        }
+    }
+
     var model: PresetModel? {
         didSet {
             applyModel()
@@ -78,7 +84,7 @@ final class PresetListViewCell: BaseTableViewCell {
         return stack
     }()
 
-    override func setupSubviews() {
+    override func constructSubviews() {
         backgroundColor = .clear
         selectionStyle = .none
         contentView.addAutolayoutSubview(card)
@@ -90,7 +96,7 @@ final class PresetListViewCell: BaseTableViewCell {
         }, for: .touchUpInside)
     }
 
-    override func setupConstraints() {
+    override func constructSubviewLayoutConstraints() {
         NSLayoutConstraint.activate([
             card.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             card.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),

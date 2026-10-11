@@ -13,9 +13,11 @@ protocol SoundSelectionViewControllerDelegate: AnyObject {
 
 class SoundSelectionViewController: BaseOptionSelectionViewController {
     weak var delegate: SoundSelectionViewControllerDelegate?
+    private let audioManager: AudioManaging
     var viewModel: OptionSelectionViewModel
 
-    init(viewModel: OptionSelectionViewModel, titleLabelText: String) {
+    init(viewModel: OptionSelectionViewModel, titleLabelText: String, audioManager: AudioManaging = AudioManager()) {
+        self.audioManager = audioManager
         self.viewModel = viewModel
         super.init(titleLabelText: titleLabelText)
     }
@@ -26,8 +28,22 @@ class SoundSelectionViewController: BaseOptionSelectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneTapped))
         optionTableView.delegate = self
         optionTableView.dataSource = self
+    }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        guard isMovingFromParent || navigationController?.isBeingDismissed == true else { return }
+
+        let manager = audioManager
+        AudioManager.playbackQueue.async {
+            try? manager.stop()
+        }
+    }
+
+    @objc private func doneTapped() {
+        delegate?.onSoundSelect()
     }
 }
 
@@ -39,9 +55,20 @@ extension SoundSelectionViewController: UITableViewDelegate {
         viewModel.setSound(soundId: selectedId)
         optionTableView.reloadData()
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
-            guard let self else { return }
-            delegate?.onSoundSelect()
+        let manager = audioManager
+        let file = SoundOptions(selectedId).fileName
+        AudioManager.playbackQueue.async {
+            do {
+                try manager.stop()
+                try manager.setPlayer(fileName: file, fileExtension: "mp3")
+                try manager.play(numberOfLoops: 0)
+            } catch {
+                DispatchQueue.main.async { [weak self] in
+                    let alert = UIAlertController(title: "Couldn't preview sound", message: "Please try again.", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default))
+                    self?.present(alert, animated: true)
+                }
+            }
         }
     }
 }

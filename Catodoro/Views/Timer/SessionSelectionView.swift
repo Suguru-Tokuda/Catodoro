@@ -50,10 +50,6 @@ final class SessionSelectionView: RoutineSelectionView {
             indicator.contentMode = .scaleAspectFit
             indicator.tintColor = ColorOptions.neonBlue.color
             indicator.isAccessibilityElement = false
-            NSLayoutConstraint.activate([
-                indicator.widthAnchor.constraint(equalToConstant: 28),
-                indicator.heightAnchor.constraint(equalToConstant: 28)
-            ])
 
             return indicator
         }
@@ -108,6 +104,13 @@ final class SessionSelectionView: RoutineSelectionView {
 
     private let breakdownCard = CatCardView()
 
+    private let separator: UIView = {
+        let view = UIView()
+        view.backgroundColor = CatTheme.separator
+
+        return view
+    }()
+
     private let breakdownStack: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
@@ -137,19 +140,33 @@ final class SessionSelectionView: RoutineSelectionView {
         return label
     }()
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    override func applyAccent(_ color: UIColor) {
+        super.applyAccent(color)
+        stepperCard.backgroundColor = color.withAlphaComponent(0.18)
+        minusButton.configuration?.baseBackgroundColor = color
+        plusButton.configuration?.baseBackgroundColor = color
+        indicatorsLabel.textColor = color
+        pawIndicators.forEach { $0.tintColor = color }
+        breakdownStack.arrangedSubviews.compactMap { $0 as? UIStackView }
+            .flatMap { $0.arrangedSubviews }
+            .compactMap { $0 as? UIImageView }
+            .forEach { $0.tintColor = color }
+    }
+
+    override func constructView() {
+        super.constructView()
         configureHeader(title: "Focus sessions", subtitle: "How many focus sessions would you like?", pose: .playful)
         confirmButton.setTitle("Set sessions", for: .normal)
+    }
+
+    override func constructSubviews() {
+        super.constructSubviews()
         stepperStack.addArrangedSubviews([minusButton, countLabel, plusButton])
         pawsStack.addArrangedSubviews(pawIndicators)
         indicatorsStack.addArrangedSubviews([pawsStack, indicatorsLabel])
         stepperContent.addArrangedSubviews([stepperStack, indicatorsStack])
         stepperCard.addAutolayoutSubview(stepperContent)
         breakdownCard.addAutolayoutSubview(breakdownStack)
-        let separator = UIView()
-        separator.backgroundColor = CatTheme.separator
-        separator.heightAnchor.constraint(equalToConstant: 1).isActive = true
         breakdownStack.addArrangedSubviews([
             summaryRow(title: "Focus", symbol: "clock", value: focusValue),
             summaryRow(title: "Breaks", symbol: "cup.and.saucer.fill", value: breakValue),
@@ -157,7 +174,17 @@ final class SessionSelectionView: RoutineSelectionView {
             summaryRow(title: "Total time", symbol: nil, value: totalValue)
         ])
         contentStack.addArrangedSubviews([stepperCard, limitsLabel, breakdownCard, footerLabel])
+        setupCountActions()
+    }
+
+    override func constructSubviewLayoutConstraints() {
+        super.constructSubviewLayoutConstraints()
         NSLayoutConstraint.activate([
+            separator.heightAnchor.constraint(equalToConstant: 1),
+            minusButton.widthAnchor.constraint(equalToConstant: 52),
+            minusButton.heightAnchor.constraint(equalToConstant: 52),
+            plusButton.widthAnchor.constraint(equalToConstant: 52),
+            plusButton.heightAnchor.constraint(equalToConstant: 52),
             stepperContent.leadingAnchor.constraint(equalTo: stepperCard.leadingAnchor, constant: 16),
             stepperContent.trailingAnchor.constraint(equalTo: stepperCard.trailingAnchor, constant: -16),
             stepperContent.topAnchor.constraint(equalTo: stepperCard.topAnchor, constant: 16),
@@ -167,16 +194,20 @@ final class SessionSelectionView: RoutineSelectionView {
             breakdownStack.topAnchor.constraint(equalTo: breakdownCard.topAnchor, constant: 16),
             breakdownStack.bottomAnchor.constraint(equalTo: breakdownCard.bottomAnchor, constant: -16)
         ])
+
+        NSLayoutConstraint.activate(pawIndicators.flatMap { indicator in
+            [indicator.widthAnchor.constraint(equalToConstant: 28),
+             indicator.heightAnchor.constraint(equalToConstant: 28)]
+        })
+    }
+
+    private func setupCountActions() {
         minusButton.addAction(UIAction { [weak self] _ in
             self?.onCountChange?(-1)
         }, for: .touchUpInside)
         plusButton.addAction(UIAction { [weak self] _ in
             self?.onCountChange?(1)
         }, for: .touchUpInside)
-    }
-
-    required init?(coder: NSCoder) {
-        nil
     }
 
     private static func stepButton(symbol: String, label: String) -> UIButton {
@@ -188,8 +219,6 @@ final class SessionSelectionView: RoutineSelectionView {
         configuration.cornerStyle = .capsule
         button.configuration = configuration
         button.accessibilityLabel = label
-        button.widthAnchor.constraint(equalToConstant: 52).isActive = true
-        button.heightAnchor.constraint(equalToConstant: 52).isActive = true
 
         return button
     }

@@ -9,6 +9,18 @@ import XCTest
 @testable import Catodoro
 
 final class OptionSelectionViewCellTests: XCTestCase {
+    func test_selectedRowLayoutKeepsLabelVisibleAndPawBounded() {
+        let cell = OptionSelectionViewCell(style: .default, reuseIdentifier: nil)
+        cell.configure(optionLabelText: "Kitty", isSelected: true)
+        cell.frame = CGRect(x: 0, y: 0, width: 393, height: 60)
+        cell.layoutIfNeeded()
+        let hooks = cell.testHooks
+        XCTAssertEqual(hooks.selectedIcon.bounds.width, 24, accuracy: 0.5)
+        XCTAssertEqual(hooks.selectedIcon.bounds.height, 24, accuracy: 0.5)
+        XCTAssertGreaterThan(hooks.optionLabel.bounds.width, 200)
+        XCTAssertFalse(hooks.optionLabel.isHidden)
+    }
+
     
     var cell: OptionSelectionViewCell!
 

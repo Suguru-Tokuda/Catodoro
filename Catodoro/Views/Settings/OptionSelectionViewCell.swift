@@ -10,33 +10,39 @@ import UIKit
 class OptionSelectionViewCell: BaseTableViewCell {
     static let reuseIdentifier = "OptionSelectionViewCell"
 
-    private var optionLabel: UILabel = {
+    private let optionLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 16, weight: .semibold)
+        label.font = CatTheme.font(.body, weight: .semibold)
+        label.adjustsFontForContentSizeCategory = true
+        label.numberOfLines = 0
         label.textColor = .label
         label.textAlignment = .left
         return label
     }()
-    private var selectedIcon: UIImageView = {
-        let icon = UIImageView(image: .init(systemName: "pawprint.fill"))
+
+    private let selectedIcon: UIImageView = {
+        let icon = UIImageView(image: UIImage(named: "CatPaw"))
+        icon.contentMode = .scaleAspectFit
         icon.tintColor = .label
         return icon
     }()
-    private var stackView: UIStackView = {
+
+    private let stackView: UIStackView = {
         let stackView = UIStackView()
         stackView.spacing = 16
         stackView.axis = .horizontal
         stackView.alignment = .center
-        stackView.distribution = .fillProportionally
+        stackView.distribution = .fill
         return stackView
     }()
 
-    override func setupSubviews() {
+    override func constructSubviews() {
+        backgroundColor = CatTheme.card
         contentView.addAutolayoutSubview(stackView)
         stackView.addArrangedSubviews([optionLabel, selectedIcon])
     }
 
-    override func setupConstraints() {
+    override func constructSubviewLayoutConstraints() {
         NSLayoutConstraint.activate([
             selectedIcon.widthAnchor.constraint(equalToConstant: 24),
             selectedIcon.heightAnchor.constraint(equalToConstant: 24),
@@ -51,7 +57,7 @@ class OptionSelectionViewCell: BaseTableViewCell {
         ])
     }
 
-    func configure(optionLabelText: String, isSelected: Bool, textColor: UIColor = .label) {
+    func configure(optionLabelText: String, isSelected: Bool, textColor: UIColor = CatTheme.text) {
         optionLabel.text = optionLabelText
         optionLabel.isAccessibilityElement = true
         optionLabel.accessibilityLabel = optionLabelText

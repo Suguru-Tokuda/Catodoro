@@ -10,6 +10,30 @@ import Combine
 @testable import Catodoro
 
 class PresetsViewControllerTests: XCTestCase {
+    @MainActor
+    func test_presetsViewUsesSavedAccentAndRefreshesAfterPreferenceChanges() async throws {
+        let preferences = MockPreferences()
+        preferences.setColor(.neonPink)
+        let controller = PresetsViewController(preferences: preferences)
+        let model = MockPresetsViewModel()
+        model.presets = [PresetModel(id: UUID(), totalDuration: 1500, intervalDuration: 300, intervals: 4)]
+        controller.testHooks.setViewModel(viewModel: model)
+        controller.loadViewIfNeeded()
+        XCTAssertTrue(controller.view is PresetsView)
+        let table = controller.testHooks.presetsTableView
+        let path = IndexPath(row: 0, section: 0)
+        let initial = try XCTUnwrap(controller.tableView(table, cellForRowAt: path) as? PresetListViewCell)
+        XCTAssertEqual(initial.playButton.configuration?.baseBackgroundColor, ColorOptions.neonPink.color)
+
+        preferences.setColor(.neonPurple)
+        let refreshed = expectation(description: "Accent publisher reaches the Presets screen")
+        DispatchQueue.main.async { refreshed.fulfill() }
+        await fulfillment(of: [refreshed], timeout: 1)
+        let updated = try XCTUnwrap(controller.tableView(table, cellForRowAt: path) as? PresetListViewCell)
+        XCTAssertEqual(updated.playButton.configuration?.baseBackgroundColor, ColorOptions.neonPurple.color)
+        XCTAssertEqual(controller.view.tintColor, ColorOptions.neonPurple.color)
+    }
+
     var sut: PresetsViewController!
     var mockDelegate: MockPresetsViewControllerDelegate!
     var mockViewModel: MockPresetsViewModel!

@@ -11,7 +11,7 @@ enum SoundOptions: String, CaseIterable {
     case angry = "Angry"
     case meowLoud = "Meow (Loud)"
     case meowRegular = "Meow (Regular)"
-    case hungry = "Hugnry"
+    case hungry = "Hungry"
     case kitty = "Kitty"
 
     init(_ id: String) {

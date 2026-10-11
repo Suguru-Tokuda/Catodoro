@@ -91,7 +91,7 @@ final class PresetEditorView: BaseView {
         return button
     }()
 
-    override func setupSubviews() {
+    override func constructSubviews() {
         backgroundColor = CatTheme.background
         addAutolayoutSubview(scrollView)
         scrollView.addAutolayoutSubview(stack)
@@ -119,7 +119,7 @@ final class PresetEditorView: BaseView {
         }
     }
 
-    override func setupConstraints() {
+    override func constructSubviewLayoutConstraints() {
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
             scrollView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
@@ -142,6 +142,7 @@ final class PresetEditorView: BaseView {
     }
 
     func configureAccent(_ color: UIColor) {
+        [focusRow, breakRow, sessionsRow].forEach { $0.configureAccent(color) }
         imageButton.tintColor = color
         saveButton.configuration?.baseBackgroundColor = color
     }
@@ -193,7 +194,7 @@ final class PresetImagePickerView: BaseView {
         return stack
     }()
 
-    override func setupSubviews() {
+    override func constructSubviews() {
         backgroundColor = CatTheme.background
         addAutolayoutSubview(scrollView)
         scrollView.addAutolayoutSubview(stack)
@@ -231,7 +232,7 @@ final class PresetImagePickerView: BaseView {
         }
     }
 
-    override func setupConstraints() {
+    override func constructSubviewLayoutConstraints() {
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
             scrollView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),

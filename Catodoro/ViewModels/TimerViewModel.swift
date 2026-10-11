@@ -70,6 +70,10 @@ class TimerViewModel {
     private let now: () -> Date
     private let schedulesTicks: Bool
     private let applicationIsActive: () -> Bool
+    private var preferenceSubscription: AnyCancellable?
+    private var liveActivityTask: Task<Void, Never>?
+    private var liveActivityGeneration = 0
+    private(set) var liveActivityError: Error?
     private(set) var audioError: Error?
 
     let presentationSubject = CurrentValueSubject<TimerPresentationState, Never>(
@@ -101,6 +105,20 @@ class TimerViewModel {
         self.applicationIsActive = applicationIsActive
         addNotificationCenterSubscriptions()
         setupPlayerSound()
+        preferenceSubscription = preferences?.liveActivityPublisher
+            .dropFirst()
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] enabled in
+                guard let self else { return }
+
+                if enabled && self.intervals > 0 && self.timerActionSubject.value != .stop {
+                    self.startLiveActivity()
+                    self.updateLiveActivity()
+                } else if !enabled {
+                    self.endLiveActivity()
+                }
+            }
     }
 
     private var endTime: Date {
@@ -201,6 +219,25 @@ class TimerViewModel {
         notifyPhaseChange(isComplete: true)
     }
 
+    /// A skipped break starts the next full focus session, including when the break was paused.
+    func skipBreak() {
+        let wasBreak = isBreak
+        refresh()
+        guard wasBreak, isBreak, timerStatus != .finished, interval < intervals else { return }
+
+        generation += 1
+        interval += 1
+        timerType = .main
+        duration = totalDuration
+        currentTimerValue = totalDuration
+        timerStatus = .playing
+        deadline = now().addingTimeInterval(totalDuration)
+        setupBackgroundTimer()
+        publishState()
+        timerActionSubject.send(.start)
+        notifyPhaseChange(isComplete: false)
+    }
+
     func stopTimer() {
         resetTimer()
         timerActionSubject.send(.stop)
@@ -297,6 +334,7 @@ class TimerViewModel {
     private func addNotificationCenterSubscriptions() {
         let notifications: [(Notification.Name, Selector)] = [
             (UIApplication.didBecomeActiveNotification, #selector(handleAppDidBecomeActive)),
+            (.skipBreakActionTriggered, #selector(handleSkipBreakAction)),
             (.playTimerActionTriggered, #selector(handlePlayTimerAction)),
             (.stopTimerActionTriggered, #selector(handleStopTimerAction)),
             (.repeatTimerActionTriggered, #selector(handleRepeatTimerAction))
@@ -310,6 +348,10 @@ class TimerViewModel {
     @objc private func handleAppDidBecomeActive() {
         refresh()
         updateLiveActivity()
+    }
+
+    @objc private func handleSkipBreakAction() {
+        skipBreak()
     }
 
     @objc private func handlePlayTimerAction() {
@@ -389,6 +431,7 @@ class TimerViewModel {
     }
 
     deinit {
+        liveActivityTask?.cancel()
         cancelBackgroundTimer()
         NotificationCenter.default.removeObserver(self)
         let manager = audioManager
@@ -399,40 +442,62 @@ class TimerViewModel {
     }
 }
 
-// MARK: - Live Acitivity
+// MARK: - Live Activity
 
 extension TimerViewModel {
     private func startLiveActivity() {
-        guard let liveActivityManager, !liveActivityManager.hasLiveActivity() else { return }
+        guard preferences?.liveActivityEnabled != false,
+              let liveActivityManager, !liveActivityManager.hasLiveActivity() else { return }
         do {
+            liveActivityError = nil
             try liveActivityManager.startLiveActivity(name: "Catodoro Timer",
                                                       currentTimerValue: currentTimerValue,
                                                       endTime: endTime,
                                                       intervals: intervals,
                                                       interval: interval,
                                                       timerType: timerType ?? .main,
-                                                      timerStatus: timerStatus)
+                                                      timerStatus: timerStatus,
+                                                      phaseDuration: duration,
+                                                      accentCode: preferences?.color)
 
         } catch {
-            // TODO: Do something with
+            liveActivityError = error
         }
     }
 
     private func updateLiveActivity(with sound: String? = nil) {
-        guard let liveActivityManager else { return }
-        Task { [weak self] in
-            guard let self else { return }
-            await liveActivityManager.updateLiveActivity(currentTimerValue: currentTimerValue,
-                                                         endTime: endTime,
-                                                         intervals: intervals,
-                                                         interval: interval,
-                                                         timerType: timerType ?? .main,
-                                                         timerStatus: timerStatus,
-                                                         soundName: sound)
+        guard preferences?.liveActivityEnabled != false, let liveActivityManager else { return }
+        let value = currentTimerValue
+        let end = endTime
+        let count = intervals
+        let session = interval
+        let phase = timerType ?? .main
+        let status = timerStatus
+        let phaseDuration = duration
+        let accent = preferences?.color
+        let previous = liveActivityTask
+        let generation = liveActivityGeneration
+        liveActivityTask = Task { [weak self] in
+            await previous?.value
+            guard !Task.isCancelled,
+                  let self, self.liveActivityGeneration == generation,
+                  self.preferences?.liveActivityEnabled != false else { return }
+
+            await liveActivityManager.updateLiveActivity(currentTimerValue: value,
+                                                        endTime: end,
+                                                        intervals: count,
+                                                        interval: session,
+                                                        timerType: phase,
+                                                        timerStatus: status,
+                                                        soundName: sound,
+                                                        phaseDuration: phaseDuration,
+                                                        accentCode: accent)
         }
     }
 
     private func endLiveActivity() {
+        liveActivityGeneration += 1
+        liveActivityTask?.cancel()
         guard let liveActivityManager else { return }
         liveActivityManager.endLiveActivity()
     }
@@ -446,6 +511,10 @@ extension TimerViewModel {
 
     struct TestHooks {
         let target: TimerViewModel
+
+        func flushLiveActivityOperations() async {
+            await target.liveActivityTask?.value
+        }
 
         func flushAudioOperations() async {
             await withCheckedContinuation { continuation in

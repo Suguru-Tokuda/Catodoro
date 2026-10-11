@@ -7,19 +7,25 @@
 
 import UIKit
 
-class BaseView: UIView {
+class BaseView: UIView, Constructable {
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setupView()
-        setupSubviews()
-        setupConstraints()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        construct()
     }
 
-    func setupView() {}
-    func setupSubviews() {}
-    func setupConstraints() {}
+    required init?(coder: NSCoder) {
+        nil
+    }
+
+    private func construct() {
+        constructView()
+        constructSubviews()
+        constructSubviewLayoutConstraints()
+    }
+
+    func constructView() {}
+
+    func constructSubviews() {}
+
+    func constructSubviewLayoutConstraints() {}
 }

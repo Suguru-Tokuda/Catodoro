@@ -14,6 +14,8 @@ enum RoutineSelection {
 }
 
 class RoutineSelectionViewController: UIViewController {
+    var accent: UIColor = ColorOptions.neonBlue.color
+
     var selectionView: RoutineSelectionView {
         view as! RoutineSelectionView
     }
@@ -33,6 +35,7 @@ class RoutineSelectionViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.setNavigationBarHidden(true, animated: false)
+        selectionView.applyAccent(accent)
         selectionView.onClose = { [weak self] in
             self?.dismiss(animated: true)
         }
@@ -42,6 +45,7 @@ class RoutineSelectionViewController: UIViewController {
 extension UIViewController {
     func makeRoutineSelectionEditor(_ selection: RoutineSelection,
                                  configuration: TimerConfigModel,
+                                 accent: UIColor = ColorOptions.neonBlue.color,
                                  onCommit: @escaping (TimerConfigModel) -> Void) -> UIViewController {
         let editor: UIViewController
 
@@ -72,13 +76,15 @@ extension UIViewController {
             editor = sessionEditor
         }
 
+        (editor as? RoutineSelectionViewController)?.accent = accent
         return editor
     }
 
     func presentRoutineSelection(_ selection: RoutineSelection,
                                  configuration: TimerConfigModel,
+                                 accent: UIColor = ColorOptions.neonBlue.color,
                                  onCommit: @escaping (TimerConfigModel) -> Void) {
-        let editor = makeRoutineSelectionEditor(selection, configuration: configuration, onCommit: onCommit)
+        let editor = makeRoutineSelectionEditor(selection, configuration: configuration, accent: accent, onCommit: onCommit)
         let navigation = BaseNavigationController(rootViewController: editor)
         navigation.modalPresentationStyle = traitCollection.userInterfaceIdiom == .pad ? .formSheet : .pageSheet
         navigation.preferredContentSize = CGSize(width: 500, height: 520)

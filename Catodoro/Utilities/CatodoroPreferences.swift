@@ -9,6 +9,10 @@ import Combine
 import UIKit
 
 protocol CatodoroPreferencesProtocol: AnyObject {
+    var liveActivityEnabled: Bool { get }
+    var liveActivityPublisher: AnyPublisher<Bool, Never> { get }
+    func setLiveActivityEnabled(_ enabled: Bool)
+
     var colorPublisher: AnyPublisher<String?, Never> { get }
     var soundPublisher: AnyPublisher<String?, Never> { get }
     var color: String? { get }
@@ -18,6 +22,7 @@ protocol CatodoroPreferencesProtocol: AnyObject {
 }
 
 class CatodoroPreferences: CatodoroPreferencesProtocol {
+    @Published private(set) var liveActivityEnabled: Bool
     @Published private(set) var color: String?
     @Published private(set) var sound: String?
 
@@ -26,8 +31,15 @@ class CatodoroPreferences: CatodoroPreferencesProtocol {
 
     init(userDefaults: UserDefaults = .standard) {
         self.userDefaults = userDefaults
+        liveActivityEnabled = userDefaults.object(forKey: Keys.liveActivityEnabled.rawValue) as? Bool ?? true
         self.color = userDefaults.string(forKey: Keys.color.rawValue)
         self.sound = userDefaults.string(forKey: Keys.sound.rawValue)
+
+        $liveActivityEnabled
+            .sink { [weak self] enabled in
+                self?.userDefaults.set(enabled, forKey: Keys.liveActivityEnabled.rawValue)
+            }
+            .store(in: &cancellables)
 
         // Sync changes back to UserDefaults when properties are updated.
         $color
@@ -48,8 +60,17 @@ class CatodoroPreferences: CatodoroPreferencesProtocol {
     }
 
     private enum Keys: String {
+        case liveActivityEnabled
         case color
         case sound
+    }
+
+    var liveActivityPublisher: AnyPublisher<Bool, Never> {
+        $liveActivityEnabled.eraseToAnyPublisher()
+    }
+
+    func setLiveActivityEnabled(_ enabled: Bool) {
+        liveActivityEnabled = enabled
     }
 
     func setColor(_ newColor: ColorOptions) {

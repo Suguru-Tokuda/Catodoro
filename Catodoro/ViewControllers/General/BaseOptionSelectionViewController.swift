@@ -9,13 +9,15 @@ import UIKit
 
 class BaseOptionSelectionViewController: BaseViewController {
     // MARK: UI Components
-    lazy var titleLabel: UILabel = {
+    let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 24, weight: .bold)
+        label.font = CatTheme.font(.title2, weight: .bold)
+        label.textColor = CatTheme.text
+        label.adjustsFontForContentSizeCategory = true
         label.textAlignment = .center
         return label
     }()
-    lazy var optionTableView: UITableView = {
+    let optionTableView: UITableView = {
        let tableView = UITableView()
         tableView.backgroundColor = CatTheme.background
         tableView.separatorColor = CatTheme.separator
@@ -27,24 +29,24 @@ class BaseOptionSelectionViewController: BaseViewController {
     init(titleLabelText: String) {
         super.init(nibName: nil, bundle: nil)
         titleLabel.text = titleLabelText
+        titleLabel.isHidden = true
+        title = titleLabelText
     }
 
     required init?(coder: NSCoder) {
         nil
     }
 
-    override func setupSubviews() {
+    override func constructSubviews() {
         view.addAutolayoutSubviews([
             titleLabel,
             optionTableView
         ])
     }
 
-    override func setupConstraints() {
+    override func constructSubviewLayoutConstraints() {
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            optionTableView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor),
+            optionTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             optionTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             optionTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             optionTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)

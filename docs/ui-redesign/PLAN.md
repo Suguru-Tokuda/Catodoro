@@ -9,7 +9,8 @@ Prepared October 10, 2026. Based on a source scan of the current working tree an
 - Task 3: Focus setup visual hierarchy and routine card implemented; light/dark iPhone screenshots checked. See [implementation and validation notes](TASK-3.md). Broader device/accessibility QA remains in Task 7.
 - Task 4: active timer redesigned with authoritative presentation state and deadline-based phase timing. See [implementation and validation notes](TASK-4.md).
 - Task 5: named preset cards, full screen create/edit flow, bundled cat image selection and versioned Core Data migration implemented. See [implementation and validation notes](TASK-5.md).
-- Task 6: next — Settings and Live Activity surfaces.
+- Task 6: Settings, Live Activity and Dynamic Island styling implemented, with shared Skip break behavior. See [implementation and validation notes](TASK-6.md).
+- Task 7: next — broader device, accessibility and release checks, including physical-device Live Activity validation.
 
 ## Goal and approved direction
 

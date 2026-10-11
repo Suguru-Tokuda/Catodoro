@@ -23,11 +23,11 @@ class SettingOptionsViewCell: BaseTableViewCell {
         return label
     }()
 
-    override func setupSubviews() {
+    override func constructSubviews() {
         contentView.addAutolayoutSubviews([icon, settingLabel])
     }
 
-    override func setupConstraints() {
+    override func constructSubviewLayoutConstraints() {
         let bottomConstraint = settingLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16)
         bottomConstraint.priority = .defaultHigh
 

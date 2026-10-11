@@ -59,7 +59,8 @@ final class AddPresetViewController: UIViewController {
         editorView.onSelectionRequested = { [weak self] selection in
             guard let self else { return }
 
-            self.presentRoutineSelection(selection, configuration: self.viewModel.configuration) { [weak self] updated in
+            self.presentRoutineSelection(selection, configuration: self.viewModel.configuration,
+                                         accent: self.accent) { [weak self] updated in
                 self?.viewModel.configuration = updated
                 self?.render()
             }

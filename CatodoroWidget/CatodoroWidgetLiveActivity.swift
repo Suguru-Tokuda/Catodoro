@@ -11,100 +11,75 @@ import WidgetKit
 import SwiftUI
 
 struct CatodoroWidgetLiveActivity: Widget {
-    @State private var currentTime = Date()
-
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: TimerAttributes.self) { context in
             TimerLiveActivityView(context: context)
-                .activityBackgroundTint(Color.black.opacity(0.7))
-                .activitySystemActionForegroundColor(.white)
+                .activityBackgroundTint(.clear)
+                .activitySystemActionForegroundColor(ActivityTheme.accent(context.state.accentCode, scheme: .dark))
         } dynamicIsland: { context in
             let state = context.state
+            let accent = ActivityTheme.accent(state.accentCode, scheme: .dark)
             return DynamicIsland {
-                DynamicIslandExpandedRegion(.leading) {
-                    getCountDownTextView(from: state)
-                }
-                DynamicIslandExpandedRegion(.trailing) {
-                    getTimerDisplayTextView(from: state)
-                }
                 DynamicIslandExpandedRegion(.bottom) {
+                    ExpandedTimerActivity(state: state)
                 }
             } compactLeading: {
-                getCountDownTextView(from: state)
+                Image("ActivityCatPaw", bundle: ActivityTheme.imageBundle)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 20, height: 20)
+                    .foregroundStyle(accent)
+                    .accessibilityLabel(state.phaseTitle)
             } compactTrailing: {
-                getTimerDisplayTextView(from: state)
+                ActivityCountdown(state: state)
+                    .font(.system(.caption, design: .rounded, weight: .semibold))
+                    .foregroundStyle(accent)
+                    .frame(width: state.currentTimerValue >= 3600 ? 66 : 48)
             } minimal: {
-                getTimerDisplayTextView(from: state)
+                Image("ActivityCatPaw", bundle: ActivityTheme.imageBundle)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 20, height: 20)
+                    .foregroundStyle(accent)
+                    .accessibilityLabel(state.phaseTitle)
             }
+            .keylineTint(accent)
         }
-    }
-
-    @ViewBuilder
-    func getTimerDisplayTextView(from state: TimerAttributes.ContentState) -> some View {
-        if state.timerStatus == .playing {
-            Text(state.endTime, style: .timer)
-        } else {
-            Text(getTimerDisplayText(from: state))
-        }
-    }
-
-    @ViewBuilder
-    func getCountDownTextView(from state: TimerAttributes.ContentState) -> some View {
-        Text("\(state.timerType.rawValue) \(state.interval)")
-            .contentTransition(.identity)
-    }
-
-    func getTimerDisplayText(from state: TimerAttributes.ContentState) -> String {
-        var retVal = ""
-        switch state.timerStatus {
-        case .paused:
-            retVal = state.currentTimerValue.getTimerLabelValue()
-        case .playing:
-            break
-        case .finished:
-            retVal = "Finished"
-        default:
-            break
-        }
-        
-        return retVal
     }
 }
 
 extension TimerAttributes {
     static var preview: TimerAttributes {
-        TimerAttributes(name: "Preview")
+        TimerAttributes(name: "Catodoro")
     }
-}
 
-extension TimerAttributes {
     static var defaultValue: TimerAttributes.ContentState {
-        TimerAttributes.ContentState(currentTimerValue: 10,
-                                     endTime: .now + 10,
-                                     intervals: 0,
-                                     interval: 0,
-                                     timerType: .main,
-                                     timerStatus: .playing)
+        .init(currentTimerValue: 1122, endTime: .now + 1122, intervals: 4, interval: 2,
+              timerType: .main, timerStatus: .playing, phaseDuration: 1500)
+    }
+
+    static var breakValue: TimerAttributes.ContentState {
+        .init(currentTimerValue: 252, endTime: .now + 252, intervals: 4, interval: 2,
+              timerType: .interval, timerStatus: .playing, phaseDuration: 300)
     }
 
     static var finishValue: TimerAttributes.ContentState {
-        TimerAttributes.ContentState(currentTimerValue: 10,
-                                     endTime: .now + 10,
-                                     intervals: 0,
-                                     interval: 0,
-                                     timerType: .main,
-                                     timerStatus: .playing)
+        .init(currentTimerValue: 0, endTime: .now, intervals: 4, interval: 4,
+              timerType: .main, timerStatus: .finished, phaseDuration: 1500)
     }
 }
 
-#Preview("Notification", as: .content, using: TimerAttributes.preview) {
+#Preview("Focus", as: .content, using: TimerAttributes.preview) {
     CatodoroWidgetLiveActivity()
 } contentStates: {
     TimerAttributes.defaultValue
+    TimerAttributes.breakValue
+    TimerAttributes.finishValue
 }
 
-#Preview("Notification", as: .content, using: TimerAttributes.preview) {
+#Preview("Expanded", as: .dynamicIsland(.expanded), using: TimerAttributes.preview) {
     CatodoroWidgetLiveActivity()
 } contentStates: {
-    TimerAttributes.finishValue
+    TimerAttributes.defaultValue
+    TimerAttributes.breakValue
 }

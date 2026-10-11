@@ -19,9 +19,8 @@ class SettingsCoordinator: Coordinator {
     }
 
     func start() {
-        let settingsViewController = SettingsViewController()
+        let settingsViewController = SettingsViewController(preferences: preferences)
         settingsViewController.delegate = self
-        settingsViewController.preferences = preferences
         navigationController.pushViewController(settingsViewController, animated: false)
     }
 
