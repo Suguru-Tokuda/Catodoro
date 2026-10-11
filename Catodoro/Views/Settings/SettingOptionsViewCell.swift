@@ -9,13 +9,13 @@ import UIKit
 
 class SettingOptionsViewCell: BaseTableViewCell {
     static let reuseIdentifier: String = "SettingOptionsViewCell"
-    private lazy var icon: UIImageView = {
+    private let icon: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.tintColor = .label
         return imageView
     }()
-    private lazy var settingLabel: UILabel = {
+    private let settingLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .semibold)
         label.textColor = .label

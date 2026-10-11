@@ -87,7 +87,7 @@ class TimerStartButtonTests: XCTestCase {
         
         // Assert
         XCTAssertNotNil(label, "Test hooks should allow access to button label")
-        XCTAssertEqual(label.font, CatTheme.font(.title2, weight: .bold), "Label font should be system font with size 28 and bold weight")
+        XCTAssertEqual(label.font, CatTheme.font(.headline, weight: .semibold), "Label font should be system font with size 28 and bold weight")
     }
 }
 

@@ -18,7 +18,7 @@ class PresetsViewController: BaseViewController {
     private var viewModel: PresetsViewModelProtocol = PresetsViewModel()
     private var cancellables: Set<AnyCancellable> = .init()
 
-    private lazy var label: UILabel = {
+    private let label: UILabel = {
         let label = UILabel()
         label.text = "Presets"
         label.font = CatTheme.font(.title2, weight: .bold)
@@ -27,7 +27,7 @@ class PresetsViewController: BaseViewController {
         label.textAlignment = .center
         return label
     }()
-    private lazy var presetsTableView: UITableView = {
+    private let presetsTableView: UITableView = {
         let tableView = UITableView()
         tableView.backgroundColor = CatTheme.background
         tableView.separatorColor = CatTheme.separator

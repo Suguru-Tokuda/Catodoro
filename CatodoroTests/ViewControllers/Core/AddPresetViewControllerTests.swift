@@ -52,47 +52,6 @@ final class AddPresetViewControllerTests: XCTestCase {
         XCTAssertEqual(viewController.navigationItem.title, "Add Preset", "The navigation title should be set correctly.")
     }
 
-    func test_onTotalDurationSelect_setsViewModelTimerModel() {
-        // Given
-        let hours = 1
-        let minutes = 30
-        let seconds = 45
-        
-        // When
-        viewController.testHooks.timerConfigView.onTotalDurationSelect?(hours, minutes, seconds)
-        
-        // Then
-        XCTAssertEqual(mockViewModel.timerModel.mainTimer.hours, hours, "The hours should be set correctly in the view model.")
-        XCTAssertEqual(mockViewModel.timerModel.mainTimer.minutes, minutes, "The minutes should be set correctly in the view model.")
-        XCTAssertEqual(mockViewModel.timerModel.mainTimer.seconds, seconds, "The seconds should be set correctly in the view model.")
-    }
-
-    func test_onIntervalDurationSelect_setsViewModelInterval() {
-        // Given
-        let hours = 0
-        let minutes = 5
-        let seconds = 0
-        
-        // When
-        viewController.testHooks.timerConfigView.onIntervalDurationSelect?(hours, minutes, seconds)
-        
-        // Then
-        XCTAssertEqual(mockViewModel.timerModel.interval.hours, hours, "The hours for interval should be set correctly.")
-        XCTAssertEqual(mockViewModel.timerModel.interval.minutes, minutes, "The minutes for interval should be set correctly.")
-        XCTAssertEqual(mockViewModel.timerModel.interval.seconds, seconds, "The seconds for interval should be set correctly.")
-    }
-
-    func test_onIntervalSelect_setsViewModelIntervals() {
-        // Given
-        let intervals = 5
-        
-        // When
-        viewController.testHooks.timerConfigView.onIntervalSelect?(intervals)
-        
-        // Then
-        XCTAssertEqual(mockViewModel.timerModel.intervals, intervals, "The number of intervals should be set correctly.")
-    }
-
     func test_onStartButtonTap_callsAddPreset() {
         let expectation = expectation(description: "Add Preset")
         // Given

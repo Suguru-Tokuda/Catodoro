@@ -16,18 +16,30 @@ class TimerPickerView: BaseView {
     private var hourLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
+        label.font = CatTheme.font(.subheadline)
+        label.textColor = CatTheme.secondaryText
+        label.adjustsFontForContentSizeCategory = true
+        label.numberOfLines = 0
         label.text = "Hours"
         return label
     }()
     private var minuteLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
+        label.font = CatTheme.font(.subheadline)
+        label.textColor = CatTheme.secondaryText
+        label.adjustsFontForContentSizeCategory = true
+        label.numberOfLines = 0
         label.text = "Minutes"
         return label
     }()
     private var secondLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
+        label.font = CatTheme.font(.subheadline)
+        label.textColor = CatTheme.secondaryText
+        label.adjustsFontForContentSizeCategory = true
+        label.numberOfLines = 0
         label.text = "Seconds"
         return label
     }()
@@ -100,23 +112,29 @@ class TimerPickerView: BaseView {
         ])
 
         NSLayoutConstraint.activate([
-            labelStackView.heightAnchor.constraint(equalToConstant: .init(24)),
-            pickersStackView.heightAnchor.constraint(equalToConstant: .init(120))
+            labelStackView.heightAnchor.constraint(greaterThanOrEqualToConstant: 24),
+            pickersStackView.heightAnchor.constraint(equalToConstant: 180)
         ])
     }
 
     private func setupEventHandlers() {
-        hourPicker.onSelect = { hours in
+        hourPicker.onSelect = { [weak self] hours in
+            guard let self else { return }
+
             self.hours = hours
             self.handleOnSelect()
         }
 
-        minutePicker.onSelect = { minutes in
+        minutePicker.onSelect = { [weak self] minutes in
+            guard let self else { return }
+
             self.minutes = minutes
             self.handleOnSelect()
         }
     
-        secondPicker.onSelect = { seconds in
+        secondPicker.onSelect = { [weak self] seconds in
+            guard let self else { return }
+
             self.seconds = seconds
             self.handleOnSelect()
         }

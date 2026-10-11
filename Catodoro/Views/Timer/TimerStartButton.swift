@@ -29,7 +29,7 @@ class TimerStartButton: UIButton {
 
     private let buttonLabel: UILabel = {
         let label = UILabel()
-        label.font = CatTheme.font(.title2, weight: .bold)
+        label.font = CatTheme.font(.headline, weight: .semibold)
         label.adjustsFontForContentSizeCategory = true
         label.textColor = CatTheme.onAccent
         return label
@@ -41,8 +41,7 @@ class TimerStartButton: UIButton {
     let trailingImageView: UIImageView
 
     override init(frame: CGRect) {
-        let imageConfig = UIImage.SymbolConfiguration(pointSize: 24, weight: .bold)
-        let image = UIImage(systemName: "pawprint.fill")?.withConfiguration(imageConfig)
+        let image = UIImage(named: "CatPaw")?.withRenderingMode(.alwaysTemplate)
 
         // Set up leading and trailing images
         leadingImageView = UIImageView(image: image)
@@ -65,7 +64,7 @@ class TimerStartButton: UIButton {
         stackView.addArrangedSubviews([
             leadingImageView,
             buttonLabel,
-            trailingImageView,
+
         ])
         stackView.axis = .horizontal
         stackView.alignment = .center
@@ -93,8 +92,16 @@ class TimerStartButton: UIButton {
             trailingImageView.widthAnchor.constraint(equalToConstant: 30),
             stackView.centerXAnchor.constraint(equalTo: centerXAnchor),
             stackView.centerYAnchor.constraint(equalTo: centerYAnchor),
-            stackView.heightAnchor.constraint(equalToConstant: 50)
+            stackView.topAnchor.constraint(equalTo: topAnchor, constant: 16),
+            stackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
+            stackView.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor, constant: 16),
+            stackView.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -16)
         ])
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        layer.cornerRadius = bounds.height / 2
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {

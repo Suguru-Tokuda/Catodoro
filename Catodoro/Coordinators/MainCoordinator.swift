@@ -28,7 +28,7 @@ enum TabBarPage {
     var tabTitle: String {
         switch self {
         case .timer:
-            return "Timer"
+            return "Focus"
         case .presets:
             return "Presets"
         case .settings:
@@ -50,7 +50,9 @@ enum TabBarPage {
     var tabImage: UIImage? {
         switch self {
         case .timer:
-            return UIImage(systemName: "timer")
+            return UIImage(named: "CatPaw")?
+                .preparingThumbnail(of: CGSize(width: 25, height: 25))?
+                .withRenderingMode(.alwaysTemplate)
         case .presets:
             return UIImage(systemName: "list.bullet")
         case .settings:

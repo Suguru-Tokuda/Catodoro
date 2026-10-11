@@ -19,7 +19,9 @@ class BaseViewController: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        onFinish?()
+        if isMovingFromParent || isBeingDismissed || navigationController?.isBeingDismissed == true {
+            onFinish?()
+        }
     }
 
     func setupSubviews() {}
