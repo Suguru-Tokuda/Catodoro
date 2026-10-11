@@ -5,190 +5,260 @@
 //  Created by Suguru Tokuda on 11/10/24.
 //
 
+import CatodoroShared
 import UIKit
 
-class TimerView: BaseView {
+final class TimerView: BaseView {
     var onPlayPauseButtonTap: (() -> Void)?
     var onStopButtonTap: (() -> Void)?
     var onDismissButtonTap: (() -> Void)?
-
-    // MARK: - Class properties
-    private let timerCircleDiameter: CGFloat = 250
-    private let buttonSize: CGFloat = 40
-
-    // MARK: - UI Elements
-
-    private var stackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.alignment = .center
-        stackView.distribution = .equalSpacing
-        stackView.spacing = 16
-        return stackView
-    }()
-
-    private var timerNameLabel: UILabel = {
-        let label = UILabel()
-        label.textAlignment = .center
-        label.font = .systemFont(ofSize: 40, weight: .regular)
-        return label
-    }()
-
-    /// UI Elements
-    private var timerLabel: UILabel = {
-        let label = UILabel()
-        label.text = "00:00:00"
-        label.textAlignment = .center
-        label.font = .systemFont(ofSize: 48, weight: .thin)
-        return label
-    }()
-
+    private var isComplete = false
+    private let accent: UIColor
+    private let timerCircleView: TimerCircleView
     private let companion = CatIllustrationView(pose: .focus)
-    private let artworkContainer = UIView()
-    private let artworkMask = CAShapeLayer()
-    private var timerCircleView: TimerCircleView
-    private let playPauseButton: PlayPauseButton = .init()
-    private let stopButton: StopButton = .init()
-    private let dismissButton: DismissButton = {
-        let button = DismissButton()
-        button.isHidden = true
+    private let artworkContainer = TimerArtworkView()
+    private let ringContainer = UIView()
+
+    private let scrollView: UIScrollView = {
+        let view = UIScrollView()
+        view.showsVerticalScrollIndicator = false
+
+        return view
+    }()
+
+    private let stackView: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.alignment = .center
+        stack.spacing = 16
+
+        return stack
+    }()
+
+    private let timerNameLabel: UILabel = {
+        let label = UILabel()
+        label.font = CatTheme.font(.subheadline, weight: .semibold)
+        label.textColor = CatTheme.secondaryText
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.adjustsFontForContentSizeCategory = true
+
+        return label
+    }()
+
+    private let sessionLabel: UILabel = {
+        let label = UILabel()
+        label.font = CatTheme.font(.title3, weight: .semibold)
+        label.textColor = CatTheme.text
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.adjustsFontForContentSizeCategory = true
+
+        return label
+    }()
+
+    private let timerLabel: UILabel = {
+        let label = UILabel()
+        let font = UIFont.monospacedDigitSystemFont(ofSize: 56, weight: .bold)
+        label.font = UIFontMetrics(forTextStyle: .largeTitle).scaledFont(for: font)
+        label.textColor = CatTheme.text
+        label.textAlignment = .center
+        label.adjustsFontForContentSizeCategory = true
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.4
+        label.accessibilityIdentifier = "TimerCountdown"
+
+        return label
+    }()
+
+    private let statusLabel: UILabel = {
+        let label = UILabel()
+        label.font = CatTheme.font(.subheadline)
+        label.textColor = CatTheme.secondaryText
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.adjustsFontForContentSizeCategory = true
+
+        return label
+    }()
+
+    private let messageLabel: UILabel = {
+        let label = UILabel()
+        label.font = CatTheme.font(.subheadline)
+        label.textColor = CatTheme.secondaryText
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.adjustsFontForContentSizeCategory = true
+
+        return label
+    }()
+
+    private let pawsStack: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .horizontal
+        stack.spacing = 12
+        stack.alignment = .center
+        stack.isAccessibilityElement = true
+
+        return stack
+    }()
+
+    private let pawIndicators: [UIImageView] = {
+        (0..<6).map { _ in
+            let image = UIImageView(image: UIImage(named: "CatPaw"))
+            image.contentMode = .scaleAspectFit
+            image.isAccessibilityElement = false
+            image.widthAnchor.constraint(equalToConstant: 28).isActive = true
+            image.heightAnchor.constraint(equalToConstant: 28).isActive = true
+
+            return image
+        }
+    }()
+
+    private let primaryButton: UIButton = {
+        let button = UIButton(type: .system)
+        var configuration = UIButton.Configuration.filled()
+        configuration.baseForegroundColor = CatTheme.onAccent
+        configuration.cornerStyle = .capsule
+        configuration.imagePadding = 10
+        configuration.contentInsets = .init(top: 16, leading: 20, bottom: 16, trailing: 20)
+        configuration.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { attributes in
+            var updated = attributes
+            updated.font = CatTheme.font(.headline, weight: .semibold)
+
+            return updated
+        }
+        button.configuration = configuration
+
+        return button
+    }()
+
+    private let secondaryButton: UIButton = {
+        let button = UIButton(type: .system)
+        var configuration = UIButton.Configuration.bordered()
+        configuration.baseForegroundColor = CatTheme.secondaryText
+        configuration.baseBackgroundColor = .clear
+        configuration.background.strokeColor = CatTheme.separator
+        configuration.background.strokeWidth = 1
+        configuration.cornerStyle = .capsule
+        configuration.imagePadding = 10
+        configuration.contentInsets = .init(top: 16, leading: 20, bottom: 16, trailing: 20)
+        button.configuration = configuration
+
         return button
     }()
 
     init(frame: CGRect, strokeColor: UIColor = ColorOptions.neonBlue.color) {
-        timerCircleView = .init(frame: .init(x: 0, y: 0, width: timerCircleDiameter, height: timerCircleDiameter),
-                                strokeColor: strokeColor)
+        self.accent = strokeColor
+        self.timerCircleView = TimerCircleView(strokeColor: strokeColor)
         super.init(frame: frame)
-        setupActionHandlers()
     }
-    
+
     required init?(coder: NSCoder) {
         nil
     }
 
     override func setupSubviews() {
-        addAutolayoutSubviews([
-            timerNameLabel,
-            artworkContainer,
-            timerCircleView,
-            stackView,
-            playPauseButton,
-            stopButton,
-            dismissButton
-        ])
-
-        artworkContainer.isUserInteractionEnabled = false
-        artworkContainer.layer.mask = artworkMask
-        artworkContainer.addAutolayoutSubview(companion)
-
+        backgroundColor = CatTheme.background
+        addAutolayoutSubview(scrollView)
+        scrollView.addAutolayoutSubview(stackView)
         stackView.addArrangedSubviews([
-            timerLabel
+            timerNameLabel, sessionLabel, ringContainer, pawsStack, messageLabel,
+            primaryButton, secondaryButton
         ])
+        stackView.setCustomSpacing(4, after: timerNameLabel)
+        stackView.setCustomSpacing(28, after: messageLabel)
+        ringContainer.addAutolayoutSubviews([artworkContainer, timerCircleView, timerLabel, statusLabel])
+        artworkContainer.isUserInteractionEnabled = false
+        artworkContainer.addAutolayoutSubview(companion)
+        pawsStack.addArrangedSubviews(pawIndicators)
+        primaryButton.configuration?.baseBackgroundColor = accent
+        primaryButton.addAction(UIAction { [weak self] _ in
+            self?.onPlayPauseButtonTap?()
+        }, for: .touchUpInside)
+        secondaryButton.addAction(UIAction { [weak self] _ in
+            guard let self else {
+                return
+            }
+
+            if isComplete {
+                onDismissButtonTap?()
+            } else {
+                onStopButtonTap?()
+            }
+        }, for: .touchUpInside)
     }
 
     override func setupConstraints() {
+        let ringWidth = ringContainer.widthAnchor.constraint(equalTo: stackView.widthAnchor)
+        ringWidth.priority = .defaultHigh
+        let contentWidth = stackView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor, constant: -40)
+        contentWidth.priority = .defaultHigh
+
         NSLayoutConstraint.activate([
-            timerNameLabel.bottomAnchor.constraint(equalTo: timerCircleView.topAnchor, constant: -8),
-            timerNameLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
-            timerNameLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
-
-            timerCircleView.centerXAnchor.constraint(equalTo: centerXAnchor),
-            timerCircleView.centerYAnchor.constraint(equalTo: centerYAnchor),
-            timerCircleView.widthAnchor.constraint(equalToConstant: timerCircleDiameter),
-            timerCircleView.heightAnchor.constraint(equalToConstant: timerCircleDiameter),
-            
-            stackView.centerXAnchor.constraint(equalTo: centerXAnchor),
-            stackView.centerYAnchor.constraint(equalTo: timerCircleView.centerYAnchor, constant: -24),
-            artworkContainer.leadingAnchor.constraint(equalTo: timerCircleView.leadingAnchor),
-            artworkContainer.trailingAnchor.constraint(equalTo: timerCircleView.trailingAnchor),
-            artworkContainer.topAnchor.constraint(equalTo: timerCircleView.topAnchor),
-            artworkContainer.bottomAnchor.constraint(equalTo: timerCircleView.bottomAnchor),
+            scrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            scrollView.contentLayoutGuide.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
+            stackView.centerXAnchor.constraint(equalTo: scrollView.frameLayoutGuide.centerXAnchor),
+            stackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor, constant: 28),
+            stackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -28),
+            contentWidth,
+            stackView.widthAnchor.constraint(lessThanOrEqualToConstant: 420),
+            ringWidth,
+            ringContainer.widthAnchor.constraint(lessThanOrEqualToConstant: 340),
+            ringContainer.heightAnchor.constraint(equalTo: ringContainer.widthAnchor),
+            timerCircleView.leadingAnchor.constraint(equalTo: ringContainer.leadingAnchor),
+            timerCircleView.trailingAnchor.constraint(equalTo: ringContainer.trailingAnchor),
+            timerCircleView.topAnchor.constraint(equalTo: ringContainer.topAnchor),
+            timerCircleView.bottomAnchor.constraint(equalTo: ringContainer.bottomAnchor),
+            artworkContainer.leadingAnchor.constraint(equalTo: ringContainer.leadingAnchor),
+            artworkContainer.trailingAnchor.constraint(equalTo: ringContainer.trailingAnchor),
+            artworkContainer.topAnchor.constraint(equalTo: ringContainer.topAnchor),
+            artworkContainer.bottomAnchor.constraint(equalTo: ringContainer.bottomAnchor),
             companion.centerXAnchor.constraint(equalTo: artworkContainer.centerXAnchor),
-            companion.bottomAnchor.constraint(equalTo: artworkContainer.bottomAnchor, constant: 30),
-            companion.widthAnchor.constraint(equalTo: artworkContainer.widthAnchor, constant: 20),
-            companion.heightAnchor.constraint(equalToConstant: 150),
-
-            timerLabel.widthAnchor.constraint(equalToConstant: 200),
-
-            playPauseButton.topAnchor.constraint(equalTo: timerCircleView.bottomAnchor),
-            playPauseButton.leadingAnchor.constraint(equalTo: timerCircleView.leadingAnchor),
-            playPauseButton.heightAnchor.constraint(equalToConstant: buttonSize),
-            playPauseButton.widthAnchor.constraint(equalToConstant: buttonSize),
-
-            stopButton.topAnchor.constraint(equalTo: timerCircleView.bottomAnchor),
-            stopButton.trailingAnchor.constraint(equalTo: timerCircleView.trailingAnchor),
-            stopButton.heightAnchor.constraint(equalToConstant: buttonSize),
-            stopButton.widthAnchor.constraint(equalToConstant: buttonSize),
-
-            dismissButton.topAnchor.constraint(equalTo: timerCircleView.bottomAnchor),
-            dismissButton.trailingAnchor.constraint(equalTo: timerCircleView.trailingAnchor),
-            dismissButton.heightAnchor.constraint(equalToConstant: buttonSize),
-            dismissButton.widthAnchor.constraint(equalToConstant: buttonSize),
+            companion.bottomAnchor.constraint(equalTo: artworkContainer.bottomAnchor, constant: 32),
+            companion.widthAnchor.constraint(equalTo: artworkContainer.widthAnchor, multiplier: 0.95),
+            companion.heightAnchor.constraint(equalTo: artworkContainer.heightAnchor, multiplier: 0.63),
+            timerLabel.topAnchor.constraint(equalTo: ringContainer.topAnchor, constant: 65),
+            timerLabel.centerXAnchor.constraint(equalTo: ringContainer.centerXAnchor),
+            timerLabel.widthAnchor.constraint(equalTo: ringContainer.widthAnchor, multiplier: 0.8),
+            statusLabel.topAnchor.constraint(equalTo: timerLabel.bottomAnchor, constant: 4),
+            statusLabel.centerXAnchor.constraint(equalTo: ringContainer.centerXAnchor),
+            statusLabel.widthAnchor.constraint(equalTo: ringContainer.widthAnchor, multiplier: 0.75),
+            timerNameLabel.widthAnchor.constraint(equalTo: stackView.widthAnchor),
+            sessionLabel.widthAnchor.constraint(equalTo: stackView.widthAnchor),
+            messageLabel.widthAnchor.constraint(equalTo: stackView.widthAnchor),
+            primaryButton.widthAnchor.constraint(equalTo: stackView.widthAnchor),
+            secondaryButton.widthAnchor.constraint(equalTo: stackView.widthAnchor),
+            primaryButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 56),
+            secondaryButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 52)
         ])
     }
 
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        // Match the inner edge of the progress ring; only the illustration is clipped.
-        let inset = 10 + timerCircleView.lineWidth / 2
-        artworkMask.frame = artworkContainer.bounds
-        artworkMask.path = UIBezierPath(ovalIn: artworkContainer.bounds.insetBy(dx: inset, dy: inset)).cgPath
-    }
+    func render(_ state: TimerPresentationState) {
+        isComplete = state.status == .finished
+        timerNameLabel.text = state.phaseTitle.uppercased()
+        sessionLabel.text = state.sessionSummary
+        timerLabel.text = state.countdown
+        timerLabel.accessibilityLabel = "Time remaining"
+        timerLabel.accessibilityValue = TimerConfigModel.durationSummary(ceil(state.remainingDuration))
+        timerCircleView.render(progress: isComplete ? 1 : 1 - state.progress)
+        companion.pose = isComplete ? .playful : (state.isBreak ? .timerBreak : .focus)
+        statusLabel.text = isComplete ? "Well done!" : (state.status == .paused ? "Paused" : (state.isBreak ? "Rest your paws." : "Time to focus."))
+        messageLabel.text = isComplete ? "One paw at a time. You did it!"
+            : (state.status == .paused ? "Your routine will be here when you’re ready." : "Your cat is keeping you company.")
+        primaryButton.configuration?.title = isComplete ? "Focus again" : (state.status == .playing ? "Pause" : "Resume")
+        primaryButton.configuration?.image = UIImage(systemName: isComplete ? "arrow.clockwise" : (state.status == .playing ? "pause.fill" : "play.fill"))
+        secondaryButton.configuration?.title = isComplete ? "Back to routine" : "End session"
+        secondaryButton.configuration?.image = UIImage(systemName: isComplete ? "arrow.left" : "stop.fill")
+        pawsStack.accessibilityLabel = state.sessionSummary
 
-    private func setupActionHandlers() {
-        playPauseButton.onButtonTap = { [weak self] in
-            guard let self else { return }
-            onPlayPauseButtonTap?()
+        for (index, paw) in pawIndicators.enumerated() {
+            paw.isHidden = index >= min(6, state.sessionCount)
+            paw.tintColor = isComplete || index < state.sessionIndex ? accent : CatTheme.disabled
         }
-
-        stopButton.onButtonTap = { [weak self] in
-            guard let self else { return }
-            onStopButtonTap?()
-        }
-
-        dismissButton.onButtonTap = { [weak self] in
-            guard let self else { return }
-            onDismissButtonTap?()
-        }
-    }
-}
-
-extension TimerView {
-    func setCompanion(isBreak: Bool) {
-        companion.pose = isBreak ? .timerBreak : .focus
-    }
-
-    func setTimerLabelText(labelText: String) {
-        timerLabel.text = labelText
-    }
-
-    func setTimerNameLabelText(labelText: String) {
-        timerNameLabel.text = labelText
-    }
-
-    func configurePlayPauseButton(timerStatus: TimerButtonStatus) {
-        playPauseButton.configure(timerStatus: timerStatus)
-    }
-
-    func pauseTimer() {
-        timerCircleView.pauseTimer()
-    }
-
-    func stopTimer() {
-        timerCircleView.resetTimer()
-    }
-
-    func startTimer(duration: TimeInterval) {
-        timerCircleView.startTimer(duration: duration)
-    }
-
-    func resumeTimer() {
-        timerCircleView.resumeTimer()
-    }
-
-    func setupStopDimissButtons(showStopButton: Bool) {
-        stopButton.isHidden = !showStopButton
-        dismissButton.isHidden = showStopButton
     }
 }
 
@@ -201,15 +271,65 @@ extension TimerView {
     struct TestHooks {
         let target: TimerView
 
-        var artworkMask: CAShapeLayer { target.artworkMask }
-        var companion: CatIllustrationView { target.companion }
-        var artworkContainer: UIView { target.artworkContainer }
-        var timerNameLabel: UILabel { target.timerNameLabel }
-        var timerLabel: UILabel { target.timerLabel }
-        var stackView: UIStackView { target.stackView }
-        var timerCircleView: TimerCircleView { target.timerCircleView }
-        var playPauseButton: PlayPauseButton { target.playPauseButton }
-        var stopButton: StopButton { target.stopButton }
+        var artworkMask: CAShapeLayer {
+            target.artworkContainer.artworkMask
+        }
+
+        var companion: CatIllustrationView {
+            target.companion
+        }
+
+        var artworkContainer: UIView {
+            target.artworkContainer
+        }
+
+        var timerNameLabel: UILabel {
+            target.timerNameLabel
+        }
+
+        var timerLabel: UILabel {
+            target.timerLabel
+        }
+
+        var timerCircleView: TimerCircleView {
+            target.timerCircleView
+        }
+
+        var primaryButton: UIButton {
+            target.primaryButton
+        }
+
+        var secondaryButton: UIButton {
+            target.secondaryButton
+        }
+
+        var statusLabel: UILabel {
+            target.statusLabel
+        }
+
     }
 }
 #endif
+
+/// Rebuild the illustration mask after this container has received its final bounds.
+private final class TimerArtworkView: UIView {
+    let artworkMask = CAShapeLayer()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        layer.mask = artworkMask
+    }
+
+    required init?(coder: NSCoder) {
+        nil
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        artworkMask.frame = bounds
+        let inset: CGFloat = 26
+        let innerBounds = bounds.insetBy(dx: inset, dy: inset)
+        artworkMask.path = innerBounds.width > 0 && innerBounds.height > 0
+            ? UIBezierPath(ovalIn: innerBounds).cgPath : nil
+    }
+}

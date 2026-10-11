@@ -12,90 +12,67 @@ protocol TimerViewControllerDelegate: AnyObject {
     func timerViewControllerDidFinish(_ controller: TimerViewController)
 }
 
-class TimerViewController: BaseViewController {
+final class TimerViewController: BaseViewController {
     weak var delegate: TimerViewControllerDelegate?
-    private var cancellables: Set<AnyCancellable> = .init()
-    private var viewModel: TimerViewModel
-    private var timerView: TimerView
+    private var cancellables: Set<AnyCancellable> = []
+    private var hasExited = false
+    private let viewModel: TimerViewModel
+    private let timerView: TimerView
 
     init(preferences: CatodoroPreferencesProtocol?, liveActivityManager: LiveActivityManaging?) {
-        viewModel = .init(preferences: preferences, liveActivityManager: liveActivityManager)
-        timerView = .init(frame: .zero, strokeColor: ColorOptions(preferences?.color ?? "").color)
+        viewModel = TimerViewModel(preferences: preferences, liveActivityManager: liveActivityManager)
+        timerView = TimerView(frame: .zero, strokeColor: ColorOptions(preferences?.color ?? "").color)
         super.init(nibName: nil, bundle: nil)
-        addSubscripitons()
+        addSubscriptions()
     }
-    
+
     required init?(coder: NSCoder) {
         nil
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        setActionHandlers()
         navigationItem.setHidesBackButton(true, animated: false)
+        timerView.onPlayPauseButtonTap = { [weak self] in
+            self?.viewModel.handlePlayPauseButtonTap()
+        }
+        timerView.onStopButtonTap = { [weak self] in
+            self?.viewModel.stopTimer()
+        }
+        timerView.onDismissButtonTap = { [weak self] in
+            self?.viewModel.stopTimer()
+        }
+        timerView.render(viewModel.presentationSubject.value)
     }
 
-    func addSubscripitons() {
-        viewModel.timerSubject
-            .subscribe(on: DispatchQueue.global(qos: .userInteractive))
+    private func addSubscriptions() {
+        viewModel.presentationSubject
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] timerLabelValue in
-                guard let self else { return }
-                timerView.setTimerLabelText(labelText: timerLabelValue)
-            }
-            .store(in: &cancellables)
-
-        viewModel.timerStatusSubject
-            .subscribe(on: DispatchQueue.global(qos: .userInteractive))
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] timerStatus in
-                guard let self else { return }
-                timerView.configurePlayPauseButton(timerStatus: timerStatus == .playing ? .playing : .paused)
+            .sink { [weak self] state in
+                self?.timerView.render(state)
             }
             .store(in: &cancellables)
 
         viewModel.timerActionSubject
-            .subscribe(on: DispatchQueue.global(qos: .userInteractive))
-            .receive(on: DispatchQueue.main)
             .dropFirst()
-            .sink { [weak self] timerAction in
-                guard let self else { return }
-                switch timerAction {
-                case .pause:
-                    timerView.pauseTimer()
-                    timerView.setupStopDimissButtons(showStopButton: true)
-                case .stop:
-                    timerView.stopTimer()
-                    timerView.setupStopDimissButtons(showStopButton: viewModel.audioState == .stopped ? true : false)
-                case .start:
-                    timerView.stopTimer()
-                    timerView.startTimer(duration: viewModel.duration)
-                    timerView.setupStopDimissButtons(showStopButton: true)
-                case .resume:
-                    timerView.resumeTimer()
-                    timerView.setupStopDimissButtons(showStopButton: true)
-                case .finish:
-                    timerView.setupStopDimissButtons(showStopButton: false)
-                    timerView.stopTimer()
-                }
-            }
-            .store(in: &cancellables)
-
-        viewModel.timerLabelSubject
-            .subscribe(on: DispatchQueue.global(qos: .userInteractive))
+            .filter { $0 == .stop }
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] timerNameStr in
-                guard let self else { return }
-                timerView.setTimerNameLabelText(labelText: timerNameStr)
-                timerView.setCompanion(isBreak: viewModel.isBreak)
+            .sink { [weak self] _ in
+                guard let self, !hasExited else {
+                    return
+                }
+
+                hasExited = true
+                delegate?.timerViewControllerDidFinish(self)
             }
             .store(in: &cancellables)
     }
 
     func configure(timerConfigViewModel: TimerConfigViewModel) {
-        viewModel.configure(totalDuration: timerConfigViewModel.timerModel.mainTimer.duration,
-                            intervalDuration: timerConfigViewModel.timerModel.interval.duration,
-                            intervals: timerConfigViewModel.timerModel.intervals)
+        let routine = timerConfigViewModel.timerModel
+        viewModel.configure(totalDuration: routine.mainTimer.duration,
+                            intervalDuration: routine.interval.duration,
+                            intervals: routine.intervals)
     }
 
     override func setupSubviews() {
@@ -111,44 +88,5 @@ class TimerViewController: BaseViewController {
             timerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             timerView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
-    }
-}
-
-// MARK: Action handlers
-
-extension TimerViewController {
-    private func setActionHandlers() {
-        handlePlayPauseButtonTapped()
-        handleStopButton()
-        handleDismissButton()
-    }
-    
-    private func handlePlayPauseButtonTapped() {
-        timerView.onPlayPauseButtonTap = { [weak self] in
-            guard let self else { return }
-            let timerAction = viewModel.timerActionSubject.value
-            if timerAction == .finish {
-                timerView.stopTimer()
-            }
-            viewModel.handlePlayPauseButtonTap()
-        }
-    }
-    
-    private func handleStopButton() {
-        timerView.onStopButtonTap = { [weak self] in
-            guard let self else { return }
-            viewModel.stopTimer()
-            timerView.stopTimer()
-            delegate?.timerViewControllerDidFinish(self)
-        }
-    }
-
-    private func handleDismissButton() {
-        timerView.onDismissButtonTap = { [weak self] in
-            guard let self else { return }
-            viewModel.stopTimer()
-            viewModel.stopSound()
-            timerView.stopTimer()
-        }
     }
 }
