@@ -9,6 +9,7 @@ import Combine
 import UIKit
 
 protocol PresetsViewControllerDelegate: AnyObject {
+    func presetsViewControllerDidRequestEdit(_ viewController: PresetsViewController, preset: PresetModel)
     func presetsViewControllerDidSelectPreset(_ viewController: PresetsViewController, preset: PresetModel)
     func presetsViewControllerDidTapAddButton(_ viewController: PresetsViewController, onFinish: @escaping(() -> Void))
 }
@@ -30,7 +31,9 @@ class PresetsViewController: BaseViewController {
     private let presetsTableView: UITableView = {
         let tableView = UITableView()
         tableView.backgroundColor = CatTheme.background
-        tableView.separatorColor = CatTheme.separator
+        tableView.separatorStyle = .none
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 180
         tableView.register(PresetListViewCell.self,
                            forCellReuseIdentifier: PresetListViewCell.reuseIdentifier)
         tableView.separatorInset = .init(top: 0, left: 0, bottom: 0, right: 0)
@@ -43,24 +46,23 @@ class PresetsViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupSubviews()
-        setupConstraints()
         setupAddButton()
         addSubscriptions()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        Task(priority: .utility) {
-            await viewModel.loadPresets()
-        }
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+        navigationController?.navigationBar.tintColor = ColorOptions.neonBlue.color
+        reloadPresets()
     }
 
     override func setupSubviews() {
         super.setupSubviews()
         presetsTableView.delegate = self
         presetsTableView.dataSource = self
-        presetsTableView.allowsSelection = false
+        presetsTableView.allowsSelection = true
+        view.backgroundColor = CatTheme.background
         view.addAutolayoutSubviews([
             label,
             presetsTableView
@@ -68,7 +70,7 @@ class PresetsViewController: BaseViewController {
     }
 
     override func setupConstraints() {
-        super.setupSubviews()
+        super.setupConstraints()
         NSLayoutConstraint.activate([
             label.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             label.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -77,6 +79,35 @@ class PresetsViewController: BaseViewController {
             presetsTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             presetsTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+    }
+
+    private func reloadPresets() {
+        Task { [weak self] in
+            guard let self else { return }
+
+            let spinner = UIActivityIndicatorView(style: .medium)
+            if self.viewModel.presets.isEmpty {
+                spinner.startAnimating()
+                self.presetsTableView.backgroundView = spinner
+            }
+
+            await self.viewModel.loadPresets()
+            self.updateEmptyState()
+            self.showPersistenceErrorIfNeeded()
+        }
+    }
+
+    private func showPersistenceErrorIfNeeded() {
+        guard let error = viewModel.coreDataError, presentedViewController == nil else { return }
+
+        let alert = UIAlertController(title: "Couldn't update presets", message: "Please try again. Your saved presets have not been removed.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .cancel))
+        if error == .get {
+            alert.addAction(UIAlertAction(title: "Retry", style: .default) { [weak self] _ in
+                self?.reloadPresets()
+            })
+        }
+        present(alert, animated: true)
     }
 
     private func setupAddButton() {
@@ -88,8 +119,26 @@ class PresetsViewController: BaseViewController {
         viewModel.presetsPublisher.receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.presetsTableView.reloadData()
+                self?.updateEmptyState()
             }
             .store(in: &cancellables)
+    }
+
+    private func updateEmptyState() {
+        guard viewModel.presets.isEmpty else {
+            presetsTableView.backgroundView = nil
+            return
+        }
+
+        var configuration = UIContentUnavailableConfiguration.empty()
+        configuration.image = UIImage(named: "CatPaw")?.preparingThumbnail(of: CGSize(width: 48, height: 48))
+        configuration.text = "Your routines belong here"
+        configuration.secondaryText = "Save a favorite rhythm and choose a cat to keep you company."
+        configuration.button.title = "Create preset"
+        configuration.buttonProperties.primaryAction = UIAction { [weak self] _ in
+            self?.handleAddButtonTap()
+        }
+        presetsTableView.backgroundView = UIContentUnavailableView(configuration: configuration)
     }
 
     private func removeSubscriptions() {
@@ -99,22 +148,22 @@ class PresetsViewController: BaseViewController {
 
 extension PresetsViewController {
     @objc private func handleAddButtonTap() {
-        delegate?.presetsViewControllerDidTapAddButton(self) { [weak self] in
-            guard let self else { return }
-            Task(priority: .utility) { [weak self] in
-                guard let self else { return }
-                await viewModel.loadPresets()
-            }
-        }
+        delegate?.presetsViewControllerDidTapAddButton(self, onFinish: {})
     }
 }
 
 extension PresetsViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        delegate?.presetsViewControllerDidRequestEdit(self, preset: viewModel.presets[indexPath.row])
+    }
+
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             let preset = viewModel.presets[indexPath.row]
             Task(priority: .utility) {
                 await viewModel.deletePreset(preset)
+                showPersistenceErrorIfNeeded()
             }
         }
     }
@@ -131,7 +180,9 @@ extension PresetsViewController: UITableViewDataSource {
             let presetModel = viewModel.presets[indexPath.row]
             cell.model = presetModel
             cell.onPlayButtonTapped = { [weak self] in
-                self?.delegate?.presetsViewControllerDidSelectPreset(self!, preset: presetModel)
+                guard let self else { return }
+
+                self.delegate?.presetsViewControllerDidSelectPreset(self, preset: presetModel)
             }
             return cell
         } else {

@@ -23,6 +23,7 @@ final class TimerViewController: BaseViewController {
         viewModel = TimerViewModel(preferences: preferences, liveActivityManager: liveActivityManager)
         timerView = TimerView(frame: .zero, strokeColor: ColorOptions(preferences?.color ?? "").color)
         super.init(nibName: nil, bundle: nil)
+        hidesBottomBarWhenPushed = true
         addSubscriptions()
     }
 

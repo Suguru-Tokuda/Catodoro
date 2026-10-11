@@ -83,15 +83,14 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
             timerCoordinator = .init()
             timerCoordinator?.preferences = preferences
             timerCoordinator?.liveActivityManager = liveActivityManager
-            timerCoordinator?.delegate = self
             if let timerCoordinator {
                 timerCoordinator.start()
                 navController = timerCoordinator.navigationController
             }
         case .presets:
             presetsCoordiantor = .init()
-            presetsCoordiantor?.delegate = self
             presetsCoordiantor?.preferences = preferences
+            presetsCoordiantor?.liveActivityManager = liveActivityManager
             if let presetsCoordiantor {
                 presetsCoordiantor.start()
                 navController = presetsCoordiantor.navigationController
@@ -165,28 +164,3 @@ extension TabCoordinator: UITabBarControllerDelegate {
     }
 }
 
-extension TabCoordinator: PresetsCoordinatorDelegate {
-    func startTimer(model: PresetModel) {
-        if let timerCoordinator {
-            selectPage(.timer)
-            if let timerDuration = model.totalDuration.toTimerModel(),
-               let interval = model.intervalDuration.toTimerModel() {
-                let timerConfig = TimerConfigModel(id: model.id,
-                                              mainTimer: timerDuration,
-                                              interval: interval,
-                                              intervals: model.intervals)
-                timerCoordinator.navigateToTimerView(viewModel: .init(timerModel: timerConfig))
-            }
-        }
-    }
-}
-
-extension TabCoordinator: TimerCoordiantorDelegate {
-    func onTimerStarted() {
-        tabBarController.tabBar.isHidden = true
-    }
-    
-    func onTimerFinished() {
-        tabBarController.tabBar.isHidden = false
-    }
-}

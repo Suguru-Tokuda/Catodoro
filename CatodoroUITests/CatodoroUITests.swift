@@ -23,6 +23,60 @@ final class CatodoroUITests: XCTestCase {
     }
 
     @MainActor
+    func test_presetCreateEditAndPersist() throws {
+        let app = XCUIApplication()
+        app.launch()
+        app.tabBars.buttons["Presets"].tap()
+        app.navigationBars.buttons["Add"].tap()
+        let name = "Study " + String(UUID().uuidString.prefix(6))
+        let field = app.textFields["presetName"]
+        XCTAssertTrue(field.waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["savePreset"].isEnabled)
+        field.tap()
+        field.typeText(name + "\n")
+        app.buttons["presetImage"].tap()
+        app.buttons["CatStretching"].tap()
+        app.buttons["Focus time"].tap()
+        app.buttons["50 min"].tap()
+        app.buttons["Set focus time"].tap()
+        capture(app, name: "Preset editor light")
+        app.buttons["savePreset"].tap()
+        XCTAssertTrue(app.staticTexts[name].waitForExistence(timeout: 5))
+        capture(app, name: "Preset cards light")
+        app.staticTexts[name].tap()
+        XCTAssertEqual(app.textFields["presetName"].value as? String, name)
+        XCTAssertEqual(app.buttons["presetImage"].value as? String, "Stretching cat")
+        XCTAssertEqual(app.buttons["Focus time"].value as? String, "50 min")
+        app.buttons["presetImage"].tap()
+        capture(app, name: "Preset image picker")
+        app.buttons["CatSleeping"].tap()
+        app.buttons["savePreset"].tap()
+        app.terminate()
+        app.launch()
+        app.tabBars.buttons["Presets"].tap()
+        XCTAssertTrue(app.staticTexts[name].waitForExistence(timeout: 5))
+        app.staticTexts[name].tap()
+        XCTAssertEqual(app.buttons["presetImage"].value as? String, "Sleeping cat")
+        app.navigationBars.buttons.element(boundBy: 0).tap()
+        app.buttons["Start " + name].tap()
+        XCTAssertTrue(app.buttons["Pause"].waitForExistence(timeout: 5))
+        app.buttons["End session"].tap()
+        XCTAssertTrue(app.tabBars.buttons["Presets"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.tabBars.buttons["Presets"].isSelected)
+        XCTAssertTrue(app.staticTexts[name].exists)
+        app.staticTexts[name].swipeLeft()
+        app.buttons["Delete"].tap()
+        XCTAssertFalse(app.staticTexts[name].exists)
+
+        app.tabBars.buttons["Focus"].tap()
+        app.buttons["Start focusing"].tap()
+        XCTAssertTrue(app.buttons["End session"].waitForExistence(timeout: 5))
+        app.buttons["End session"].tap()
+        XCTAssertTrue(app.tabBars.buttons["Focus"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.tabBars.buttons["Focus"].isSelected)
+    }
+
+    @MainActor
     func testExample() throws {
         // UI tests must launch the application that they test.
         let app = XCUIApplication()

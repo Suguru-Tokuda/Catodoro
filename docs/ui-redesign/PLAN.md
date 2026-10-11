@@ -8,7 +8,8 @@ Prepared October 10, 2026. Based on a source scan of the current working tree an
 - Task 2: shared configuration validation, summaries and selection sheets implemented. See [implementation and validation notes](TASK-2.md).
 - Task 3: Focus setup visual hierarchy and routine card implemented; light/dark iPhone screenshots checked. See [implementation and validation notes](TASK-3.md). Broader device/accessibility QA remains in Task 7.
 - Task 4: active timer redesigned with authoritative presentation state and deadline-based phase timing. See [implementation and validation notes](TASK-4.md).
-- Task 5: next — Presets cards, names, empty state and creation flow.
+- Task 5: named preset cards, full screen create/edit flow, bundled cat image selection and versioned Core Data migration implemented. See [implementation and validation notes](TASK-5.md).
+- Task 6: next — Settings and Live Activity surfaces.
 
 ## Goal and approved direction
 
@@ -131,7 +132,8 @@ Done when: screen and ring stay synchronized during pauses and app return, every
 
 Dependencies: milestones 1–3; schema migration precedes named cards.
 
-- Version the data model; update `PresetModel`, Core Data mapping/save, mocks and fixtures for optional names.
+- Version the data model; update `PresetModel`, Core Data mapping/save, mocks and fixtures for optional names and bundled image identifiers.
+- Provide a full screen create/edit editor with a name field, bundled cat image picker and shared routine selection sheets.
 - Replace `PresetListViewCell` layout with accessible cards; add empty/loading/error states and accurate summaries.
 - Remove duplicated setup in `PresetsViewController.viewDidLoad` and correct `setupConstraints` calling `super.setupSubviews`.
 - Keep save/delete/load UI updates on the main actor. Replace silent save errors and review completion callbacks and weak-reference handling.
