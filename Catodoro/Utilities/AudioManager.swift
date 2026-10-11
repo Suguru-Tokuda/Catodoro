@@ -8,9 +8,10 @@
 import AVFoundation
 
 enum AudioError: Error {
-    case fileNotFound,
-         playerNotSet,
-         setup
+    case fileNotFound
+    case playerNotSet
+    case setup
+    case playbackFailed
 }
 
 enum AudioState {
@@ -28,23 +29,31 @@ protocol AudioManaging {
 }
 
 class AudioManager: NSObject, AudioManaging {
-    private var _audioStatte: AudioState = .stopped
+    /// Session and player commands share a serial queue so stop cannot overtake activation.
+    static let playbackQueue = DispatchQueue(label: "com.catodoro.audio", qos: .userInitiated)
+    private let stateLock = NSLock()
+    private var storedState: AudioState = .stopped
+
+    private var _audioState: AudioState {
+        get {
+            stateLock.lock()
+            defer { stateLock.unlock() }
+
+            return storedState
+        }
+        set {
+            stateLock.lock()
+            defer { stateLock.unlock() }
+            storedState = newValue
+        }
+    }
+
     var audioState: AudioState {
-        _audioStatte
+        _audioState
     }
     private var audioPlayer: AVAudioPlayer?
-    var playTimer: Timer?
-    let loopDelay = 1.0
 
     func setPlayer(fileName: String, fileExtension: String) throws {
-        do {
-            try AVAudioSession.sharedInstance().setCategory(.playback,
-                                                            mode: .default,
-                                                            options: [])
-            try AVAudioSession.sharedInstance().setActive(true)
-        } catch {
-            throw AudioError.setup
-        }
         try audioPlayer = getAudioPlayer(fileName: fileName, fileExtension: fileExtension)
         audioPlayer?.numberOfLoops = 0
     }
@@ -54,10 +63,17 @@ class AudioManager: NSObject, AudioManaging {
             audioPlayer.prepareToPlay()
             audioPlayer.delegate = self
             audioPlayer.numberOfLoops = numberOfLoops
-            playTimer?.invalidate()
-            playTimer = nil
-            audioPlayer.play()
-            _audioStatte = .playing
+            // Activate at playback time; another app may have taken the session since setup.
+            let session = AVAudioSession.sharedInstance()
+            try session.setCategory(.playback, mode: .default, options: [.mixWithOthers, .duckOthers])
+            try session.setActive(true)
+
+            guard audioPlayer.play() else {
+                try? session.setActive(false, options: .notifyOthersOnDeactivation)
+                throw AudioError.playbackFailed
+            }
+
+            _audioState = .playing
         } else {
             throw AudioError.playerNotSet
         }
@@ -66,18 +82,20 @@ class AudioManager: NSObject, AudioManaging {
     func pause() throws {
         if let audioPlayer {
             audioPlayer.pause()
-            _audioStatte = .paused
+            _audioState = .paused
+            try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
         } else {
             throw AudioError.playerNotSet
         }
     }
     
     func stop() throws {
-        playTimer?.invalidate()
-        playTimer = nil
-        _audioStatte = .stopped
+        _audioState = .stopped
+
         if let audioPlayer {
             audioPlayer.stop()
+            audioPlayer.currentTime = 0
+            try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
         } else {
             throw AudioError.playerNotSet
         }
@@ -93,10 +111,19 @@ class AudioManager: NSObject, AudioManaging {
 
 extension AudioManager: AVAudioPlayerDelegate {
     func audioPlayerDidFinishPlaying(_ audioPlayer: AVAudioPlayer, successfully flag: Bool) {
-        playTimer = Timer.scheduledTimer(withTimeInterval: loopDelay, repeats: false) { [weak self] _ in
-            guard self != nil else { return }
+        Self.playbackQueue.async { [weak self] in
+            guard let self else {
+                return
+            }
+
+            // Ignore a delayed completion callback if a new cue is already playing.
+            guard !audioPlayer.isPlaying else {
+                return
+            }
+
+            _audioState = .stopped
             audioPlayer.currentTime = 0
-            audioPlayer.play()
+            try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
         }
     }
 }

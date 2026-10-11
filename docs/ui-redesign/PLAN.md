@@ -7,6 +7,8 @@ Prepared October 10, 2026. Based on a source scan of the current working tree an
 - Task 1: theme and cat assets merged.
 - Task 2: shared configuration validation, summaries and selection sheets implemented. See [implementation and validation notes](TASK-2.md).
 - Task 3: Focus setup visual hierarchy and routine card implemented; light/dark iPhone screenshots checked. See [implementation and validation notes](TASK-3.md). Broader device/accessibility QA remains in Task 7.
+- Task 4: active timer redesigned with authoritative presentation state and deadline-based phase timing. See [implementation and validation notes](TASK-4.md).
+- Task 5: next — Presets cards, names, empty state and creation flow.
 
 ## Goal and approved direction
 

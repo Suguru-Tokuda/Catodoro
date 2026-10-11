@@ -87,6 +87,71 @@ final class CatodoroUITests: XCTestCase {
     }
 
     @MainActor
+    func test_activeTimerPauseResumeAndExitRestoreRoutine() throws {
+        let app = XCUIApplication()
+        app.launch()
+        app.buttons["Start focusing"].tap()
+        XCTAssertTrue(app.buttons["Pause"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["FOCUS SESSION"].exists)
+        XCTAssertTrue(app.staticTexts["1 of 4"].exists)
+        XCTAssertFalse(app.tabBars.buttons["Presets"].isHittable)
+        capture(app, name: "Active focus")
+        app.buttons["Pause"].tap()
+        XCTAssertTrue(app.buttons["Resume"].waitForExistence(timeout: 5))
+        let pausedTime = app.staticTexts["TimerCountdown"].value as? String
+        capture(app, name: "Paused focus")
+        XCTAssertEqual(app.staticTexts["TimerCountdown"].value as? String, pausedTime)
+        app.buttons["Resume"].tap()
+        XCTAssertTrue(app.buttons["Pause"].waitForExistence(timeout: 5))
+        XCUIDevice.shared.press(.home)
+        app.activate()
+        XCTAssertTrue(app.buttons["Pause"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["FOCUS SESSION"].exists)
+        capture(app, name: "Focus after app return")
+        app.buttons["End session"].tap()
+        XCTAssertTrue(app.buttons["Start focusing"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.tabBars.buttons["Presets"].isHittable)
+        XCTAssertEqual(app.buttons["Focus time"].value as? String, "25 min")
+    }
+
+    @MainActor
+    func test_activeTimerBreakCompletionRepeatAndBack() throws {
+        let app = XCUIApplication()
+        app.launch()
+        app.buttons["Focus time"].tap()
+        app.pickerWheels.element(boundBy: 1).adjust(toPickerWheelValue: "0")
+        app.pickerWheels.element(boundBy: 2).adjust(toPickerWheelValue: "5")
+        app.buttons["Set focus time"].tap()
+        app.buttons["Catnap break"].tap()
+        app.pickerWheels.element(boundBy: 1).adjust(toPickerWheelValue: "0")
+        app.pickerWheels.element(boundBy: 2).adjust(toPickerWheelValue: "5")
+        app.buttons["Set break time"].tap()
+        app.buttons["Sessions"].tap()
+        app.buttons["Fewer sessions"].tap()
+        app.buttons["Fewer sessions"].tap()
+        app.buttons["Set sessions"].tap()
+        app.buttons["Start focusing"].tap()
+        XCTAssertTrue(app.staticTexts["CATNAP BREAK"].waitForExistence(timeout: 10))
+        capture(app, name: "Active break")
+        app.buttons["Pause"].tap()
+        XCTAssertTrue(app.buttons["Resume"].waitForExistence(timeout: 5))
+        capture(app, name: "Paused break")
+        app.buttons["Resume"].tap()
+        XCTAssertTrue(app.buttons["Focus again"].waitForExistence(timeout: 20))
+        XCTAssertTrue(app.staticTexts["2 sessions completed"].exists)
+        capture(app, name: "Routine complete")
+        app.buttons["Focus again"].tap()
+        XCTAssertTrue(app.buttons["Pause"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["1 of 2"].exists)
+        XCTAssertTrue(app.staticTexts["FOCUS SESSION"].exists)
+        XCTAssertTrue(app.buttons["Focus again"].waitForExistence(timeout: 20))
+        app.buttons["Back to routine"].tap()
+        XCTAssertTrue(app.buttons["Start focusing"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.tabBars.buttons["Presets"].isHittable)
+        XCTAssertEqual(app.buttons["Sessions"].value as? String, "2")
+    }
+
+    @MainActor
     private func capture(_ app: XCUIApplication, name: String) {
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = name
