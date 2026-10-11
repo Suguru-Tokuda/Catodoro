@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CA7600000000000000000011 /* CoordinatorConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7600000000000000000001; };
 		CA7500000000000000000012 /* PresetEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7500000000000000000002; };
 		CA7500000000000000000011 /* PresetEditorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7500000000000000000001; };
 		CA7400000000000000000013 /* SessionSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7400000000000000000003 /* SessionSelectionView.swift */; };
@@ -191,6 +192,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CA7600000000000000000001 /* CoordinatorConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoordinatorConfigurationTests.swift; sourceTree = "<group>"; };
 		CA7500000000000000000003 = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CatodoroCoreDataV2.xcdatamodel; sourceTree = "<group>"; };
 		CA7500000000000000000002 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetEditorView.swift; sourceTree = "<group>"; };
 		CA7500000000000000000001 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetEditorViewModel.swift; sourceTree = "<group>"; };
@@ -567,6 +569,7 @@
 		BBEA02D82D1D015300922951 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				CA7600000000000000000001 /* CoordinatorConfigurationTests.swift */,
 				BBEA02E02D1D035900922951 /* AddPresetViewControllerTests.swift */,
 				BBEA02E42D1D07FC00922951 /* PresetsViewControllerTests.swift */,
 			);
@@ -1047,6 +1050,7 @@
 				BBEA02CD2D1C797700922951 /* TimerStartButtonTests.swift in Sources */,
 				BBEA02DB2D1D01BF00922951 /* BaseOptionSelectionViewControllerTests.swift in Sources */,
 				BBEA02C12D1C6AE300922951 /* StopButtonTests.swift in Sources */,
+				CA7600000000000000000011 /* CoordinatorConfigurationTests.swift in Sources */,
 				BBEA02E12D1D035900922951 /* AddPresetViewControllerTests.swift in Sources */,
 				BBEA02D12D1CE3D600922951 /* PresetListViewCellTests.swift in Sources */,
 				BB6C85312D1A66FA005C4D0B /* MockPreferences.swift in Sources */,

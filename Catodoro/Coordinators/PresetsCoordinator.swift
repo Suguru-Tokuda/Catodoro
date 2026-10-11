@@ -7,6 +7,14 @@
 
 import UIKit
 
+struct PresetsCoordinatorConfiguration {
+    let shouldHideBottomBar: Bool
+
+    init(shouldHideBottomBar: Bool = false) {
+        self.shouldHideBottomBar = shouldHideBottomBar
+    }
+}
+
 class PresetsCoordinator: Coordinator {
     var finishDelegate: CoordinatorFinishDelegate?
     var type: CoordinatorType { .feature }
@@ -16,10 +24,14 @@ class PresetsCoordinator: Coordinator {
     weak var liveActivityManager: LiveActivityManaging?
     private var editorCompletion: (() -> Void)?
     weak var preferences: CatodoroPreferences?
+    private var configuration: PresetsCoordinatorConfiguration
 
-    init(navigationController: UINavigationController = BaseNavigationController()) {
+    init(navigationController: UINavigationController = BaseNavigationController(),
+         configuration: PresetsCoordinatorConfiguration = PresetsCoordinatorConfiguration()
+    ) {
         self.navigationController = navigationController
-        timerCoordinator = TimerCoordiantor(navigationController: navigationController)
+        self.configuration = configuration
+        timerCoordinator = TimerCoordiantor(navigationController: navigationController, configuration: TimerCoordinatorConfiguration(shouldHideBottomBarWhenTimerStart: configuration.shouldHideBottomBar))
         childCoordinators = [timerCoordinator]
     }
 

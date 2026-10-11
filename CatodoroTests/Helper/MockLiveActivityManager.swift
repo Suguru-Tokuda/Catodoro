@@ -10,6 +10,8 @@ import Foundation
 @testable import Catodoro
 
 final class MockLiveActivityManager: LiveActivityManaging {
+    var onUpdate: ((TimerStatus) -> Void)?
+
     private(set) var didStartLiveActivity = false
     private(set) var didUpdateLiveActivity = false
     private(set) var didEndLiveActivity = false
@@ -32,6 +34,7 @@ final class MockLiveActivityManager: LiveActivityManaging {
                             timerStatus: CatodoroShared.TimerStatus,
                             soundName: String?) async {
         didUpdateLiveActivity = true
+        onUpdate?(timerStatus)
     }
 
     func endLiveActivity() {

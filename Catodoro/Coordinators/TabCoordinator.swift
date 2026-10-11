@@ -80,7 +80,7 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
 
         switch page {
         case .timer:
-            timerCoordinator = .init()
+            timerCoordinator = TimerCoordiantor(configuration: TimerCoordinatorConfiguration(shouldHideBottomBarWhenTimerStart: true))
             timerCoordinator?.preferences = preferences
             timerCoordinator?.liveActivityManager = liveActivityManager
             if let timerCoordinator {
@@ -88,7 +88,7 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
                 navController = timerCoordinator.navigationController
             }
         case .presets:
-            presetsCoordiantor = .init()
+            presetsCoordiantor = PresetsCoordinator(configuration: PresetsCoordinatorConfiguration(shouldHideBottomBar: true))
             presetsCoordiantor?.preferences = preferences
             presetsCoordiantor?.liveActivityManager = liveActivityManager
             if let presetsCoordiantor {
@@ -96,7 +96,7 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
                 navController = presetsCoordiantor.navigationController
             }
         case .settings:
-            settingsCoordinator = .init()
+            settingsCoordinator = SettingsCoordinator()
             settingsCoordinator?.preferences = preferences
             if let settingsCoordinator {
                 settingsCoordinator.start()

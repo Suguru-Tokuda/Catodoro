@@ -19,11 +19,14 @@ final class TimerViewController: BaseViewController {
     private let viewModel: TimerViewModel
     private let timerView: TimerView
 
-    init(preferences: CatodoroPreferencesProtocol?, liveActivityManager: LiveActivityManaging?) {
+    init(preferences: CatodoroPreferencesProtocol?,
+         liveActivityManager: LiveActivityManaging?,
+         shouldHidesBottomBarWhen: Bool = true
+    ) {
         viewModel = TimerViewModel(preferences: preferences, liveActivityManager: liveActivityManager)
         timerView = TimerView(frame: .zero, strokeColor: ColorOptions(preferences?.color ?? "").color)
         super.init(nibName: nil, bundle: nil)
-        hidesBottomBarWhenPushed = true
+        hidesBottomBarWhenPushed = shouldHidesBottomBarWhen
         addSubscriptions()
     }
 
