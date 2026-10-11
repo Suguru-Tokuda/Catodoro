@@ -64,6 +64,8 @@ class CatodoroCoreDataManager: CatodoroCoreDataManaging {
 
             do {
                 let presetEntity = try context.fetch(request).first ?? PresetEntity(context: context)
+                presetEntity.name = preset.name
+                presetEntity.imageIdentifier = preset.imageIdentifier
                 presetEntity.id = preset.id
                 presetEntity.totalDuration = Double(preset.totalDuration)
                 presetEntity.intervalDuration = Double(preset.intervalDuration)

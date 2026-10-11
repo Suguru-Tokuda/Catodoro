@@ -7,20 +7,20 @@
 
 import UIKit
 
-protocol PresetsCoordinatorDelegate: AnyObject {
-    func startTimer(model: PresetModel)
-}
-
 class PresetsCoordinator: Coordinator {
-    weak var delegate: PresetsCoordinatorDelegate?
     var finishDelegate: CoordinatorFinishDelegate?
     var type: CoordinatorType { .feature }
     var childCoordinators: [Coordinator] = []
     var navigationController: UINavigationController
+    private let timerCoordinator: TimerCoordiantor
+    weak var liveActivityManager: LiveActivityManaging?
+    private var editorCompletion: (() -> Void)?
     weak var preferences: CatodoroPreferences?
 
     init(navigationController: UINavigationController = BaseNavigationController()) {
         self.navigationController = navigationController
+        timerCoordinator = TimerCoordiantor(navigationController: navigationController)
+        childCoordinators = [timerCoordinator]
     }
 
     func start() {
@@ -30,6 +30,7 @@ class PresetsCoordinator: Coordinator {
     }
 
     func navigateToAddPreset(onFinish: @escaping(() -> Void)) {
+        editorCompletion = onFinish
         let addPresetViewController = AddPresetViewController(preferences: preferences)
         addPresetViewController.delegate = self
         navigationController.pushViewController(addPresetViewController, animated: true)
@@ -37,8 +38,19 @@ class PresetsCoordinator: Coordinator {
 }
 
 extension PresetsCoordinator: PresetsViewControllerDelegate {
+    func presetsViewControllerDidRequestEdit(_ viewController: PresetsViewController, preset: PresetModel) {
+        let editor = AddPresetViewController(preferences: preferences, preset: preset)
+        editor.delegate = self
+        navigationController.pushViewController(editor, animated: true)
+    }
+
     func presetsViewControllerDidSelectPreset(_ viewController: PresetsViewController, preset: PresetModel) {
-        delegate?.startTimer(model: preset)
+        let configuration = preset.configuration
+        guard configuration.isValid else { return }
+
+        timerCoordinator.preferences = preferences
+        timerCoordinator.liveActivityManager = liveActivityManager
+        timerCoordinator.navigateToTimerView(viewModel: .init(timerModel: configuration))
     }
     
     func presetsViewControllerDidTapAddButton(_ viewController: PresetsViewController, onFinish: @escaping(() -> Void)) {
@@ -52,5 +64,17 @@ extension PresetsCoordinator: PresetsViewControllerDelegate {
 extension PresetsCoordinator: AddPresetViewControllerDelegate {
     func onFinish() {
         navigationController.popViewController(animated: true)
+        editorCompletion?()
+        editorCompletion = nil
+    }
+
+    func presetEditorDidRequestImage(_ editor: AddPresetViewController) {
+        let picker = PresetImagePickerViewController()
+        picker.onSelect = { [weak self, weak editor] pose in
+            editor?.selectImage(pose)
+            self?.navigationController.popViewController(animated: true)
+        }
+        navigationController.pushViewController(picker, animated: true)
     }
 }
+

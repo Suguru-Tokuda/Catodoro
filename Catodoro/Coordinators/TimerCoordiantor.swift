@@ -7,11 +7,6 @@
 
 import UIKit
 
-protocol TimerCoordiantorDelegate: AnyObject {
-    func onTimerStarted()
-    func onTimerFinished()
-}
-
 class TimerCoordiantor: Coordinator {
     var finishDelegate: CoordinatorFinishDelegate?
     var type: CoordinatorType { .feature }
@@ -19,7 +14,6 @@ class TimerCoordiantor: Coordinator {
     var navigationController: UINavigationController
     weak var preferences: CatodoroPreferencesProtocol?
     weak var liveActivityManager: LiveActivityManaging?
-    weak var delegate: TimerCoordiantorDelegate?
 
     init(navigationController: UINavigationController = BaseNavigationController()) {
         self.navigationController = navigationController
@@ -36,11 +30,6 @@ class TimerCoordiantor: Coordinator {
                                                  liveActivityManager: liveActivityManager)
         viewController.delegate = self
         viewController.configure(timerConfigViewModel: viewModel)
-        delegate?.onTimerStarted()
-        viewController.onFinish = { [weak self] in
-            guard let self else { return }
-            self.delegate?.onTimerFinished()
-        }
         navigationController.pushViewController(viewController, animated: true)
     }
 }

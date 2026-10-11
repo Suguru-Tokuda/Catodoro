@@ -32,10 +32,16 @@ class PresetsViewModel: PresetsViewModelProtocol {
 
     func loadPresets() async {
         do {
-            presets = try await self.coreDataManager?.getPresets() ?? []
+            let loaded = try await self.coreDataManager?.getPresets() ?? []
+            await MainActor.run {
+                self.coreDataError = nil
+                self.presets = loaded.sorted(by: { $0.displayName < $1.displayName })
+            }
         } catch {
             if let coreDataError = error as? CoreDataError {
-                self.coreDataError = coreDataError
+                await MainActor.run {
+                    self.coreDataError = coreDataError
+                }
             }
         }
     }
@@ -43,12 +49,15 @@ class PresetsViewModel: PresetsViewModelProtocol {
     func deletePreset(_ preset: PresetModel) async {
         do {
             try await self.coreDataManager?.deletePreset(preset.id.uuidString)
-            if let index = presets.firstIndex(where: { $0.id == preset.id }) {
-                presets.remove(at: index)
+            await MainActor.run {
+                self.coreDataError = nil
+                self.presets.removeAll { $0.id == preset.id }
             }
         } catch {
             if let coreDataError = error as? CoreDataError {
-                self.coreDataError = coreDataError
+                await MainActor.run {
+                    self.coreDataError = coreDataError
+                }
             }
         }
     }

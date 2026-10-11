@@ -24,6 +24,11 @@ struct CatodoroPersistentController {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
         }
 
+        container.persistentStoreDescriptions.forEach {
+            $0.shouldMigrateStoreAutomatically = true
+            $0.shouldInferMappingModelAutomatically = true
+        }
+
         container.loadPersistentStores { storeDescription, error in
             if let error = error as NSError? {
                 fatalError("Unresolved error \(error), \(error.userInfo)")

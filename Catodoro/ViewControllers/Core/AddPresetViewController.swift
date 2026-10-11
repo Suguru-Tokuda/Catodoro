@@ -5,95 +5,120 @@
 //  Created by Suguru Tokuda on 12/24/24.
 //
 
-import Combine
 import UIKit
 
 protocol AddPresetViewControllerDelegate: AnyObject {
     func onFinish()
+    func presetEditorDidRequestImage(_ editor: AddPresetViewController)
 }
 
-class AddPresetViewController: BaseViewController {
+final class AddPresetViewController: UIViewController {
     weak var delegate: AddPresetViewControllerDelegate?
-    private var viewModel: TimerConfigViewModelProtocol = TimerConfigViewModel()
-    private weak var preferences: CatodoroPreferencesProtocol?
-    private var cancellables: Set<AnyCancellable> = .init()
+    private let viewModel: PresetEditorViewModel
+    private let accent: UIColor
+    private let editorView = PresetEditorView()
 
-    // MARK: - UI Components
-
-    private let timerConfigView: TimerConfigView = .init()
-
-    init(preferences: CatodoroPreferencesProtocol? = CatodoroPreferences()) {
-        self.preferences = preferences
+    init(preferences: CatodoroPreferencesProtocol? = nil, preset: PresetModel? = nil,
+         viewModel: PresetEditorViewModel? = nil) {
+        self.viewModel = viewModel ?? PresetEditorViewModel(preset: preset)
+        accent = ColorOptions(preferences?.color ?? ColorOptions.neonBlue.code).color
         super.init(nibName: nil, bundle: nil)
+        hidesBottomBarWhenPushed = true
     }
-    
+
     required init?(coder: NSCoder) {
-        super.init(nibName: nil, bundle: nil)
+        nil
     }
-    
+
+    override func loadView() {
+        view = editorView
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+        navigationController?.navigationBar.tintColor = accent
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupEventHandlers()
-    }
-
-    override func setupSubviews() {
-        view.backgroundColor = CatTheme.background
-        navigationItem.title = "Add Preset"
-        timerConfigView.model = .init(startLabelText: "Save",
-                                      color: ColorOptions(preferences?.color ?? ColorOptions.neonBlue.code).color)
-        view.addAutolayoutSubview(timerConfigView)
-    }
-
-    override func setupConstraints() {
-        NSLayoutConstraint.activate([
-            timerConfigView.topAnchor.constraint(equalTo: view.topAnchor),
-            timerConfigView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            timerConfigView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            timerConfigView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
-        ])
-    }
-
-    private func setupEventHandlers() {
-        timerConfigView.render(viewModel.timerModel)
-        timerConfigView.onSelectionRequest = { [weak self] selection in
+        editorView.configureAccent(accent)
+        navigationItem.title = viewModel.isEditing ? "Edit preset" : "New preset"
+        editorView.onNameChanged = { [weak self] name in
+            self?.viewModel.name = name
+            self?.render()
+        }
+        editorView.onImageRequested = { [weak self] in
             guard let self else { return }
 
-            self.presentRoutineSelection(selection, configuration: self.viewModel.timerModel) { [weak self] updated in
-                guard let self else { return }
+            self.delegate?.presetEditorDidRequestImage(self)
+        }
+        editorView.onSelectionRequested = { [weak self] selection in
+            guard let self else { return }
 
-                self.viewModel.timerModel = updated
-                self.timerConfigView.render(updated)
+            self.presentRoutineSelection(selection, configuration: self.viewModel.configuration) { [weak self] updated in
+                self?.viewModel.configuration = updated
+                self?.render()
             }
         }
+        viewModel.onStateChanged = { [weak self] in
+            self?.render()
+        }
+        editorView.onSave = { [weak self] in
+            self?.save()
+        }
+        render()
+    }
 
-        timerConfigView.onStartButtonTap = { [weak self] in
+    func selectImage(_ pose: CatPose) {
+        viewModel.pose = pose
+        render()
+    }
+
+    private func render() {
+        editorView.render(name: viewModel.name, pose: viewModel.pose, configuration: viewModel.configuration,
+                          canSave: viewModel.canSave, isSaving: viewModel.isSaving)
+    }
+
+    private func save() {
+        guard viewModel.canSave else { return }
+
+        Task { [weak self] in
             guard let self else { return }
-            Task(priority: .utility) { [weak self] in
-                guard let self else { return }
-                do {
-                    try await viewModel.addPreset()
-                    delegate?.onFinish()
-                } catch {
-                }
+
+            do {
+                try await self.viewModel.save()
+                self.delegate?.onFinish()
+            } catch {
+                let alert = UIAlertController(title: "Couldn't save preset", message: "Your changes are still here. Please try again.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                self.present(alert, animated: true)
             }
+
+            self.render()
         }
     }
 }
 
-#if DEBUG
-extension AddPresetViewController {
-    var testHooks: TestHooks {
-        .init(target: self)
+final class PresetImagePickerViewController: UIViewController {
+    var onSelect: ((CatPose) -> Void)?
+    private let pickerView = PresetImagePickerView()
+
+    override func loadView() {
+        view = pickerView
     }
 
-    struct TestHooks {
-        let target: AddPresetViewController
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+        navigationController?.navigationBar.tintColor = ColorOptions.neonBlue.color
+    }
 
-        var timerConfigView: TimerConfigView { target.timerConfigView }
-        
-        func setViewModel(viewModel: TimerConfigViewModelProtocol) {
-            target.viewModel = viewModel
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        title = "Choose your cat"
+        pickerView.onSelect = { [weak self] pose in
+            self?.onSelect?(pose)
         }
     }
 }
-#endif

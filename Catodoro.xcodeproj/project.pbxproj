@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CA7500000000000000000012 /* PresetEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7500000000000000000002; };
+		CA7500000000000000000011 /* PresetEditorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7500000000000000000001; };
 		CA7400000000000000000013 /* SessionSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7400000000000000000003 /* SessionSelectionView.swift */; };
 		CA7400000000000000000012 /* DurationSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7400000000000000000002 /* DurationSelectionView.swift */; };
 		CA7400000000000000000011 /* RoutineSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7400000000000000000001 /* RoutineSelectionView.swift */; };
@@ -189,6 +191,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CA7500000000000000000003 = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CatodoroCoreDataV2.xcdatamodel; sourceTree = "<group>"; };
+		CA7500000000000000000002 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetEditorView.swift; sourceTree = "<group>"; };
+		CA7500000000000000000001 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetEditorViewModel.swift; sourceTree = "<group>"; };
 		CA7400000000000000000003 /* SessionSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionSelectionView.swift; sourceTree = "<group>"; };
 		CA7400000000000000000002 /* DurationSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DurationSelectionView.swift; sourceTree = "<group>"; };
 		CA7400000000000000000001 /* RoutineSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutineSelectionView.swift; sourceTree = "<group>"; };
@@ -461,6 +466,7 @@
 		BB1817B62C7EB1F100BF8DA8 /* Presets */ = {
 			isa = PBXGroup;
 			children = (
+				CA7500000000000000000002 /* PresetEditorView.swift */,
 				BB7AFB352D0B286B00801CAA /* PresetListViewCell.swift */,
 			);
 			path = Presets;
@@ -643,6 +649,7 @@
 		BBF4F46C2C7642940079448E /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				CA7500000000000000000001 /* PresetEditorViewModel.swift */,
 				BB49DC702D08F33D001E3CDC /* OptionSelectionViewModel.swift */,
 				BB7AFB372D0B3BD600801CAA /* PresetsViewModel.swift */,
 				BB8D28442CE1595E001D73B1 /* SettingsViewModel.swift */,
@@ -1065,6 +1072,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CA7500000000000000000011 /* PresetEditorViewModel.swift in Sources */,
+				CA7500000000000000000012 /* PresetEditorView.swift in Sources */,
 				BBF4F4762C7644FB0079448E /* BaseNavigationController.swift in Sources */,
 				BB516E4E2CAB98930004B95C /* TimerConfigModel.swift in Sources */,
 				BB0B25D12C9CF5F000487314 /* StopButton.swift in Sources */,
@@ -1698,8 +1707,9 @@
 			isa = XCVersionGroup;
 			children = (
 				BB07847C2D1B293E004BF908 /* CatodoroCoreData.xcdatamodel */,
+				CA7500000000000000000003 /* CatodoroCoreDataV2.xcdatamodel */,
 			);
-			currentVersion = BB07847C2D1B293E004BF908 /* CatodoroCoreData.xcdatamodel */;
+			currentVersion = CA7500000000000000000003 /* CatodoroCoreDataV2.xcdatamodel */;
 			path = CatodoroCoreData.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

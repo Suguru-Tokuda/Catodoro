@@ -37,9 +37,9 @@ class PresetListViewCellTests: XCTestCase {
     func test_applyModel_expectLabelsUpdatedCorrectly() {
         cell.model = mockModel
         
-        XCTAssertEqual(cell.timerLabel.text, "00:25:00", "Timer label should display formatted total duration")
-        XCTAssertEqual(cell.intervalDurationLabel.text, "Interval: 00:05:00", "Interval duration label should display formatted interval duration")
-        XCTAssertEqual(cell.intervalLabel.text, "Intervals: 5", "Interval label should display the correct number of intervals")
+        XCTAssertEqual(cell.timerLabel.text, "25 min focus", "Timer label should display formatted total duration")
+        XCTAssertEqual(cell.intervalDurationLabel.text, "25 min focus · 5 min break · 5 sessions", "Interval duration label should display formatted interval duration")
+        XCTAssertEqual(cell.intervalLabel.text, "Total: 2 hr 25 min", "Interval label should display the correct number of intervals")
     }
     
     func test_playButtonTap_expectOnPlayButtonTappedCalled() {
@@ -61,10 +61,10 @@ class PresetListViewCellTests: XCTestCase {
     
     func test_reusability_expectLabelsResetWhenModelCleared() {
         cell.model = mockModel
-        XCTAssertEqual(cell.timerLabel.text, "00:25:00", "Timer label should be set after model is applied")
+        XCTAssertEqual(cell.timerLabel.text, "25 min focus", "Timer label should be set after model is applied")
         
         cell.model = nil
-        XCTAssertNotNil(cell.timerLabel.text, "Timer label should reset after model is cleared")
+        XCTAssertNil(cell.timerLabel.text, "Timer label should reset after model is cleared")
     }
     
     func test_accessibility_expectLabelsAndPlayButtonAccessible() {

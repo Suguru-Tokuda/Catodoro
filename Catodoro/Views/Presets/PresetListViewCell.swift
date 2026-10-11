@@ -7,107 +7,125 @@
 
 import UIKit
 
-class PresetListViewCell: BaseTableViewCell {
+final class PresetListViewCell: BaseTableViewCell {
     static let reuseIdentifier = "PresetListViewCell"
     var onPlayButtonTapped: (() -> Void)?
+
     var model: PresetModel? {
         didSet {
             applyModel()
         }
     }
 
-    // MARK: UI Components
+    private let card = CatCardView()
+    private let artwork = CatIllustrationView()
 
     let timerLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 40, weight: .regular)
-        label.isAccessibilityElement = true
-        label.accessibilityLabel = "Timer"
-        label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        label.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        label.font = CatTheme.font(.headline, weight: .bold)
+        label.textColor = CatTheme.text
+        label.numberOfLines = 0
+        label.adjustsFontForContentSizeCategory = true
+        label.accessibilityLabel = "Preset name"
         return label
     }()
 
     let intervalDurationLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 16, weight: .light)
-        label.isAccessibilityElement = true
-        label.accessibilityLabel = "Interval duration"
+        label.font = CatTheme.font(.subheadline)
+        label.textColor = CatTheme.secondaryText
+        label.numberOfLines = 0
+        label.adjustsFontForContentSizeCategory = true
+        label.accessibilityLabel = "Routine"
         return label
     }()
 
     let intervalLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .light)
-        label.isAccessibilityElement = true
-        label.accessibilityLabel = "Intervals"
+        label.font = CatTheme.font(.footnote)
+        label.textColor = CatTheme.secondaryText
+        label.numberOfLines = 0
+        label.adjustsFontForContentSizeCategory = true
+        label.accessibilityLabel = "Total time"
         return label
     }()
 
-    let playButton: PlayPauseButton = {
-        let button = PlayPauseButton(buttonHeight: 36,
-                                     buttonWidth: 36,
-                                     buttonStatus: .paused)
+    let playButton: UIButton = {
+        let button = UIButton(type: .system)
+        var configuration = UIButton.Configuration.filled()
+        configuration.image = UIImage(systemName: "play.fill")
+        configuration.baseBackgroundColor = ColorOptions.neonBlue.color
+        configuration.baseForegroundColor = CatTheme.onAccent
+        configuration.cornerStyle = .capsule
+        button.configuration = configuration
         button.isAccessibilityElement = true
-        button.accessibilityLabel = "Play or Pause"
+        button.accessibilityLabel = "Start preset"
         return button
     }()
+
     let horizontalStackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .horizontal
-        stackView.alignment = .center
-        stackView.distribution = .fillProportionally
-        return stackView
+        let stack = UIStackView()
+        stack.axis = .horizontal
+        stack.alignment = .center
+        stack.spacing = 12
+        return stack
     }()
 
     let verticalStackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.distribution = .fill
-        stackView.spacing = 4
-        return stackView
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.spacing = 8
+        return stack
     }()
 
     override func setupSubviews() {
-        contentView.addAutolayoutSubview(horizontalStackView)
-        horizontalStackView.addArrangedSubviews([
-            verticalStackView,
-            playButton
-        ])
-        verticalStackView.addArrangedSubviews([
-            timerLabel,
-            intervalDurationLabel,
-            intervalLabel
-        ])
-
-        playButton.addTarget(self, action: #selector(handlePlayButtonTap), for: .touchUpInside)
+        backgroundColor = .clear
+        selectionStyle = .none
+        contentView.addAutolayoutSubview(card)
+        card.addAutolayoutSubview(horizontalStackView)
+        horizontalStackView.addArrangedSubviews([artwork, verticalStackView, playButton])
+        verticalStackView.addArrangedSubviews([timerLabel, intervalDurationLabel, intervalLabel])
+        playButton.addAction(UIAction { [weak self] _ in
+            self?.onPlayButtonTapped?()
+        }, for: .touchUpInside)
     }
 
     override func setupConstraints() {
         NSLayoutConstraint.activate([
-            horizontalStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
-            horizontalStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
-            horizontalStackView.topAnchor.constraint(equalTo: contentView.topAnchor,
-                                                     constant: 8).withPriority(.defaultHigh),
-            horizontalStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor,
-                                                        constant: -8).withPriority(.defaultLow),
-
-            playButton.heightAnchor.constraint(equalToConstant: 32),
-            playButton.widthAnchor.constraint(equalToConstant: 32)
+            card.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            card.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            card.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
+            card.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
+            horizontalStackView.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 16),
+            horizontalStackView.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -16),
+            horizontalStackView.topAnchor.constraint(equalTo: card.topAnchor, constant: 20),
+            horizontalStackView.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -20),
+            artwork.widthAnchor.constraint(equalToConstant: 64),
+            artwork.heightAnchor.constraint(equalToConstant: 90),
+            playButton.widthAnchor.constraint(equalToConstant: 44),
+            playButton.heightAnchor.constraint(equalToConstant: 44)
         ])
     }
 
-    private func applyModel() {
-        guard let model else { return }
-
-        timerLabel.text = model.totalDuration.getTimerLabelValue()
-        intervalDurationLabel.text = "Interval: \(model.intervalDuration.getTimerLabelValue())"
-        intervalLabel.text = "Intervals: \(model.intervals)"
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        onPlayButtonTapped = nil
+        model = nil
     }
-}
 
-extension PresetListViewCell {
-    @objc private func handlePlayButtonTap() {
-        onPlayButtonTapped?()
+    private func applyModel() {
+        timerLabel.text = model?.displayName
+        intervalDurationLabel.text = model.map {
+            "\(TimerConfigModel.durationSummary($0.totalDuration)) focus · \(TimerConfigModel.durationSummary($0.intervalDuration)) break · \($0.intervals) sessions"
+        }
+        intervalLabel.text = model.map {
+            "Total: \(TimerConfigModel.durationSummary($0.configuration.totalDuration))"
+        }
+        timerLabel.accessibilityLabel = timerLabel.text
+        intervalDurationLabel.accessibilityLabel = intervalDurationLabel.text
+        intervalLabel.accessibilityLabel = intervalLabel.text
+        artwork.pose = model?.catPose ?? .sitting
+        playButton.accessibilityLabel = model.map { "Start \($0.displayName)" } ?? "Start preset"
+        playButton.isEnabled = model?.configuration.isValid == true
     }
 }
