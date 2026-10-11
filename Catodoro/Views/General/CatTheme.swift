@@ -108,7 +108,9 @@ final class CatSummaryRow: UIControl {
     private let valueLabel: UILabel = {
         let label = UILabel()
         label.font = CatTheme.font(.body, weight: .semibold)
-        label.textColor = CatTheme.secondaryText
+        label.textColor = CatTheme.text
+        label.textAlignment = .right
+        label.setContentHuggingPriority(.required, for: .horizontal)
         label.numberOfLines = 0
         label.adjustsFontForContentSizeCategory = true
 
@@ -131,8 +133,10 @@ final class CatSummaryRow: UIControl {
         return imageView
     }()
 
-    private lazy var stack: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [iconView, titleLabel, valueLabel, chevron])
+    private let iconBadge = UIView()
+
+    private let stack: UIStackView = {
+        let stack = UIStackView()
         stack.axis = .horizontal
         stack.alignment = .center
         stack.spacing = CatTheme.Spacing.medium
@@ -146,18 +150,30 @@ final class CatSummaryRow: UIControl {
 
         titleLabel.text = title
         valueLabel.text = value
-        iconView.image = UIImage(systemName: symbol)
+        iconView.image = symbol == "CatPaw"
+            ? UIImage(named: "CatPaw")?.withRenderingMode(.alwaysTemplate)
+            : UIImage(systemName: symbol)
+        iconBadge.backgroundColor = symbol == "cup.and.saucer.fill"
+            ? CatTheme.selection : CatTheme.color(0xFBE6D4, 0x574037)
+        iconBadge.layer.cornerRadius = 18
+        iconBadge.addAutolayoutSubview(iconView)
+        titleLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
 
+        stack.addArrangedSubviews([iconBadge, titleLabel, valueLabel, chevron])
         addAutolayoutSubview(stack)
 
         NSLayoutConstraint.activate([
-            stack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            stack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            stack.topAnchor.constraint(equalTo: topAnchor, constant: 16),
-            stack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
+            stack.leadingAnchor.constraint(equalTo: leadingAnchor),
+            stack.trailingAnchor.constraint(equalTo: trailingAnchor),
+            stack.topAnchor.constraint(equalTo: topAnchor, constant: 10),
+            stack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10),
             heightAnchor.constraint(greaterThanOrEqualToConstant: CatTheme.minimumTouchTarget),
-            iconView.widthAnchor.constraint(equalToConstant: 24),
-            iconView.heightAnchor.constraint(equalToConstant: 24),
+            iconBadge.widthAnchor.constraint(equalToConstant: 36),
+            iconBadge.heightAnchor.constraint(equalToConstant: 36),
+            iconView.widthAnchor.constraint(equalToConstant: 20),
+            iconView.heightAnchor.constraint(equalToConstant: 20),
+            iconView.centerXAnchor.constraint(equalTo: iconBadge.centerXAnchor),
+            iconView.centerYAnchor.constraint(equalTo: iconBadge.centerYAnchor),
             chevron.widthAnchor.constraint(equalToConstant: 12)
         ])
 

@@ -47,9 +47,9 @@ class TimerView: BaseView {
     private let artworkContainer = UIView()
     private let artworkMask = CAShapeLayer()
     private var timerCircleView: TimerCircleView
-    private lazy var playPauseButton: PlayPauseButton = .init()
-    private lazy var stopButton: StopButton = .init()
-    private lazy var dismissButton: DismissButton = {
+    private let playPauseButton: PlayPauseButton = .init()
+    private let stopButton: StopButton = .init()
+    private let dismissButton: DismissButton = {
         let button = DismissButton()
         button.isHidden = true
         return button

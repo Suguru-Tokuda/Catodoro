@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CA7400000000000000000013 /* SessionSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7400000000000000000003 /* SessionSelectionView.swift */; };
+		CA7400000000000000000012 /* DurationSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7400000000000000000002 /* DurationSelectionView.swift */; };
+		CA7400000000000000000011 /* RoutineSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7400000000000000000001 /* RoutineSelectionView.swift */; };
+		CA7300000000000000000011 /* DurationSelectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7300000000000000000001 /* DurationSelectionViewModel.swift */; };
+		CA7200000000000000000014 /* RoutineSelectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7200000000000000000004 /* RoutineSelectionTests.swift */; };
+		CA7200000000000000000013 /* SessionSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7200000000000000000003 /* SessionSelectionViewController.swift */; };
+		CA7200000000000000000012 /* DurationSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7200000000000000000002 /* DurationSelectionViewController.swift */; };
+		CA7200000000000000000011 /* RoutineSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7200000000000000000001 /* RoutineSelectionViewController.swift */; };
 		CA7000000000000000000012 /* CatIllustrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7000000000000000000002 /* CatIllustrationView.swift */; };
 		CA7000000000000000000011 /* CatTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7000000000000000000001 /* CatTheme.swift */; };
 		BB07847D2D1B293E004BF908 /* CatodoroCoreData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = BB07847B2D1B293E004BF908 /* CatodoroCoreData.xcdatamodeld */; };
@@ -181,6 +189,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CA7400000000000000000003 /* SessionSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionSelectionView.swift; sourceTree = "<group>"; };
+		CA7400000000000000000002 /* DurationSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DurationSelectionView.swift; sourceTree = "<group>"; };
+		CA7400000000000000000001 /* RoutineSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutineSelectionView.swift; sourceTree = "<group>"; };
+		CA7300000000000000000001 /* DurationSelectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DurationSelectionViewModel.swift; sourceTree = "<group>"; };
+		CA7200000000000000000004 /* RoutineSelectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutineSelectionTests.swift; sourceTree = "<group>"; };
+		CA7200000000000000000003 /* SessionSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionSelectionViewController.swift; sourceTree = "<group>"; };
+		CA7200000000000000000002 /* DurationSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DurationSelectionViewController.swift; sourceTree = "<group>"; };
+		CA7200000000000000000001 /* RoutineSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutineSelectionViewController.swift; sourceTree = "<group>"; };
 		CA7000000000000000000002 /* CatIllustrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatIllustrationView.swift; sourceTree = "<group>"; };
 		CA7000000000000000000001 /* CatTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatTheme.swift; sourceTree = "<group>"; };
 		BB07847C2D1B293E004BF908 /* CatodoroCoreData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CatodoroCoreData.xcdatamodel; sourceTree = "<group>"; };
@@ -394,6 +410,7 @@
 				BBEA02C22D1C6B5700922951 /* TimePickerViewTests.swift */,
 				BBEA02C42D1C6C5300922951 /* TimerCircleViewTests.swift */,
 				BBEA02C62D1C6ED700922951 /* TimerConfigSubTitleTests.swift */,
+				CA7200000000000000000004 /* RoutineSelectionTests.swift */,
 				BBEA02C82D1C6F0200922951 /* TimerConfigViewTests.swift */,
 				BBEA02CA2D1C784800922951 /* TimerPickerViewTests.swift */,
 				BBEA02CC2D1C797700922951 /* TimerStartButtonTests.swift */,
@@ -431,6 +448,9 @@
 				BB1817B82C7EB23300BF8DA8 /* TimerCircleView.swift */,
 				BB8D28582CE18E73001D73B1 /* TimerConfigSubTitle.swift */,
 				BB8D28562CE18E4B001D73B1 /* TimerConfigView.swift */,
+				CA7400000000000000000003 /* SessionSelectionView.swift */,
+				CA7400000000000000000002 /* DurationSelectionView.swift */,
+				CA7400000000000000000001 /* RoutineSelectionView.swift */,
 				BB479AB02CB487E7000CBE6D /* TimerPickerView.swift */,
 				BB8D283C2CE14E57001D73B1 /* TimerStartButton.swift */,
 				BB8D28422CE1559D001D73B1 /* TimerView.swift */,
@@ -627,6 +647,7 @@
 				BB7AFB372D0B3BD600801CAA /* PresetsViewModel.swift */,
 				BB8D28442CE1595E001D73B1 /* SettingsViewModel.swift */,
 				BB516E462CAB94D70004B95C /* TimerConfigViewModel.swift */,
+				CA7300000000000000000001 /* DurationSelectionViewModel.swift */,
 				BBF4F48D2C76D2C90079448E /* TimerViewModel.swift */,
 			);
 			path = ViewModels;
@@ -670,6 +691,9 @@
 				BBF4F48B2C76B61A0079448E /* PresetsViewController.swift */,
 				BBF4F4812C7648820079448E /* SettingsViewController.swift */,
 				BB49DC742D08FA37001E3CDC /* SoundSelectionViewController.swift */,
+				CA7200000000000000000001 /* RoutineSelectionViewController.swift */,
+				CA7200000000000000000002 /* DurationSelectionViewController.swift */,
+				CA7200000000000000000003 /* SessionSelectionViewController.swift */,
 				BB516E442CAB933C0004B95C /* TimerConfigViewController.swift */,
 				BBF4F47F2C7648510079448E /* TimerViewController.swift */,
 			);
@@ -1007,6 +1031,7 @@
 				BBEA02C52D1C6C5300922951 /* TimerCircleViewTests.swift in Sources */,
 				BBEA02C72D1C6ED700922951 /* TimerConfigSubTitleTests.swift in Sources */,
 				BBD7253F2D43E5FC00FCF62E /* MockLiveActivityManager.swift in Sources */,
+				CA7200000000000000000014 /* RoutineSelectionTests.swift in Sources */,
 				BBEA02C92D1C6F0200922951 /* TimerConfigViewTests.swift in Sources */,
 				BB6C85352D1A8B57005C4D0B /* OptionSelectionViewModelTests.swift in Sources */,
 				BBEA02CB2D1C784800922951 /* TimerPickerViewTests.swift in Sources */,
@@ -1048,6 +1073,9 @@
 				BB1817B92C7EB23300BF8DA8 /* TimerCircleView.swift in Sources */,
 				BBF4F4882C767A420079448E /* SettingsCoordinator.swift in Sources */,
 				BBF4F4802C7648510079448E /* TimerViewController.swift in Sources */,
+				CA7200000000000000000011 /* RoutineSelectionViewController.swift in Sources */,
+				CA7200000000000000000012 /* DurationSelectionViewController.swift in Sources */,
+				CA7200000000000000000013 /* SessionSelectionViewController.swift in Sources */,
 				BB516E452CAB933C0004B95C /* TimerConfigViewController.swift in Sources */,
 				BB4E43432D191B2300C34D04 /* CatodoroCoreDataManager.swift in Sources */,
 				BBA3CDA22C866749002A3E7B /* UIStackView+Extensions.swift in Sources */,
@@ -1069,6 +1097,7 @@
 				BBF4F4822C7648820079448E /* SettingsViewController.swift in Sources */,
 				BB1817BE2C7EB57B00BF8DA8 /* UIView+Extensions.swift in Sources */,
 				BB516E472CAB94D70004B95C /* TimerConfigViewModel.swift in Sources */,
+				CA7300000000000000000011 /* DurationSelectionViewModel.swift in Sources */,
 				BB5818F92D2129D700F6A846 /* DismissButton.swift in Sources */,
 				BBF4F48A2C76B5E10079448E /* PresetsCoordinator.swift in Sources */,
 				BB479AC42CC883D1000CBE6D /* AudioManager.swift in Sources */,
@@ -1087,6 +1116,9 @@
 				BBF4F4842C7654A10079448E /* TimerCoordiantor.swift in Sources */,
 				BB479AB12CB487E7000CBE6D /* TimerPickerView.swift in Sources */,
 				BB8D28572CE18E4B001D73B1 /* TimerConfigView.swift in Sources */,
+				CA7400000000000000000013 /* SessionSelectionView.swift in Sources */,
+				CA7400000000000000000012 /* DurationSelectionView.swift in Sources */,
+				CA7400000000000000000011 /* RoutineSelectionView.swift in Sources */,
 				BB4CF7622D34A41100B0946C /* LiveActivityManager.swift in Sources */,
 				BB7AFB3A2D0B436600801CAA /* PresetModel.swift in Sources */,
 				BB49DC712D08F33D001E3CDC /* OptionSelectionViewModel.swift in Sources */,

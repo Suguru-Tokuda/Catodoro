@@ -17,17 +17,25 @@ class TimerConfigViewModel: TimerConfigViewModelProtocol {
     var timerModel: TimerConfigModel
     private var coreDataManager: CatodoroCoreDataManaging?
 
-    init(timerModel: TimerConfigModel = .init(),
+    init(timerModel: TimerConfigModel = .standard,
          coreDataManager: CatodoroCoreDataManaging? = CatodoroCoreDataManager()) {
         self.timerModel = timerModel
         self.coreDataManager = coreDataManager
     }
 
     var isValidSelection: Bool {
-        timerModel.mainTimer.duration > 0
+        timerModel.isValid
+    }
+
+    enum ValidationError: Error {
+        case invalidRoutine
     }
 
     func addPreset() async throws {
+        guard timerModel.isValid else {
+            throw ValidationError.invalidRoutine
+        }
+
         let preset = PresetModel(id: timerModel.id,
                                  totalDuration: timerModel.mainTimer.duration,
                                  intervalDuration: timerModel.interval.duration,

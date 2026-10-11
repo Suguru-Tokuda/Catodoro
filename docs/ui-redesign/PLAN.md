@@ -1,10 +1,16 @@
 # Catodoro UI redesign project plan
 
-Prepared October 10, 2026. Based on a source scan of the current working tree and the approved visual concepts. This document plans implementation; it does not implement the redesign.
+Prepared October 10, 2026. Based on a source scan of the current working tree and the approved visual concepts. The original scan below is retained as planning context; delivery status is updated as implementation progresses.
+
+## Delivery status
+
+- Task 1: theme and cat assets merged.
+- Task 2: shared configuration validation, summaries and selection sheets implemented. See [implementation and validation notes](TASK-2.md).
+- Task 3: Focus setup visual hierarchy and routine card implemented; light/dark iPhone screenshots checked. See [implementation and validation notes](TASK-3.md). Broader device/accessibility QA remains in Task 7.
 
 ## Goal and approved direction
 
-Deliver a cohesive, cozy cat-themed app across Focus, active timer, Presets, and Settings, in light and dark mode. Use cream/charcoal surfaces, rounded typography, teal/mint controls, restrained ginger cat illustrations, and consistent rounded cards. Keep the existing UIKit architecture and coordinator navigation. The widget extension remains SwiftUI.
+Deliver a cohesive, cozy cat-themed app across Focus, active timer, Presets, and Settings, in light and dark mode. Use cream/charcoal surfaces, rounded typography, teal/mint controls, cream/beige tabby cat illustrations, and consistent rounded cards. Keep the existing UIKit architecture and coordinator navigation. The widget extension remains SwiftUI.
 
 Reference boards: [Light mode](references/light-mode.png), [Dark mode](references/dark-mode.png), [Selection sheets](references/selection-sheets.png).
 

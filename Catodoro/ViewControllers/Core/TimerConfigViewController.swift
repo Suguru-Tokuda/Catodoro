@@ -19,7 +19,7 @@ class TimerConfigViewController: BaseViewController {
     private var cancellables: Set<AnyCancellable> = .init()
     
     // MARK: UI Components
-    private lazy var timerConfigView: TimerConfigView = .init()
+    private let timerConfigView: TimerConfigView = .init()
 
     init(preferences: CatodoroPreferencesProtocol?) {
         self.preferences = preferences
@@ -41,6 +41,11 @@ class TimerConfigViewController: BaseViewController {
         addSubscriptions()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
+
     override func setupSubviews() {
         super.setupSubviews()
         view.addAutolayoutSubview(timerConfigView)
@@ -57,24 +62,16 @@ class TimerConfigViewController: BaseViewController {
     }
 
     private func setupEventHandlers() {
-        timerConfigView.onTotalDurationSelect = { [weak self] (hours, minutes, seconds) in
+        timerConfigView.render(viewModel.timerModel)
+        timerConfigView.onSelectionRequest = { [weak self] selection in
             guard let self else { return }
-            self.viewModel.timerModel.mainTimer = .init(hours: hours,
-                                                 minutes: minutes,
-                                                 seconds: seconds)
-            self.timerConfigView.setStartButtonStatus(isEnabled: self.viewModel.isValidSelection)
-        }
 
-        timerConfigView.onIntervalDurationSelect = { [weak self] (hours, minutes, seconds) in
-            guard let self else { return }
-            self.viewModel.timerModel.interval = .init(hours: hours,
-                                                minutes: minutes,
-                                                seconds: seconds)
-        }
+            self.presentRoutineSelection(selection, configuration: self.viewModel.timerModel) { [weak self] updated in
+                guard let self else { return }
 
-        timerConfigView.onIntervalSelect = { [weak self] intervals in
-            guard let self else { return }
-            self.viewModel.timerModel.intervals = intervals
+                self.viewModel.timerModel = updated
+                self.timerConfigView.render(updated)
+            }
         }
 
         timerConfigView.onStartButtonTap = { [weak self] in
