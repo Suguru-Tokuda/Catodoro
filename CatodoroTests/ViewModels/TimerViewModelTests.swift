@@ -107,21 +107,24 @@ final class TimerViewModelTests: XCTestCase {
         XCTAssertTrue(liveActivityManagerMock.didStartLiveActivity)
     }
 
-    func test_updateLiveActivity_expectLiveActivityIsUpdated() {
+    @MainActor
+    func test_updateLiveActivity_expectLiveActivityIsUpdated() async {
+        let updated = expectation(description: "LiveActivityManager receives paused state")
+        // Refresh and pause may both update the activity; either paused update satisfies this test.
+        updated.assertForOverFulfill = false
+        liveActivityManagerMock.onUpdate = { status in
+            if status == .paused {
+                updated.fulfill()
+            }
+        }
+
         viewModel.configure(totalDuration: 1500, intervalDuration: 300, intervals: 4)
         viewModel.startTimer()
         viewModel.pauseTimer()
-        
-        let expectation = self.expectation(description: "LiveActivityManager updates activity")
-        
-        Task {
-            // Allow the async method in MockLiveActivityManager to execute
-            if liveActivityManagerMock.didUpdateLiveActivity {
-                expectation.fulfill()
-            }
-        }
-        
-        waitForExpectations(timeout: 1.0)
+
+        await fulfillment(of: [updated], timeout: 1.0)
+        XCTAssertTrue(liveActivityManagerMock.didUpdateLiveActivity)
+        liveActivityManagerMock.onUpdate = nil
     }
 
     func test_endLiveActivity_expectLiveActivityIsEnded() {

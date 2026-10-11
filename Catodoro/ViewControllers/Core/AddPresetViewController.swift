@@ -18,12 +18,15 @@ final class AddPresetViewController: UIViewController {
     private let accent: UIColor
     private let editorView = PresetEditorView()
 
-    init(preferences: CatodoroPreferencesProtocol? = nil, preset: PresetModel? = nil,
-         viewModel: PresetEditorViewModel? = nil) {
+    init(preferences: CatodoroPreferencesProtocol? = nil,
+         preset: PresetModel? = nil,
+         viewModel: PresetEditorViewModel? = nil,
+         shouldHideBottomBar: Bool = false
+    ) {
         self.viewModel = viewModel ?? PresetEditorViewModel(preset: preset)
         accent = ColorOptions(preferences?.color ?? ColorOptions.neonBlue.code).color
         super.init(nibName: nil, bundle: nil)
-        hidesBottomBarWhenPushed = true
+        hidesBottomBarWhenPushed = shouldHideBottomBar
     }
 
     required init?(coder: NSCoder) {

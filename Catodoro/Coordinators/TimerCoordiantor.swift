@@ -7,16 +7,28 @@
 
 import UIKit
 
+struct TimerCoordinatorConfiguration {
+    let shouldHideBottomBarWhenTimerStart: Bool
+
+    init(shouldHideBottomBarWhenTimerStart: Bool = false) {
+        self.shouldHideBottomBarWhenTimerStart = shouldHideBottomBarWhenTimerStart
+    }
+}
+
 class TimerCoordiantor: Coordinator {
     var finishDelegate: CoordinatorFinishDelegate?
     var type: CoordinatorType { .feature }
     var childCoordinators: [Coordinator] = []
     var navigationController: UINavigationController
+    private var configuration: TimerCoordinatorConfiguration
     weak var preferences: CatodoroPreferencesProtocol?
     weak var liveActivityManager: LiveActivityManaging?
 
-    init(navigationController: UINavigationController = BaseNavigationController()) {
+    init(navigationController: UINavigationController = BaseNavigationController(),
+         configuration: TimerCoordinatorConfiguration = TimerCoordinatorConfiguration()
+    ) {
         self.navigationController = navigationController
+        self.configuration = configuration
     }
 
     func start() {
@@ -27,7 +39,9 @@ class TimerCoordiantor: Coordinator {
 
     func navigateToTimerView(viewModel: TimerConfigViewModel) {
         let viewController = TimerViewController(preferences: preferences,
-                                                 liveActivityManager: liveActivityManager)
+                                                 liveActivityManager: liveActivityManager,
+                                                 shouldHidesBottomBarWhen: configuration.shouldHideBottomBarWhenTimerStart
+        )
         viewController.delegate = self
         viewController.configure(timerConfigViewModel: viewModel)
         navigationController.pushViewController(viewController, animated: true)
