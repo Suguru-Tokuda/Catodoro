@@ -5,90 +5,66 @@
 //  Created by Suguru Tokuda on 8/21/24.
 //
 
+import Combine
 import UIKit
 
 protocol SettingsViewControllerDelegate: AnyObject {
     func onSettingMenuSelected(settingOption: SettingOptions)
 }
 
-class SettingsViewController: BaseViewController {
+final class SettingsViewController: UIViewController {
     weak var delegate: SettingsViewControllerDelegate?
-    var preferences: CatodoroPreferencesProtocol?
-    private var viewModel: SettingsViewModel = .init()
-    private var label: UILabel = {
-        let label = UILabel()
-        label.text = "Settings"
-        label.font = CatTheme.font(.title2, weight: .bold)
-        label.textColor = CatTheme.text
-        label.adjustsFontForContentSizeCategory = true
-        label.textAlignment = .center
-        return label
-    }()
-    private var colorOptionSubTitle: SettingSubtitleLabel = .init(labelText: "Color")
-    private var optionTableView: UITableView = {
-        let tableView = UITableView()
-        tableView.backgroundColor = CatTheme.background
-        tableView.separatorColor = CatTheme.separator
-        tableView.register(SettingOptionsViewCell.self,
-                           forCellReuseIdentifier: SettingOptionsViewCell.reuseIdentifier)
-        return tableView
-    }()
+    private let settingsView = SettingsView()
+    private let viewModel: SettingsViewModel
+    private var subscriptions = Set<AnyCancellable>()
+
+    init(preferences: CatodoroPreferencesProtocol? = nil) {
+        viewModel = SettingsViewModel(preferences: preferences)
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        nil
+    }
+
+    override func loadView() {
+        view = settingsView
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        optionTableView.delegate = self
-        optionTableView.dataSource = self
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-    }
-
-    override func setupSubviews() {
-        super.setupSubviews()
-        view.addAutolayoutSubviews([
-            label,
-            optionTableView
-        ])
-    }
-
-    override func setupConstraints() {
-        super.setupConstraints()
-        NSLayoutConstraint.activate([
-            label.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            label.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            optionTableView.topAnchor.constraint(equalTo: label.bottomAnchor),
-            optionTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            optionTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            optionTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
-    }
-}
-
-extension SettingsViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectedOption = viewModel.settingOptions[indexPath.row]
-        if let settingModel = SettingOptions.init(rawValue: selectedOption.title) {
-            delegate?.onSettingMenuSelected(settingOption: settingModel)
+        title = "Settings"
+        settingsView.onColorSelected = { [weak self] color in
+            self?.viewModel.selectColor(color)
         }
-        tableView.deselectRow(at: indexPath, animated: true)
-    }
-}
-
-extension SettingsViewController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.settingOptions.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if let cell = tableView.dequeueReusableCell(withIdentifier: SettingOptionsViewCell.reuseIdentifier,
-                                                    for: indexPath) as? SettingOptionsViewCell {
-            let optionLabelText = viewModel.settingOptions[indexPath.row].title
-            let iconName = viewModel.settingOptions[indexPath.row].iconName
-            cell.configure(settingLabelText: optionLabelText, iconName: iconName)
-            return cell
-        } else {
-            return UITableViewCell()
+        settingsView.onSoundRequested = { [weak self] in
+            self?.delegate?.onSettingMenuSelected(settingOption: .sound)
         }
+        settingsView.onLiveActivityChanged = { [weak self] enabled in
+            self?.viewModel.setLiveActivityEnabled(enabled)
+        }
+        settingsView.onSystemSettingsRequested = {
+            guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+
+            UIApplication.shared.open(url)
+        }
+        viewModel.statePublisher.receive(on: DispatchQueue.main)
+            .sink { [weak self] state in
+                self?.settingsView.render(state)
+            }
+            .store(in: &subscriptions)
+        NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.viewModel.refresh()
+            }
+            .store(in: &subscriptions)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+        viewModel.refresh()
+        navigationController?.navigationBar.tintColor = viewModel.state.color.color
     }
 }

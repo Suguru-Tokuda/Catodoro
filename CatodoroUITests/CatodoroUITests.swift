@@ -77,6 +77,67 @@ final class CatodoroUITests: XCTestCase {
     }
 
     @MainActor
+    func test_settingsPersistAccentSoundAndActivityPreference() throws {
+        let app = XCUIApplication()
+        app.launch()
+        app.tabBars.buttons["Settings"].tap()
+        XCTAssertTrue(app.staticTexts["Make yourself at home"].waitForExistence(timeout: 5))
+        app.buttons["nPink"].tap()
+        XCTAssertEqual(app.buttons["nPink"].value as? String, "Selected")
+        let activity = app.switches["liveActivityToggle"]
+        let original = activity.value as? String
+        activity.tap()
+        let updated = activity.value as? String
+        XCTAssertNotEqual(original, updated)
+        app.buttons["Timer sound"].tap()
+        app.staticTexts["Kitty"].tap()
+        capture(app, name: "Sound selection")
+        app.navigationBars.buttons["Done"].tap()
+        XCTAssertEqual(app.buttons["Timer sound"].value as? String, "Kitty")
+        capture(app, name: "Settings")
+        app.terminate()
+        app.launch()
+        app.tabBars.buttons["Settings"].tap()
+        XCTAssertEqual(app.buttons["nPink"].value as? String, "Selected")
+        XCTAssertEqual(app.switches["liveActivityToggle"].value as? String, updated)
+        XCTAssertEqual(app.buttons["Timer sound"].value as? String, "Kitty")
+        app.buttons["nBlue"].tap()
+        if app.switches["liveActivityToggle"].value as? String == "0" {
+            app.switches["liveActivityToggle"].tap()
+        }
+    }
+
+    @MainActor
+    func test_skipPausedBreakStartsNextFocus() throws {
+        let app = XCUIApplication()
+        app.launch()
+        app.buttons["Focus time"].tap()
+        setDuration(app, seconds: 5)
+        app.buttons["Set focus time"].tap()
+        app.buttons["Catnap break"].tap()
+        setDuration(app, seconds: 30)
+        app.buttons["Set break time"].tap()
+        app.buttons["Sessions"].tap()
+        for _ in 0..<19 {
+            if app.staticTexts["2 focus sessions"].exists { break }
+            app.buttons["Fewer sessions"].tap()
+        }
+        XCTAssertTrue(app.staticTexts["2 focus sessions"].exists)
+        app.buttons["Set sessions"].tap()
+        app.buttons["Start focusing"].tap()
+        XCTAssertFalse(app.buttons["skipBreak"].exists)
+        XCTAssertTrue(app.staticTexts["CATNAP BREAK"].waitForExistence(timeout: 10))
+        app.buttons["Pause"].tap()
+        capture(app, name: "Break with skip")
+        app.buttons["skipBreak"].tap()
+        XCTAssertTrue(app.staticTexts["FOCUS SESSION"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["2 of 2"].exists)
+        XCTAssertFalse(app.buttons["skipBreak"].exists)
+        app.buttons["End session"].tap()
+        XCTAssertTrue(app.tabBars.buttons["Focus"].waitForExistence(timeout: 5))
+    }
+
+    @MainActor
     func testExample() throws {
         // UI tests must launch the application that they test.
         let app = XCUIApplication()
@@ -203,6 +264,13 @@ final class CatodoroUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Start focusing"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.tabBars.buttons["Presets"].isHittable)
         XCTAssertEqual(app.buttons["Sessions"].value as? String, "2")
+    }
+
+    @MainActor
+    private func setDuration(_ app: XCUIApplication, seconds: Int) {
+        app.pickerWheels.element(boundBy: 0).adjust(toPickerWheelValue: "0")
+        app.pickerWheels.element(boundBy: 1).adjust(toPickerWheelValue: "0")
+        app.pickerWheels.element(boundBy: 2).adjust(toPickerWheelValue: "\(seconds)")
     }
 
     @MainActor

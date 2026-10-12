@@ -12,6 +12,7 @@ import Foundation
 struct PlayTimerIntent: AppIntent & LiveActivityIntent {
     static var title: LocalizedStringResource = "Play Timer"
     
+    @MainActor
     func perform() async throws -> some IntentResult {
         NotificationCenter.default.post(name: .playTimerActionTriggered, object: nil)
         return .result()

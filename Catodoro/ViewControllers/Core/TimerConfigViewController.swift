@@ -14,12 +14,12 @@ protocol TimerConfigViewControllerDelegate: AnyObject {
 
 class TimerConfigViewController: BaseViewController {
     weak var delegate: TimerConfigViewControllerDelegate?
-    private var viewModel: TimerConfigViewModel = .init()
+    private var viewModel = TimerConfigViewModel()
     private weak var preferences: CatodoroPreferencesProtocol?
-    private var cancellables: Set<AnyCancellable> = .init()
+    private var cancellables = Set<AnyCancellable>()
     
     // MARK: UI Components
-    private let timerConfigView: TimerConfigView = .init()
+    private let timerConfigView: TimerConfigView = TimerConfigView()
 
     init(preferences: CatodoroPreferencesProtocol?) {
         self.preferences = preferences
@@ -46,13 +46,13 @@ class TimerConfigViewController: BaseViewController {
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
 
-    override func setupSubviews() {
-        super.setupSubviews()
+    override func constructSubviews() {
+        super.constructSubviews()
         view.addAutolayoutSubview(timerConfigView)
     }
 
-    override func setupConstraints() {
-        super.setupConstraints()
+    override func constructSubviewLayoutConstraints() {
+        super.constructSubviewLayoutConstraints()
         NSLayoutConstraint.activate([
             timerConfigView.topAnchor.constraint(equalTo: view.topAnchor),
             timerConfigView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
@@ -66,11 +66,12 @@ class TimerConfigViewController: BaseViewController {
         timerConfigView.onSelectionRequest = { [weak self] selection in
             guard let self else { return }
 
-            self.presentRoutineSelection(selection, configuration: self.viewModel.timerModel) { [weak self] updated in
+            presentRoutineSelection(selection, configuration: self.viewModel.timerModel,
+                                         accent: ColorOptions(self.preferences?.color ?? "").color) { [weak self] updated in
                 guard let self else { return }
 
-                self.viewModel.timerModel = updated
-                self.timerConfigView.render(updated)
+                viewModel.timerModel = updated
+                timerConfigView.render(updated)
             }
         }
 

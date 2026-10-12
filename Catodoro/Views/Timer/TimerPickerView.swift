@@ -82,7 +82,7 @@ class TimerPickerView: BaseView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func setupSubviews() {
+    override func constructSubviews() {
         addAutolayoutSubview(outerStackView)
 
         outerStackView.addArrangedSubviews([
@@ -103,7 +103,7 @@ class TimerPickerView: BaseView {
         ])
     }
 
-    override func setupConstraints() {
+    override func constructSubviewLayoutConstraints() {
         NSLayoutConstraint.activate([
             outerStackView.topAnchor.constraint(equalTo: topAnchor),
             outerStackView.leadingAnchor.constraint(equalTo: leadingAnchor),

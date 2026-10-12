@@ -12,6 +12,7 @@ import Foundation
 struct RepeatTimerIntent: AppIntent & LiveActivityIntent {
     static var title: LocalizedStringResource = "Repeat Timer"
 
+    @MainActor
     func perform() async throws -> some IntentResult {
         NotificationCenter.default.post(name: .repeatTimerActionTriggered, object: nil)
         return .result()

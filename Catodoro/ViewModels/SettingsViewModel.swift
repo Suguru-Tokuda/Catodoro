@@ -5,6 +5,8 @@
 //  Created by Suguru Tokuda on 11/10/24.
 //
 
+import ActivityKit
+import Combine
 import Foundation
 
 struct SettingModel {
@@ -24,16 +26,55 @@ enum SettingOptions: String, CaseIterable {
     }
 }
 
-class SettingsViewModel {
-    var selectedColorOption: ColorOptionModel?
-    let settingOptions: [SettingModel]
+final class SettingsViewModel {
+    struct State {
+        let color: ColorOptions
+        let sound: SoundOptions
+        let liveActivityEnabled: Bool
+        let activitiesAuthorized: Bool
+    }
 
-    init(selectedColorOption: ColorOptionModel? = nil) {
-        self.selectedColorOption = selectedColorOption
-        var settingOptions: [SettingModel] = []
-        SettingOptions.allCases.forEach {
-            settingOptions.append(.init(iconName: $0.iconName, title: $0.rawValue))
+    @Published private(set) var state: State
+    private let preferences: CatodoroPreferencesProtocol?
+    private let activitiesAuthorized: () -> Bool
+    private var subscriptions = Set<AnyCancellable>()
+
+    init(preferences: CatodoroPreferencesProtocol? = nil,
+         activitiesAuthorized: @escaping () -> Bool = { ActivityAuthorizationInfo().areActivitiesEnabled }) {
+        self.preferences = preferences
+        self.activitiesAuthorized = activitiesAuthorized
+        state = State(color: ColorOptions(preferences?.color ?? ""),
+                      sound: SoundOptions(preferences?.sound ?? ""),
+                      liveActivityEnabled: preferences?.liveActivityEnabled ?? true,
+                      activitiesAuthorized: activitiesAuthorized())
+        if let preferences {
+            preferences.colorPublisher.combineLatest(preferences.soundPublisher, preferences.liveActivityPublisher)
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] _ in
+                    self?.refresh()
+                }
+                .store(in: &subscriptions)
         }
-        self.settingOptions = settingOptions
+    }
+
+    var statePublisher: AnyPublisher<State, Never> {
+        $state.eraseToAnyPublisher()
+    }
+
+    func selectColor(_ option: ColorOptions) {
+        preferences?.setColor(option)
+        refresh()
+    }
+
+    func setLiveActivityEnabled(_ enabled: Bool) {
+        preferences?.setLiveActivityEnabled(enabled)
+        refresh()
+    }
+
+    func refresh() {
+        state = State(color: ColorOptions(preferences?.color ?? ""),
+                      sound: SoundOptions(preferences?.sound ?? ""),
+                      liveActivityEnabled: preferences?.liveActivityEnabled ?? true,
+                      activitiesAuthorized: activitiesAuthorized())
     }
 }

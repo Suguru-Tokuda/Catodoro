@@ -40,6 +40,9 @@ final class TimerViewController: BaseViewController {
         timerView.onPlayPauseButtonTap = { [weak self] in
             self?.viewModel.handlePlayPauseButtonTap()
         }
+        timerView.onSkipBreakTap = { [weak self] in
+            self?.viewModel.skipBreak()
+        }
         timerView.onStopButtonTap = { [weak self] in
             self?.viewModel.stopTimer()
         }
@@ -79,13 +82,13 @@ final class TimerViewController: BaseViewController {
                             intervals: routine.intervals)
     }
 
-    override func setupSubviews() {
-        super.setupSubviews()
+    override func constructSubviews() {
+        super.constructSubviews()
         view.addAutolayoutSubview(timerView)
     }
 
-    override func setupConstraints() {
-        super.setupConstraints()
+    override func constructSubviewLayoutConstraints() {
+        super.constructSubviewLayoutConstraints()
         NSLayoutConstraint.activate([
             timerView.topAnchor.constraint(equalTo: view.topAnchor),
             timerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),

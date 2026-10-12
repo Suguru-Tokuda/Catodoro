@@ -16,7 +16,9 @@ protocol LiveActivityManaging: AnyObject {
                            intervals: Int,
                            interval: Int,
                            timerType: TimerType,
-                           timerStatus: TimerStatus) throws
+                           timerStatus: TimerStatus,
+                           phaseDuration: TimeInterval,
+                           accentCode: String?) throws
 
     func updateLiveActivity(currentTimerValue: TimeInterval,
                             endTime: Date,
@@ -24,7 +26,9 @@ protocol LiveActivityManaging: AnyObject {
                             interval: Int,
                             timerType: TimerType,
                             timerStatus: TimerStatus,
-                            soundName: String?) async
+                            soundName: String?,
+                            phaseDuration: TimeInterval,
+                            accentCode: String?) async
     func endLiveActivity()
 
     func hasLiveActivity() -> Bool
@@ -32,96 +36,93 @@ protocol LiveActivityManaging: AnyObject {
 
 enum LiveActivityError: Error {
     case start
+    case disabled
 }
 
-class LiveActivityManager: LiveActivityManaging {
+final class LiveActivityManager: LiveActivityManaging {
+    private let lock = NSLock()
     private var currentActivity: Activity<TimerAttributes>?
-    
+    private var pendingOperation: Task<Void, Never>?
+    private let activitiesEnabled: () -> Bool
+
+    init(activitiesEnabled: @escaping () -> Bool = { ActivityAuthorizationInfo().areActivitiesEnabled }) {
+        self.activitiesEnabled = activitiesEnabled
+    }
+
     func startLiveActivity(name: String,
                            currentTimerValue: TimeInterval,
                            endTime: Date,
                            intervals: Int,
                            interval: Int,
                            timerType: TimerType,
-                           timerStatus: TimerStatus) throws {
-        Task {
-            guard currentActivity == nil else {
-                await updateLiveActivity(currentTimerValue: currentTimerValue,
-                                         endTime: endTime,
-                                         intervals: intervals,
-                                         interval: interval,
-                                         timerType: timerType,
-                                         timerStatus: timerStatus,
-                                         soundName: nil)
-                return
-            }
-            if let currentActivity {
-                await currentActivity.end(nil)
-            }
-            let timer = TimerAttributes(name: name)
-            let initialState = TimerAttributes.ContentState(currentTimerValue: currentTimerValue,
-                                                            endTime: endTime,
-                                                            intervals: intervals,
-                                                            interval: interval,
-                                                            timerType: timerType,
-                                                            timerStatus: timerStatus)
-            let content = ActivityContent(state: initialState, staleDate: nil)
-            
-            do {
-                currentActivity = try Activity<TimerAttributes>
-                    .request(attributes: timer,
-                             content: content)
-            } catch {
-                throw error
-            }
+                           timerStatus: TimerStatus,
+                           phaseDuration: TimeInterval,
+                           accentCode: String?) throws {
+        guard activitiesEnabled() else {
+            throw LiveActivityError.disabled
+        }
+
+        let state = TimerAttributes.ContentState(currentTimerValue: currentTimerValue, endTime: endTime,
+                                                intervals: intervals, interval: interval,
+                                                timerType: timerType, timerStatus: timerStatus,
+                                                phaseDuration: phaseDuration, accentCode: accentCode)
+        // Request is synchronous and throwing, so the caller can handle authorization/request failures.
+        try lock.withLock {
+            guard currentActivity == nil else { return }
+
+            currentActivity = try Activity.request(attributes: TimerAttributes(name: name),
+                                                   content: ActivityContent(state: state, staleDate: nil))
         }
     }
 
-    @MainActor
     func updateLiveActivity(currentTimerValue: TimeInterval,
                             endTime: Date,
                             intervals: Int,
                             interval: Int,
                             timerType: TimerType,
                             timerStatus: TimerStatus,
-                            soundName: String?
-    ) async {
-        guard let currentActivity else { return }
-        let updatedState = TimerAttributes.ContentState(currentTimerValue: currentTimerValue,
-                                                        endTime: endTime,
-                                                        intervals: intervals,
-                                                        interval: interval,
-                                                        timerType: timerType,
-                                                        timerStatus: timerStatus)
-        var alertConfig: AlertConfiguration?
+                            soundName: String?,
+                            phaseDuration: TimeInterval,
+                            accentCode: String?) async {
+        let state = TimerAttributes.ContentState(currentTimerValue: currentTimerValue, endTime: endTime,
+                                                intervals: intervals, interval: interval,
+                                                timerType: timerType, timerStatus: timerStatus,
+                                                phaseDuration: phaseDuration, accentCode: accentCode)
+        let task: Task<Void, Never>? = lock.withLock {
+            guard let activity = currentActivity else { return nil }
 
-        if let soundName {
-            alertConfig = .init(title: timerStatus == .finished ? "Finished" : "\(timerType.rawValue) \(interval)",
-                                body: "",
-                                sound: .named("\(soundName).mp3"))
-        }
-
-        await currentActivity.update(
-            ActivityContent(state: updatedState, staleDate: nil),
-            alertConfiguration: alertConfig
-        )
-    }
-    
-    func endLiveActivity() {
-        guard let currentActivity else { return }
-        let semaphore = DispatchSemaphore(value: 0)
-        Task {
-            for activity in Activity<TimerAttributes>.activities {
-                await activity.end(nil)
+            let previous = pendingOperation
+            let task = Task {
+                await previous?.value
+                var alert: AlertConfiguration?
+                if let soundName {
+                    alert = AlertConfiguration(title: timerStatus == .finished ? "Routine complete" : "Catodoro",
+                                               body: timerType == .interval ? "Rest your paws." : "Time to focus.",
+                                               sound: .named("\(soundName).mp3"))
+                }
+                await activity.update(ActivityContent(state: state, staleDate: nil), alertConfiguration: alert)
             }
-            await currentActivity.end(nil, dismissalPolicy: .immediate)
-            semaphore.signal()
+            pendingOperation = task
+            return task
         }
-        semaphore.wait()
-        self.currentActivity = nil
+        await task?.value
+    }
+
+    func endLiveActivity() {
+        // Clear ownership immediately; ending the old activity must not end a newly started routine.
+        lock.withLock {
+            guard let activity = currentActivity else { return }
+
+            currentActivity = nil
+            let previous = pendingOperation
+            pendingOperation = Task {
+                await previous?.value
+                await activity.end(nil, dismissalPolicy: .immediate)
+            }
+        }
     }
 
     func hasLiveActivity() -> Bool {
-        currentActivity != nil
+        lock.withLock { currentActivity != nil }
     }
 }

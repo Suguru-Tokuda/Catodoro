@@ -104,7 +104,7 @@ class TimerConfigView: BaseView {
         return view
     }
 
-    override func setupSubviews() {
+    override func constructSubviews() {
         startButton.addTarget(self, action: #selector(startButtonTapped), for: .touchUpInside)
         backgroundColor = CatTheme.background
         addAutolayoutSubview(scrollView)
@@ -132,7 +132,7 @@ class TimerConfigView: BaseView {
         applyModel()
     }
 
-    override func setupConstraints() {
+    override func constructSubviewLayoutConstraints() {
         NSLayoutConstraint.activate([
             heroView.heightAnchor.constraint(equalToConstant: 200),
             companion.heightAnchor.constraint(equalTo: heroView.heightAnchor),
@@ -172,6 +172,7 @@ class TimerConfigView: BaseView {
 
         heading.text = model.startLabelText == "Save" ? "Create a routine" : "Catodoro"
         startButton.model = .init(buttonLabelText: model.startLabelText, color: model.color)
+        [focusRow, breakRow, sessionsRow].forEach { $0.configureAccent(model.color) }
     }
 
     func setStartButtonStatus(isEnabled: Bool) {

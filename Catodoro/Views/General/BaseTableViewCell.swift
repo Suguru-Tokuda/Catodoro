@@ -7,22 +7,26 @@
 
 import UIKit
 
-class BaseTableViewCell: UITableViewCell {
+class BaseTableViewCell: UITableViewCell, Constructable {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setupView()
-        setupSubviews()
-        setupConstraints()
+        constructView()
+        constructSubviews()
+        constructSubviewLayoutConstraints()
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        setupView()
-        setupSubviews()
-        setupConstraints()
+        constructView()
+        constructSubviews()
+        constructSubviewLayoutConstraints()
     }
 
-    func setupView() { backgroundColor = CatTheme.card }
-    func setupSubviews() {}
-    func setupConstraints() {}
+    func constructView() {
+        backgroundColor = CatTheme.card
+    }
+
+    func constructSubviews() {}
+
+    func constructSubviewLayoutConstraints() {}
 }

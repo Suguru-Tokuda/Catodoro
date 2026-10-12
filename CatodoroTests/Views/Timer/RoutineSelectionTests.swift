@@ -10,6 +10,43 @@ import XCTest
 
 @MainActor
 final class RoutineSelectionTests: XCTestCase {
+    func test_allSelectionSheetsUseInjectedAccentAfterDraftChanges() {
+        let presenter = UIViewController()
+        let accent = ColorOptions.neonPink.color
+
+        for selection in [RoutineSelection.focus, .catnap, .sessions] {
+            let editor = presenter.makeRoutineSelectionEditor(selection, configuration: .standard,
+                                                              accent: accent) { _ in }
+            editor.loadViewIfNeeded()
+            let sheet = editor as! RoutineSelectionViewController
+            XCTAssertEqual(sheet.selectionView.tintColor, accent)
+            XCTAssertEqual(sheet.confirmButton.configuration?.baseBackgroundColor, accent)
+
+            if let duration = editor as? DurationSelectionViewController {
+                duration.selectShortcut(minutes: 5)
+                if selection == .focus {
+                    duration.selectShortcut(minutes: 25)
+                }
+            }
+
+            func descendants(_ view: UIView) -> [UIView] {
+                view.subviews.flatMap { [$0] + descendants($0) }
+            }
+
+            if selection == .sessions {
+                XCTAssertTrue(descendants(sheet.view).contains {
+                    $0.backgroundColor == accent.withAlphaComponent(0.18)
+                }, "The session-count card should use the selected accent tint")
+            }
+
+            for button in descendants(sheet.view).compactMap({ $0 as? UIButton }) {
+                if button.isSelected || ["Fewer sessions", "More sessions"].contains(button.accessibilityLabel ?? "") {
+                    XCTAssertEqual(button.configuration?.baseBackgroundColor, accent)
+                }
+            }
+        }
+    }
+
     func test_summaryIncludesOnlyBreaksBetweenSessionsAndKeepsSeconds() {
         var routine = TimerConfigModel.standard
         XCTAssertEqual(routine.totalDuration, 6900)

@@ -10,6 +10,7 @@ import UIKit
 
 final class TimerView: BaseView {
     var onPlayPauseButtonTap: (() -> Void)?
+    var onSkipBreakTap: (() -> Void)?
     var onStopButtonTap: (() -> Void)?
     var onDismissButtonTap: (() -> Void)?
     private var isComplete = false
@@ -133,6 +134,15 @@ final class TimerView: BaseView {
         return button
     }()
 
+    private let skipBreakButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Skip break", for: .normal)
+        button.titleLabel?.font = CatTheme.font(.body, weight: .semibold)
+        button.isHidden = true
+        button.accessibilityIdentifier = "skipBreak"
+        return button
+    }()
+
     private let secondaryButton: UIButton = {
         let button = UIButton(type: .system)
         var configuration = UIButton.Configuration.bordered()
@@ -158,13 +168,13 @@ final class TimerView: BaseView {
         nil
     }
 
-    override func setupSubviews() {
+    override func constructSubviews() {
         backgroundColor = CatTheme.background
         addAutolayoutSubview(scrollView)
         scrollView.addAutolayoutSubview(stackView)
         stackView.addArrangedSubviews([
             timerNameLabel, sessionLabel, ringContainer, pawsStack, messageLabel,
-            primaryButton, secondaryButton
+            primaryButton, skipBreakButton, secondaryButton
         ])
         stackView.setCustomSpacing(4, after: timerNameLabel)
         stackView.setCustomSpacing(28, after: messageLabel)
@@ -175,6 +185,11 @@ final class TimerView: BaseView {
         primaryButton.configuration?.baseBackgroundColor = accent
         primaryButton.addAction(UIAction { [weak self] _ in
             self?.onPlayPauseButtonTap?()
+        }, for: .touchUpInside)
+        skipBreakButton.tintColor = accent
+        skipBreakButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
+        skipBreakButton.addAction(UIAction { [weak self] _ in
+            self?.onSkipBreakTap?()
         }, for: .touchUpInside)
         secondaryButton.addAction(UIAction { [weak self] _ in
             guard let self else {
@@ -189,7 +204,7 @@ final class TimerView: BaseView {
         }, for: .touchUpInside)
     }
 
-    override func setupConstraints() {
+    override func constructSubviewLayoutConstraints() {
         let ringWidth = ringContainer.widthAnchor.constraint(equalTo: stackView.widthAnchor)
         ringWidth.priority = .defaultHigh
         let contentWidth = stackView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor, constant: -40)
@@ -239,6 +254,7 @@ final class TimerView: BaseView {
 
     func render(_ state: TimerPresentationState) {
         isComplete = state.status == .finished
+        skipBreakButton.isHidden = !state.isBreak || isComplete
         timerNameLabel.text = state.phaseTitle.uppercased()
         sessionLabel.text = state.sessionSummary
         timerLabel.text = state.countdown
@@ -297,6 +313,10 @@ extension TimerView {
 
         var primaryButton: UIButton {
             target.primaryButton
+        }
+
+        var skipBreakButton: UIButton {
+            target.skipBreakButton
         }
 
         var secondaryButton: UIButton {

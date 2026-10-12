@@ -92,13 +92,12 @@ class AudioManager: NSObject, AudioManaging {
     func stop() throws {
         _audioState = .stopped
 
-        if let audioPlayer {
-            audioPlayer.stop()
-            audioPlayer.currentTime = 0
-            try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
-        } else {
-            throw AudioError.playerNotSet
-        }
+        // A new sound preview manager has no player yet. Stopping it is a no-op.
+        guard let audioPlayer else { return }
+
+        audioPlayer.stop()
+        audioPlayer.currentTime = 0
+        try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
     }
 
     private func getAudioPlayer(fileName: String, fileExtension: String) throws -> AVAudioPlayer {

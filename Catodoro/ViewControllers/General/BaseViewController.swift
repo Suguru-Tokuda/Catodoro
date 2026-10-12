@@ -7,14 +7,12 @@
 
 import UIKit
 
-class BaseViewController: UIViewController {
+class BaseViewController: UIViewController, Constructable {
     var onFinish: (() -> Void)?
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = CatTheme.background
-        setupSubviews()
-        setupConstraints()
+        construct()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -24,7 +22,17 @@ class BaseViewController: UIViewController {
         }
     }
 
-    func setupSubviews() {}
+    private func construct() {
+        constructView()
+        constructSubviews()
+        constructSubviewLayoutConstraints()
+    }
 
-    func setupConstraints() {}
+    func constructView() {
+        view.backgroundColor = CatTheme.background
+    }
+
+    func constructSubviews() {}
+
+    func constructSubviewLayoutConstraints() {}
 }

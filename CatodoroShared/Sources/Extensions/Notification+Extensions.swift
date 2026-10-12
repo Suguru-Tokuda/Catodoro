@@ -8,6 +8,7 @@
 import Foundation
 
 public extension Notification.Name {
+    static let skipBreakActionTriggered = Notification.Name("skipBreakActionTriggered")
     static let playTimerActionTriggered = Notification.Name("playTimerActionTriggered")
     static let stopTimerActionTriggered = Notification.Name("stopTimerActionTriggered")
     static let repeatTimerActionTriggered = Notification.Name("repeatTimerActionTriggerred")

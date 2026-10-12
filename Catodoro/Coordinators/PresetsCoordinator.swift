@@ -36,7 +36,7 @@ class PresetsCoordinator: Coordinator {
     }
 
     func start() {
-        let presetsViewController = PresetsViewController()
+        let presetsViewController = PresetsViewController(preferences: preferences)
         presetsViewController.delegate = self
         navigationController.pushViewController(presetsViewController, animated: false)
     }

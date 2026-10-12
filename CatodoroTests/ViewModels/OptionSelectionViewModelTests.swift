@@ -57,14 +57,14 @@ class OptionSelectionViewModelTests: XCTestCase {
         XCTAssertFalse(viewModel.options.first(where: { $0.id == ColorOptions.neonBlue.code })?.selected ?? true)
         
         // Test if preferences are updated
-        XCTAssertEqual(mockPreferences.color, ColorOptions.neonGreen.rawValue)
+        XCTAssertEqual(mockPreferences.color, ColorOptions.neonGreen.code)
     }
     
     func test_setSound_expectSelectionAndPreferencesUpdated() {
         viewModel.setSound(soundId: "meowLoud")
         
         // Test if preferences are updated
-        XCTAssertEqual(mockPreferences.sound, SoundOptions.meowLoud.rawValue)
+        XCTAssertEqual(mockPreferences.sound, SoundOptions.meowLoud.id)
     }
     
     func test_initializeSoundOptionsWithUnknownId_expectDefaultSoundOption() {

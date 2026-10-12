@@ -7,7 +7,7 @@
 
 import UIKit
 
-class RoutineSelectionView: UIView {
+class RoutineSelectionView: BaseView {
     var onClose: (() -> Void)?
     var onConfirm: (() -> Void)?
 
@@ -115,23 +115,29 @@ class RoutineSelectionView: UIView {
         imagePlate.backgroundColor = pose == nil ? CatTheme.color(0xFBE7D5, 0x4B352E) : .clear
     }
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    func applyAccent(_ color: UIColor) {
+        tintColor = color
+        confirmButton.configuration?.baseBackgroundColor = color
+    }
+
+    override func constructView() {
+        super.constructView()
+        backgroundColor = CatTheme.background
+    }
+
+    override func constructSubviews() {
+        super.constructSubviews()
         headerLabels.addArrangedSubviews([headerTitle, explanationLabel])
         headerStack.addArrangedSubviews([imagePlate, headerLabels])
-        closeButton.addAction(UIAction { [weak self] _ in
-            self?.onClose?()
-        }, for: .touchUpInside)
-
-        backgroundColor = CatTheme.background
         addAutolayoutSubviews([scrollView, confirmButton, closeButton])
-        confirmButton.addAction(UIAction { [weak self] _ in
-            self?.onConfirm?()
-        }, for: .touchUpInside)
         imagePlate.addAutolayoutSubview(headerImage)
         contentStack.addArrangedSubview(headerStack)
         scrollView.addAutolayoutSubview(contentStack)
+        setupActions()
+    }
 
+    override func constructSubviewLayoutConstraints() {
+        super.constructSubviewLayoutConstraints()
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 20),
             closeButton.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 12),
@@ -158,7 +164,13 @@ class RoutineSelectionView: UIView {
         ])
     }
 
-    required init?(coder: NSCoder) {
-        nil
+    private func setupActions() {
+        closeButton.addAction(UIAction { [weak self] _ in
+            self?.onClose?()
+        }, for: .touchUpInside)
+
+        confirmButton.addAction(UIAction { [weak self] _ in
+            self?.onConfirm?()
+        }, for: .touchUpInside)
     }
 }

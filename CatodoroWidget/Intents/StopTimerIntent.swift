@@ -11,6 +11,7 @@ import Foundation
 struct StopTimerIntent: AppIntent & LiveActivityIntent {
     static var title: LocalizedStringResource = "Stop Timer"
 
+    @MainActor
     func perform() async throws -> some  IntentResult {
         NotificationCenter.default.post(name: .stopTimerActionTriggered,
                                         object: nil)
