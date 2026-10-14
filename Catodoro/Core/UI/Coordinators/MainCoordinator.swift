@@ -73,7 +73,6 @@ class MainCoordinator: @preconcurrency MainCoordinatorProtocol {
     var type: CoordinatorType { .app }
     private let preferences: CatodoroPreferences
     private let coreDataManager: CatodoroCoreDataManaging
-    private let syncCoordinator: OnboardingSyncControlling
     weak var liveActivityManager: LiveActivityManaging?
     private let syncLifecycleManager: SyncLifecycleManaging
 
@@ -81,10 +80,8 @@ class MainCoordinator: @preconcurrency MainCoordinatorProtocol {
                   preferences: CatodoroPreferences,
                   liveActivityManager: LiveActivityManaging?,
                   coreDataManager: CatodoroCoreDataManaging,
-                  syncCoordinator: OnboardingSyncControlling,
                   syncLifecycleManager: SyncLifecycleManaging
     ) {
-        self.syncCoordinator = syncCoordinator
         self.coreDataManager = coreDataManager
         self.navigationController = navigationController ?? BaseNavigationController()
         self.preferences = preferences
@@ -114,7 +111,8 @@ class MainCoordinator: @preconcurrency MainCoordinatorProtocol {
         let tabCoordinator = TabCoordinator.init(navigationController,
                                                  preferences: preferences,
                                                  liveActivityManager: liveActivityManager,
-                                                 coreDataManager: coreDataManager)
+                                                 coreDataManager: coreDataManager,
+                                                 syncLifecycleManager: syncLifecycleManager)
         tabCoordinator.finishDelegate = self
         tabCoordinator.start()
         childCoordinators.append(tabCoordinator)

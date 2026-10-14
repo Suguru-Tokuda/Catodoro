@@ -1,19 +1,16 @@
-//
-//  SyncLifecycleManager.swift
-//  Catodoro
-//
-//  Created by Suguru Tokuda on 10/12/26.
-//
-
 import CloudKit
-import Combine
 import UIKit
+import Combine
+import CoreData
+import Foundation
 
 struct SyncStatus {
     var isEnabled: Bool
-    var isSyncing: Bool
-    var pendingChangeCount: Int
-    var lastSuccessfulCheck: Date?
+    var isSyncing = false
+    var isAvailable = false
+    var isCheckingAvailability = false
+    // Core Data doesn't expose a reliable pending-record count or a "fully synced" state.
+    var lastSuccessfulTransfer: Date?
     var errorMessage: String?
 }
 
@@ -22,189 +19,205 @@ protocol SyncLifecycleManaging: AnyObject {
     func start()
     func stop() async
     func setSyncEnabled(_ enabled: Bool) async throws
-    func accountDidChange()
-
     var syncStatus: SyncStatus { get }
     var syncStatusPublisher: AnyPublisher<SyncStatus, Never> { get }
 }
 
+/// Owns the app's opt-in setting and reports Core Data mirroring events.
+/// Core Data owns scheduling, account changes, retries, and conflict resolution.
+@MainActor
 final class SyncLifecycleManager: SyncLifecycleManaging {
     @Published private(set) var syncStatus: SyncStatus
-    var syncStatusPublisher: AnyPublisher<SyncStatus, Never> {
-        $syncStatus.eraseToAnyPublisher()
-    }
+    var syncStatusPublisher: AnyPublisher<SyncStatus, Never> { $syncStatus.eraseToAnyPublisher() }
     private let preferences: CatodoroPreferencesProtocol
-    private let sync: OnboardingSyncControlling
+    private let persistence: CloudSyncPersistence
     private let notificationCenter: NotificationCenter
-
-    private var subscriptions = Set<AnyCancellable>()
+    private let eventSource: NSPersistentCloudKitContainer?
+    private var subscription: AnyCancellable?
+    private var availabilitySubscriptions = Set<AnyCancellable>()
+    private let accountStatus: @MainActor () async throws -> CKAccountStatus
+    private var startupTask: Task<Void, Never>?
     private var isStarted = false
     private var generation = 0
-    private var accountRecoveryTask: Task<Void, Never>?
-    private var accountRecoveryID: UUID?
+    private var activeEvents = Set<UUID>()
 
-    private(set) var lastError: Error?
-
-    init(preferences: CatodoroPreferencesProtocol,
-         sync: OnboardingSyncControlling,
-         notificationCenter: NotificationCenter = .default) {
-        self.notificationCenter = notificationCenter
+    init(preferences: CatodoroPreferencesProtocol, persistence: CloudSyncPersistence,
+         notificationCenter: NotificationCenter = .default,
+         accountStatus: @escaping @MainActor () async throws -> CKAccountStatus = {
+             try await CKContainer(identifier: CatodoroPersistentController.cloudContainerIdentifier).accountStatus()
+         }) {
+        self.accountStatus = accountStatus
         self.preferences = preferences
-        self.sync = sync
-        self.syncStatus = SyncStatus(
-            isEnabled: preferences.syncEnabled,
-            isSyncing: false,
-            pendingChangeCount: 0,
-            lastSuccessfulCheck: nil,
-            errorMessage: nil
-        )
+        self.persistence = persistence
+        self.notificationCenter = notificationCenter
+        eventSource = (persistence as? CatodoroPersistentController)?.container
+        syncStatus = SyncStatus(isEnabled: false)
     }
 
     func start() {
         guard !isStarted else { return }
         isStarted = true
-
-        notificationCenter.publisher(
-            for: UIApplication.didBecomeActiveNotification
-        )
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] _ in
-            Task { @MainActor [weak self] in
-                guard let self,
-                      isStarted,
-                      preferences.syncEnabled,
-                      accountRecoveryTask == nil else {
-                    return
-                }
-
-                await restoreSyncIfEnabled()
-            }
-        }
-        .store(in: &subscriptions)
-
-        notificationCenter.publisher(for: .CKAccountChanged)
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
+        if let eventSource {
+            subscription = notificationCenter.publisher(
+                for: NSPersistentCloudKitContainer.eventChangedNotification, object: eventSource
+            ).receive(on: DispatchQueue.main).sink { [weak self] notification in
+                guard let event = notification.userInfo?[NSPersistentCloudKitContainer.eventNotificationUserInfoKey]
+                        as? NSPersistentCloudKitContainer.Event else { return }
                 Task { @MainActor [weak self] in
-                    self?.accountDidChange()
+                    guard let self, self.isStarted else { return }
+                    updateEvent(id: event.identifier,
+                                type: event.type,
+                                endDate: event.endDate,
+                                succeeded: event.succeeded,
+                                error: event.error
+                    )
                 }
             }
-            .store(in: &subscriptions)
+        }
+        for name in [UIApplication.didBecomeActiveNotification, .CKAccountChanged] {
+            notificationCenter.publisher(for: name)
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] _ in self?.scheduleAvailabilityRefresh() }
+                .store(in: &availabilitySubscriptions)
+        }
+        scheduleAvailabilityRefresh()
+    }
 
-        Task { [weak self] in
-            guard let self, self.accountRecoveryTask == nil else { return }
-            await self.restoreSyncIfEnabled()
+    private func scheduleAvailabilityRefresh() {
+        guard isStarted else { return }
+        startupTask?.cancel()
+        startupTask = Task { [weak self] in
+            guard let self, !Task.isCancelled, isStarted else { return }
+            await refreshAvailability()
         }
     }
-    
-    func stop()async {
-        isStarted = false
+
+    func refreshAvailability() async {
         generation += 1
-        subscriptions.removeAll()
-
-        accountRecoveryTask?.cancel()
-        accountRecoveryTask = nil
-        accountRecoveryID = nil
-
-        await sync.disableSync()
+        let request = generation
+        var accountWasChecked = false
+        syncStatus.isCheckingAvailability = true
+        defer {
+            if request == generation { syncStatus.isCheckingAvailability = false }
+        }
+        do {
+            let status = try await accountStatus()
+            try Task.checkCancellation()
+            guard request == generation else { return }
+            accountWasChecked = true
+            syncStatus.isAvailable = status == .available
+            let enabled = syncStatus.isAvailable && preferences.syncEnabled
+            if !enabled {
+                syncStatus.isEnabled = false
+                activeEvents.removeAll()
+                syncStatus.isSyncing = false
+            }
+            try await persistence.setCloudSyncEnabled(enabled)
+            guard request == generation, !Task.isCancelled else { return }
+            syncStatus.isEnabled = enabled
+            syncStatus.errorMessage = Self.unavailabilityMessage(for: status)
+        } catch is CancellationError {
+            // Superseded check; retain the saved preference.
+        } catch {
+            guard request == generation else { return }
+            if !accountWasChecked {
+                syncStatus.isAvailable = false
+                syncStatus.isEnabled = false
+                activeEvents.removeAll()
+                syncStatus.isSyncing = false
+            }
+            syncStatus.errorMessage = error.localizedDescription
+        }
     }
-    
+
+    func stop() async {
+        isStarted = false
+        startupTask?.cancel()
+        startupTask = nil
+        subscription = nil
+        availabilitySubscriptions.removeAll()
+        activeEvents.removeAll()
+        syncStatus.isSyncing = false
+        // Stopping observation doesn't change the user's mirroring preference.
+    }
+
     func setSyncEnabled(_ enabled: Bool) async throws {
         generation += 1
         let request = generation
-
-        preferences.setSyncEnabled(enabled)
-
-        if !enabled {
-            await sync.disableSync()
-            guard request == generation else { return }
-            lastError = nil
-            return
+        var accountWasChecked = !enabled
+        defer {
+            if request == generation { syncStatus.isCheckingAvailability = false }
         }
-
         do {
-            try await sync.enableSync()
-
-            guard request == generation else {
-                throw CancellationError()
+            if enabled {
+                syncStatus.isCheckingAvailability = true
+                let status = try await accountStatus()
+                try Task.checkCancellation()
+                guard request == generation else { throw CancellationError() }
+                accountWasChecked = true
+                syncStatus.isAvailable = status == .available
+                if let message = Self.unavailabilityMessage(for: status) {
+                    syncStatus.isEnabled = false
+                    try await persistence.setCloudSyncEnabled(false)
+                    throw ICloudUnavailableError(message: message)
+                }
             }
-
-            lastError = nil
+            try await persistence.setCloudSyncEnabled(enabled)
+            guard request == generation else { throw CancellationError() }
+            preferences.setSyncEnabled(enabled)
+            syncStatus.isEnabled = enabled
+            syncStatus.errorMessage = nil
+            if !enabled {
+                activeEvents.removeAll()
+                syncStatus.isSyncing = false
+            }
         } catch {
-            if request == generation,
-               !(error is CancellationError) {
-                lastError = error
+            if request == generation, !(error is CancellationError) {
+                if !accountWasChecked {
+                    syncStatus.isAvailable = false
+                    syncStatus.isEnabled = false
+                    activeEvents.removeAll()
+                    syncStatus.isSyncing = false
+                }
+                syncStatus.errorMessage = error.localizedDescription
             }
             throw error
         }
     }
 
-    func accountDidChange() {
-        guard isStarted, accountRecoveryTask == nil else { return }
-
-        let recoveryID = UUID()
-        accountRecoveryID = recoveryID
-
-        accountRecoveryTask = Task { @MainActor [weak self] in
-            guard let self else { return }
-
-            defer {
-                if accountRecoveryID == recoveryID {
-                    accountRecoveryTask = nil
-                    accountRecoveryID = nil
-                }
-            }
-
-            guard !Task.isCancelled,
-                  accountRecoveryID == recoveryID else {
-                return
-            }
-
-            await pauseForAccountChange()
+    private static func unavailabilityMessage(for status: CKAccountStatus) -> String? {
+        switch status {
+        case .available: return nil
+        case .noAccount:
+            return "iCloud is unavailable. Sign in to iCloud and enable Catodoro in iOS iCloud Settings."
+        case .restricted:
+            return "iCloud access is restricted. Check your device’s iCloud restrictions."
+        case .temporarilyUnavailable, .couldNotDetermine:
+            return "iCloud is temporarily unavailable. Catodoro will check again when you return to the app."
+        @unknown default:
+            return "iCloud is unavailable right now. Your presets remain available locally."
         }
+    }
+
+    func updateEvent(id: UUID, type: NSPersistentCloudKitContainer.EventType,
+                     endDate: Date?, succeeded: Bool, error: Error?) {
+        guard syncStatus.isEnabled, syncStatus.isAvailable else { return }
+        if let endDate {
+            activeEvents.remove(id)
+            if let error {
+                syncStatus.errorMessage = error.localizedDescription
+            } else if succeeded, type != .setup {
+                syncStatus.lastSuccessfulTransfer = endDate
+                syncStatus.errorMessage = nil
+            }
+        } else {
+            activeEvents.insert(id)
+        }
+        syncStatus.isSyncing = !activeEvents.isEmpty
     }
 }
 
-// MARK: - Private functions
-
-extension SyncLifecycleManager {
-    private func restoreSyncIfEnabled() async {
-        guard isStarted,
-              preferences.syncEnabled else {
-            return
-        }
-
-        let request = generation
-
-        do {
-            try await sync.enableSync()
-
-            guard request == generation else { return }
-            lastError = nil
-        } catch is CancellationError {
-            // Superseded request.
-        } catch {
-            guard request == generation else { return }
-            lastError = error
-        }
-    }
-
-    private func pauseForAccountChange() async {
-        guard isStarted, !Task.isCancelled else { return }
-
-        generation += 1
-        let request = generation
-
-        // Preserve the user's preference and all local data.
-        await sync.disableSync()
-
-        guard isStarted,
-              !Task.isCancelled,
-              request == generation,
-              preferences.syncEnabled else {
-            return
-        }
-
-        await restoreSyncIfEnabled()
-    }
+private struct ICloudUnavailableError: LocalizedError {
+    let message: String
+    var errorDescription: String? { message }
 }

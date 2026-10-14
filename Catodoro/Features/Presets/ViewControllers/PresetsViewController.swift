@@ -68,13 +68,9 @@ class PresetsViewController: BaseViewController {
         Task { [weak self] in
             guard let self else { return }
 
-            if self.viewModel.presets.isEmpty {
-                self.presetsView.showLoading()
-            }
-
-            await self.viewModel.loadPresets()
-            self.updateEmptyState()
-            self.showPersistenceErrorIfNeeded()
+            await viewModel.loadPresets()
+            updateEmptyState()
+            showPersistenceErrorIfNeeded()
         }
     }
 
@@ -101,23 +97,39 @@ class PresetsViewController: BaseViewController {
             .sink { [weak self] _ in
                 guard let self else { return }
 
-                self.presetsView.tintColor = self.accent
-                self.navigationController?.navigationBar.tintColor = self.accent
-                self.presetsView.tableView.reloadData()
+                presetsView.tintColor = accent
+                navigationController?.navigationBar.tintColor = accent
+                presetsView.tableView.reloadData()
             }
             .store(in: &cancellables)
 
 
         viewModel.presetsPublisher.receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                self?.presetsView.tableView.reloadData()
-                self?.updateEmptyState()
+                guard let self else { return }
+
+                presetsView.tableView.reloadData()
+                updateEmptyState()
+            }
+            .store(in: &cancellables)
+
+        viewModel.loadingStatePublisher.receive(on: DispatchQueue.main)
+            .sink { [weak self] loadingState in
+                guard let self else { return }
+
+                presetsView.render(
+                    isEmpty: viewModel.presets.isEmpty,
+                    showLoading: loadingState == .loading
+                )
             }
             .store(in: &cancellables)
     }
 
     private func updateEmptyState() {
-        presetsView.render(isEmpty: viewModel.presets.isEmpty)
+        presetsView.render(
+            isEmpty: viewModel.presets.isEmpty,
+            showLoading: viewModel.loadingState == .loading
+        )
     }
 
     private func removeSubscriptions() {

@@ -32,7 +32,8 @@ final class PresetsView: BaseView {
         return tableView
     }()
 
-    private let spinner = UIActivityIndicatorView(style: .medium)
+    private let spinner = UIActivityIndicatorView(style: .large)
+    private let loadingBackgroundView = UIView()
 
     override func constructView() {
         backgroundColor = CatTheme.background
@@ -40,10 +41,14 @@ final class PresetsView: BaseView {
 
     override func constructSubviews() {
         addAutolayoutSubviews([label, tableView])
+        loadingBackgroundView.addAutolayoutSubview(spinner)
+        spinner.color = CatTheme.secondaryText
     }
 
     override func constructSubviewLayoutConstraints() {
         NSLayoutConstraint.activate([
+            spinner.centerXAnchor.constraint(equalTo: loadingBackgroundView.centerXAnchor),
+            spinner.centerYAnchor.constraint(equalTo: loadingBackgroundView.centerYAnchor),
             label.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
             label.centerXAnchor.constraint(equalTo: centerXAnchor),
             tableView.topAnchor.constraint(equalTo: label.bottomAnchor),
@@ -55,11 +60,23 @@ final class PresetsView: BaseView {
 
     func showLoading() {
         spinner.startAnimating()
-        tableView.backgroundView = spinner
+        tableView.backgroundView = loadingBackgroundView
     }
 
-    func render(isEmpty: Bool) {
+    func hideLoading() {
         spinner.stopAnimating()
+        if tableView.backgroundView === loadingBackgroundView {
+            tableView.backgroundView = nil
+        }
+    }
+
+    func render(isEmpty: Bool, showLoading: Bool) {
+        if showLoading {
+            self.showLoading()
+            return
+        }
+        hideLoading()
+
         guard isEmpty else {
             tableView.backgroundView = nil
             return

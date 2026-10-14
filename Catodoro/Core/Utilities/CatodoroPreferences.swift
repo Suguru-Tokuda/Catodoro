@@ -8,7 +8,25 @@
 import Combine
 import UIKit
 
+enum ThemeOption: String, CaseIterable {
+    case system, light, dark
+
+    var title: String { rawValue.capitalized }
+
+    var interfaceStyle: UIUserInterfaceStyle {
+        switch self {
+        case .system: return .unspecified
+        case .light: return .light
+        case .dark: return .dark
+        }
+    }
+}
+
 protocol CatodoroPreferencesProtocol: AnyObject {
+    var theme: ThemeOption { get }
+    var themePublisher: AnyPublisher<ThemeOption, Never> { get }
+    func setTheme(_ theme: ThemeOption)
+
     var hasCompletedOnboarding: Bool { get }
     var syncEnabled: Bool { get }
     func setSyncEnabled(_ enabled: Bool)
@@ -27,7 +45,7 @@ protocol CatodoroPreferencesProtocol: AnyObject {
 }
 
 class CatodoroPreferences: CatodoroPreferencesProtocol {
-    @Published private(set) var cloudSyncEnabled: Bool
+    @Published private(set) var theme: ThemeOption
     @Published private(set) var liveActivityEnabled: Bool
     @Published private(set) var color: String?
     @Published private(set) var sound: String?
@@ -37,10 +55,16 @@ class CatodoroPreferences: CatodoroPreferencesProtocol {
 
     init(userDefaults: UserDefaults = .standard) {
         self.userDefaults = userDefaults
-        cloudSyncEnabled = userDefaults.object(forKey: Keys.cloudSyncEnabled.rawValue) as? Bool ?? false
+        theme = ThemeOption(rawValue: userDefaults.string(forKey: Keys.theme.rawValue) ?? "") ?? .system
         liveActivityEnabled = userDefaults.object(forKey: Keys.liveActivityEnabled.rawValue) as? Bool ?? true
         self.color = userDefaults.string(forKey: Keys.color.rawValue)
         self.sound = userDefaults.string(forKey: Keys.sound.rawValue)
+
+        $theme
+            .sink { [weak self] theme in
+                self?.userDefaults.set(theme.rawValue, forKey: Keys.theme.rawValue)
+            }
+            .store(in: &cancellables)
 
         $liveActivityEnabled
             .sink { [weak self] enabled in
@@ -86,8 +110,8 @@ class CatodoroPreferences: CatodoroPreferencesProtocol {
     private enum Keys: String {
         case hasCompletedOnboarding
         case presetSyncEnabled
-        case cloudSyncEnabled
         case liveActivityEnabled
+        case theme
         case color
         case sound
     }
@@ -106,6 +130,14 @@ class CatodoroPreferences: CatodoroPreferencesProtocol {
 
     func setSound(_ newSound: SoundOptions) {
         sound = newSound.id
+    }
+
+    var themePublisher: AnyPublisher<ThemeOption, Never> {
+        $theme.eraseToAnyPublisher()
+    }
+
+    func setTheme(_ theme: ThemeOption) {
+        self.theme = theme
     }
 
     // Expose publishers for color and sound as required by the protocol

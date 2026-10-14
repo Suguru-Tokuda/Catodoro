@@ -102,8 +102,7 @@ final class OnboardingViewModelTests: XCTestCase {
 @MainActor
 private final class MockOnboardingSync: SyncLifecycleManaging {
     @Published var syncStatus = SyncStatus(
-        isEnabled: false, isSyncing: false, pendingChangeCount: 0,
-        lastSuccessfulCheck: nil, errorMessage: nil
+        isEnabled: false
     )
     var syncStatusPublisher: AnyPublisher<SyncStatus, Never> {
         $syncStatus.eraseToAnyPublisher()
@@ -116,12 +115,11 @@ private final class MockOnboardingSync: SyncLifecycleManaging {
     var requests: [Bool] = []
     func start() {}
     func stop() async {}
-    func accountDidChange() {}
     func setSyncEnabled(_ enabled: Bool) async throws {
         requests.append(enabled)
         if enabled { enableCount += 1 } else { disableCount += 1 }
         if cancellation { throw CancellationError() }
-        if shouldFail { throw SyncError.iCloudUnavailable }
+        if shouldFail { throw NSError(domain: "Test", code: 1) }
         syncStatus.isEnabled = enabled
     }
 }

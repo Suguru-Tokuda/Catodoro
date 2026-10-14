@@ -11,6 +11,31 @@ import Combine
 
 class PresetsViewControllerTests: XCTestCase {
     @MainActor
+    func test_loadingSpinnerIsCenteredAndTerminalStatesRestoreTableBackground() throws {
+        let view = PresetsView(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+        view.render(isEmpty: true, showLoading: true)
+        view.layoutIfNeeded()
+        let background = try XCTUnwrap(view.tableView.backgroundView)
+        background.layoutIfNeeded()
+        let spinner = try XCTUnwrap(background.subviews.compactMap { $0 as? UIActivityIndicatorView }.first)
+        XCTAssertTrue(spinner.isAnimating)
+        XCTAssertGreaterThan(spinner.bounds.width, 0)
+        XCTAssertGreaterThan(spinner.bounds.height, 0)
+        XCTAssertEqual(spinner.center.x, background.bounds.midX, accuracy: 0.5)
+        XCTAssertEqual(spinner.center.y, background.bounds.midY, accuracy: 0.5)
+        XCTAssertFalse(spinner.hasAmbiguousLayout)
+
+        view.render(isEmpty: true, showLoading: false)
+        XCTAssertFalse(spinner.isAnimating)
+        XCTAssertTrue(view.tableView.backgroundView is UIContentUnavailableView)
+        // A repeated stop must not erase the rendered empty state.
+        view.hideLoading()
+        XCTAssertTrue(view.tableView.backgroundView is UIContentUnavailableView)
+        view.render(isEmpty: false, showLoading: false)
+        XCTAssertNil(view.tableView.backgroundView)
+    }
+
+    @MainActor
     func test_presetsViewUsesSavedAccentAndRefreshesAfterPreferenceChanges() async throws {
         let preferences = MockPreferences()
         preferences.setColor(.neonPink)

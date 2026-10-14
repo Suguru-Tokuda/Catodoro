@@ -5,9 +5,11 @@
 //  Created by Suguru Tokuda on 8/21/24.
 //
 
+import Combine
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    private var themeSubscription: AnyCancellable?
     var window: UIWindow?
     var mainCoordinator: Coordinator?
     var liveActivityManager: LiveActivityManaging = LiveActivityManager()
@@ -20,16 +22,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let dependencies = appDelegate.dependencies
         let coordinator = MainCoordinator(preferences: dependencies.preferences, liveActivityManager: liveActivityManager,
                                           coreDataManager: dependencies.coreDataManager,
-                                          syncCoordinator: dependencies.syncCoordinator,
                                           syncLifecycleManager: dependencies.syncLifecycleManager
         )
         mainCoordinator = coordinator
         coordinator.start()
         window?.rootViewController = coordinator.navigationController
         window?.windowScene = windowScene
-        window?.makeKeyAndVisible()
+        window?.overrideUserInterfaceStyle = dependencies.preferences.theme.interfaceStyle
+        themeSubscription = dependencies.preferences.themePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] theme in
+                self?.window?.overrideUserInterfaceStyle = theme.interfaceStyle
+            }
 
-        window?.overrideUserInterfaceStyle = .unspecified
+        window?.makeKeyAndVisible()
 
         UINavigationBar.appearance().tintColor = .white
 

@@ -25,7 +25,7 @@ final class CatodoroUITests: XCTestCase {
     @MainActor
     func test_presetCreateEditAndPersist() throws {
         let app = XCUIApplication()
-        app.launch()
+        launchLocally(app)
         app.tabBars.buttons["Presets"].tap()
         app.navigationBars.buttons["Add"].tap()
         let name = "Study " + String(UUID().uuidString.prefix(6))
@@ -52,7 +52,7 @@ final class CatodoroUITests: XCTestCase {
         app.buttons["CatSleeping"].tap()
         app.buttons["savePreset"].tap()
         app.terminate()
-        app.launch()
+        launchLocally(app)
         app.tabBars.buttons["Presets"].tap()
         XCTAssertTrue(app.staticTexts[name].waitForExistence(timeout: 5))
         app.staticTexts[name].tap()
@@ -79,16 +79,19 @@ final class CatodoroUITests: XCTestCase {
     @MainActor
     func test_settingsPersistAccentSoundAndActivityPreference() throws {
         let app = XCUIApplication()
-        app.launch()
+        launchLocally(app)
         app.tabBars.buttons["Settings"].tap()
-        XCTAssertTrue(app.staticTexts["Make yourself at home"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Your cozy corner"].waitForExistence(timeout: 5))
         app.buttons["nPink"].tap()
         XCTAssertEqual(app.buttons["nPink"].value as? String, "Selected")
         let activity = app.switches["liveActivityToggle"]
         let original = activity.value as? String
+        // Content scrolls under the glass tab bar, so bring the bottom card clear of it first.
+        scrollUntilHittable(activity, in: app)
         activity.tap()
         let updated = activity.value as? String
         XCTAssertNotEqual(original, updated)
+        scrollUntilHittable(app.buttons["Timer sound"], in: app, towardsTop: true)
         app.buttons["Timer sound"].tap()
         app.staticTexts["Kitty"].tap()
         capture(app, name: "Sound selection")
@@ -96,13 +99,14 @@ final class CatodoroUITests: XCTestCase {
         XCTAssertEqual(app.buttons["Timer sound"].value as? String, "Kitty")
         capture(app, name: "Settings")
         app.terminate()
-        app.launch()
+        launchLocally(app)
         app.tabBars.buttons["Settings"].tap()
         XCTAssertEqual(app.buttons["nPink"].value as? String, "Selected")
         XCTAssertEqual(app.switches["liveActivityToggle"].value as? String, updated)
         XCTAssertEqual(app.buttons["Timer sound"].value as? String, "Kitty")
         app.buttons["nBlue"].tap()
         if app.switches["liveActivityToggle"].value as? String == "0" {
+            scrollUntilHittable(app.switches["liveActivityToggle"], in: app)
             app.switches["liveActivityToggle"].tap()
         }
     }
@@ -110,7 +114,7 @@ final class CatodoroUITests: XCTestCase {
     @MainActor
     func test_skipPausedBreakStartsNextFocus() throws {
         let app = XCUIApplication()
-        app.launch()
+        launchLocally(app)
         app.buttons["Focus time"].tap()
         setDuration(app, seconds: 5)
         app.buttons["Set focus time"].tap()
@@ -141,7 +145,7 @@ final class CatodoroUITests: XCTestCase {
     func testExample() throws {
         // UI tests must launch the application that they test.
         let app = XCUIApplication()
-        app.launch()
+        launchLocally(app)
 
         // Use XCTAssert and related functions to verify your tests produce the correct results.
     }
@@ -149,7 +153,7 @@ final class CatodoroUITests: XCTestCase {
     @MainActor
     func test_routineSheetsCommitCancelAndReopen() throws {
         let app = XCUIApplication()
-        app.launch()
+        launchLocally(app)
         let focusRow = app.buttons["Focus time"]
         XCTAssertTrue(focusRow.waitForExistence(timeout: 5))
         XCTAssertEqual(focusRow.value as? String, "25 min")
@@ -204,7 +208,7 @@ final class CatodoroUITests: XCTestCase {
     @MainActor
     func test_activeTimerPauseResumeAndExitRestoreRoutine() throws {
         let app = XCUIApplication()
-        app.launch()
+        launchLocally(app)
         app.buttons["Start focusing"].tap()
         XCTAssertTrue(app.buttons["Pause"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["FOCUS SESSION"].exists)
@@ -232,7 +236,7 @@ final class CatodoroUITests: XCTestCase {
     @MainActor
     func test_activeTimerBreakCompletionRepeatAndBack() throws {
         let app = XCUIApplication()
-        app.launch()
+        launchLocally(app)
         app.buttons["Focus time"].tap()
         app.pickerWheels.element(boundBy: 1).adjust(toPickerWheelValue: "0")
         app.pickerWheels.element(boundBy: 2).adjust(toPickerWheelValue: "5")
@@ -264,6 +268,32 @@ final class CatodoroUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Start focusing"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.tabBars.buttons["Presets"].isHittable)
         XCTAssertEqual(app.buttons["Sessions"].value as? String, "2")
+    }
+
+    @MainActor
+    private func launchLocally(_ app: XCUIApplication) {
+        app.launch()
+        let localChoice = app.buttons["Continue on This Device"]
+        if localChoice.waitForExistence(timeout: 2) {
+            if !localChoice.isHittable { app.swipeUp() }
+            localChoice.tap()
+        }
+        XCTAssertTrue(app.tabBars.buttons["Focus"].waitForExistence(timeout: 5))
+    }
+
+    /// Scroll views extend under the translucent bars, so an element can be on screen
+    /// but covered by the tab bar or navigation bar. Swipe until it can receive taps.
+    @MainActor
+    private func scrollUntilHittable(_ element: XCUIElement, in app: XCUIApplication,
+                                     towardsTop: Bool = false, maxSwipes: Int = 5) {
+        XCTAssertTrue(element.waitForExistence(timeout: 5))
+        let scrollView = app.scrollViews.firstMatch
+        var swipes = 0
+        while !element.isHittable && swipes < maxSwipes {
+            if towardsTop { scrollView.swipeDown() } else { scrollView.swipeUp() }
+            swipes += 1
+        }
+        XCTAssertTrue(element.isHittable, "\(element) is still covered after \(maxSwipes) swipes")
     }
 
     @MainActor

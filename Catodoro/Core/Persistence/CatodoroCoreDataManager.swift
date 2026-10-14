@@ -21,26 +21,20 @@ protocol CatodoroCoreDataManaging {
     func deletePreset(_ id: String) async throws
 }
 
-enum PendingActions: String {
-    case upsert
-    case delete
-}
-
 class CatodoroCoreDataManager: CatodoroCoreDataManaging {
 
     private let writeContext: NSManagedObjectContext
-    private let notifier: LocalChangesNotifying?
 
-    init(context: NSManagedObjectContext,
-         notifier: LocalChangesNotifying? = nil
-    ) {
+    init(context: NSManagedObjectContext) {
         writeContext = context
-        self.notifier = notifier
     }
 
     func getPreset(id: String) async throws -> PresetModel? {
         let context = writeContext
         return try await context.perform {
+            guard context.persistentStoreCoordinator?.persistentStores.isEmpty == false else {
+                throw CoreDataError.get
+            }
             let request: NSFetchRequest<PresetEntity> = PresetEntity.fetchRequest()
             guard let uuid = UUID(uuidString: id) else {
                 throw CoreDataError.get
@@ -61,6 +55,9 @@ class CatodoroCoreDataManager: CatodoroCoreDataManaging {
     func getPresets() async throws -> [PresetModel] {
         let context = writeContext
         return try await context.perform {
+            guard context.persistentStoreCoordinator?.persistentStores.isEmpty == false else {
+                throw CoreDataError.get
+            }
             let request: NSFetchRequest<PresetEntity> = PresetEntity.fetchRequest()
 
             do {
@@ -75,6 +72,9 @@ class CatodoroCoreDataManager: CatodoroCoreDataManaging {
     func savePreset(_ preset: PresetModel) async throws {
         let context = writeContext
         try await context.perform {
+            guard context.persistentStoreCoordinator?.persistentStores.isEmpty == false else {
+                throw CoreDataError.save
+            }
             let request: NSFetchRequest<PresetEntity> = PresetEntity.fetchRequest()
             request.predicate = NSPredicate(format: "id == %@", preset.id as NSUUID)
 
@@ -87,20 +87,20 @@ class CatodoroCoreDataManager: CatodoroCoreDataManaging {
                 presetEntity.intervalDuration = Double(preset.intervalDuration)
                 presetEntity.intervals = Int64(preset.intervals)
 
-                try Self.markPending(id: preset.id.uuidString, action: .upsert, in: context)
                 try context.save()
             } catch {
                 context.rollback()
                 throw CoreDataError.save
             }
         }
-
-        await notifier?.localChangeDidCommit()
     }
 
     func deletePreset(_ id: String) async throws {
         let context = writeContext
         try await context.perform {
+            guard context.persistentStoreCoordinator?.persistentStores.isEmpty == false else {
+                throw CoreDataError.delete
+            }
             let request: NSFetchRequest<PresetEntity> = PresetEntity.fetchRequest()
             guard let uuid = UUID(uuidString: id) else {
                 throw CoreDataError.delete
@@ -110,30 +110,11 @@ class CatodoroCoreDataManager: CatodoroCoreDataManaging {
             do {
                 let allPresets = try context.fetch(request)
                 allPresets.forEach(context.delete)
-                try Self.markPending(id: id, action: .delete, in: context)
                 try context.save()
             } catch {
                 context.rollback()
                 throw CoreDataError.delete
             }
         }
-
-        await notifier?.localChangeDidCommit()
-    }
-
-    private static func markPending(
-        id: String,
-        action: PendingActions,
-        in context: NSManagedObjectContext
-    ) throws {
-        let request: NSFetchRequest<LocalSyncAction> = LocalSyncAction.fetchRequest()
-        request.predicate = NSPredicate(format: "id == %@", id)
-        request.fetchLimit = 1
-
-        let pending = try context.fetch(request).first ?? LocalSyncAction(context: context)
-
-        pending.id = id
-        pending.action = action.rawValue
-        pending.revision = UUID().uuidString
     }
 }

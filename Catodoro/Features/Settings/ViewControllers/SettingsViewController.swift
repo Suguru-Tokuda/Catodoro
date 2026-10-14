@@ -18,8 +18,8 @@ final class SettingsViewController: UIViewController {
     private let viewModel: SettingsViewModel
     private var subscriptions = Set<AnyCancellable>()
 
-    init(preferences: CatodoroPreferencesProtocol? = nil) {
-        viewModel = SettingsViewModel(preferences: preferences)
+    init(preferences: CatodoroPreferencesProtocol? = nil, syncLifecycleManager: SyncLifecycleManaging? = nil) {
+        viewModel = SettingsViewModel(preferences: preferences, syncLifecycleManager: syncLifecycleManager)
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -34,6 +34,9 @@ final class SettingsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Settings"
+        settingsView.onThemeSelected = { [weak self] theme in
+            self?.viewModel.selectTheme(theme)
+        }
         settingsView.onColorSelected = { [weak self] color in
             self?.viewModel.selectColor(color)
         }
@@ -42,6 +45,9 @@ final class SettingsViewController: UIViewController {
         }
         settingsView.onLiveActivityChanged = { [weak self] enabled in
             self?.viewModel.setLiveActivityEnabled(enabled)
+        }
+        settingsView.onSyncChanged = { [weak self] enabled in
+            Task { @MainActor [weak self] in await self?.viewModel.setSyncEnabled(enabled) }
         }
         settingsView.onSystemSettingsRequested = {
             guard let url = URL(string: UIApplication.openSettingsURLString) else { return }

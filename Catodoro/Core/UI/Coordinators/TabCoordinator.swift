@@ -33,6 +33,7 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
     var settingsCoordinator: SettingsCoordinator?
 
     weak var preferences: CatodoroPreferences?
+    private let syncLifecycleManager: SyncLifecycleManaging?
     private let coreDataManager: CatodoroCoreDataManaging
     weak var liveActivityManager: LiveActivityManaging?
 
@@ -41,7 +42,9 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
     required init(_ navigationController: UINavigationController = BaseNavigationController(),
                   preferences: CatodoroPreferences?,
                   liveActivityManager: LiveActivityManaging?,
-                  coreDataManager: CatodoroCoreDataManaging) {
+                  coreDataManager: CatodoroCoreDataManaging,
+                  syncLifecycleManager: SyncLifecycleManaging? = nil) {
+        self.syncLifecycleManager = syncLifecycleManager
         self.coreDataManager = coreDataManager
         self.navigationController = navigationController
         self.preferences = preferences
@@ -99,7 +102,7 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
                 navController = presetsCoordiantor.navigationController
             }
         case .settings:
-            settingsCoordinator = SettingsCoordinator()
+            settingsCoordinator = SettingsCoordinator(syncLifecycleManager: syncLifecycleManager)
             settingsCoordinator?.preferences = preferences
             if let settingsCoordinator {
                 settingsCoordinator.start()
@@ -124,16 +127,14 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
         tabBarController.selectedIndex = TabBarPage.timer.tabOrderNumber
         /// Styling
         let appearance = UITabBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = CatTheme.background
-        appearance.shadowColor = .clear
+        appearance.configureWithTransparentBackground()
         tabBarController.tabBar.standardAppearance = appearance
         tabBarController.tabBar.scrollEdgeAppearance = appearance
         tabBarController.tabBar.unselectedItemTintColor = CatTheme.secondaryText
         tabBarController.tabBar.tintColor = ColorOptions(preferences?.color ?? "").color
-        tabBarController.view.backgroundColor = CatTheme.background
-        tabBarController.tabBar.backgroundColor = CatTheme.background
-        tabBarController.tabBar.isTranslucent = false
+        tabBarController.view.backgroundColor = .clear
+        tabBarController.tabBar.backgroundColor = .clear
+        tabBarController.tabBar.isTranslucent = true
 
         /// In this step, we attach tabBarController to navigation controller associated with this coordiantor
         navigationController.viewControllers = [tabBarController]

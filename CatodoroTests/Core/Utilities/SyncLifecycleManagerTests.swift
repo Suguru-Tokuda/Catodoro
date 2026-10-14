@@ -1,314 +1,237 @@
 import CloudKit
-import Combine
 import UIKit
+import Combine
+import CoreData
 import XCTest
 @testable import Catodoro
 
 @MainActor
 final class SyncLifecycleManagerTests: XCTestCase {
-    func test_statusPublisherImmediatelyReflectsSavedPreferenceWithoutClaimingCompletedSync() {
-        for enabled in [true, false] {
-            let preferences = MockPreferences()
-            preferences.syncEnabled = enabled
-            let manager = SyncLifecycleManager(
-                preferences: preferences,
-                sync: LifecycleSyncMock(),
-                notificationCenter: NotificationCenter()
-            )
-            var values: [SyncStatus] = []
-            let subscription = manager.syncStatusPublisher.sink { values.append($0) }
-            XCTAssertEqual(values.count, 1)
-            XCTAssertEqual(values.first?.isEnabled, enabled)
-            XCTAssertEqual(manager.syncStatus.isEnabled, enabled)
-            XCTAssertEqual(values.first?.isSyncing, false)
-            XCTAssertNil(values.first?.lastSuccessfulCheck)
-            XCTAssertNil(values.first?.errorMessage)
-            withExtendedLifetime(subscription) {}
-        }
-    }
-
-    func test_startIsIdempotentAndRestoresEnabledSync() async {
-        let (manager, preferences, sync, _) = makeSystem()
+    func test_startIsIdempotentAndRestoresSavedOptIn() async {
+        let preferences = MockPreferences()
         preferences.syncEnabled = true
-        let enabled = expectation(description: "Startup restoration")
-        sync.onEnable = { enabled.fulfill() }
+        let persistence = CloudPersistenceMock()
+        let restored = expectation(description: "Restored mirroring")
+        persistence.onChange = { restored.fulfill() }
+        let manager = SyncLifecycleManager(preferences: preferences, persistence: persistence, accountStatus: { .available })
         manager.start()
         manager.start()
-        await fulfillment(of: [enabled], timeout: 1)
-        XCTAssertEqual(sync.enableCount, 1)
+        await fulfillment(of: [restored], timeout: 1)
+        XCTAssertEqual(persistence.requests, [true])
+        XCTAssertTrue(manager.syncStatus.isEnabled)
+        XCTAssertNil(manager.syncStatus.lastSuccessfulTransfer)
         await manager.stop()
     }
 
-    func test_startAndForegroundLeaveDisabledSyncAlone() async {
-        let (manager, _, sync, center) = makeSystem()
-        let enabled = expectation(description: "No activation while disabled")
-        enabled.isInverted = true
-        sync.onEnable = { enabled.fulfill() }
+    func test_localStartupDoesNotEnableMirroring() async {
+        let preferences = MockPreferences()
+        let persistence = CloudPersistenceMock()
+        let manager = SyncLifecycleManager(preferences: preferences, persistence: persistence, accountStatus: { .available })
+        let noActivation = expectation(description: "Local startup")
+        persistence.onChange = { noActivation.fulfill() }
         manager.start()
-        center.post(name: UIApplication.didBecomeActiveNotification, object: nil)
-        await fulfillment(of: [enabled], timeout: 0.1)
-        XCTAssertEqual(sync.enableCount, 0)
+        await fulfillment(of: [noActivation], timeout: 0.1)
         await manager.stop()
+        XCTAssertEqual(persistence.requests, [false])
     }
 
-    func test_foregroundRetriesPreviouslyFailedRestoration() async {
-        let (manager, preferences, sync, center) = makeSystem()
-        preferences.syncEnabled = true
-        sync.error = SyncError.iCloudUnavailable
-        let initial = expectation(description: "Initial attempt")
-        sync.onEnable = { initial.fulfill() }
-        manager.start()
-        await fulfillment(of: [initial], timeout: 1)
-        XCTAssertNotNil(manager.lastError)
+    func test_toggleUpdatesPreferenceAndPublishesStatusOnlyAfterSuccess() async throws {
+        let preferences = MockPreferences()
+        let persistence = CloudPersistenceMock()
+        let manager = SyncLifecycleManager(preferences: preferences, persistence: persistence, accountStatus: { .available })
+        var values: [Bool] = []
+        let subscription = manager.syncStatusPublisher.sink { values.append($0.isEnabled) }
+        try await manager.setSyncEnabled(true)
         XCTAssertTrue(preferences.syncEnabled)
-        sync.error = nil
-        let retry = expectation(description: "Foreground retry")
-        sync.onEnable = { retry.fulfill() }
-        center.post(name: UIApplication.didBecomeActiveNotification, object: nil)
-        await fulfillment(of: [retry], timeout: 1)
-        XCTAssertEqual(sync.enableCount, 2)
-        XCTAssertNil(manager.lastError)
-        await manager.stop()
-    }
-
-    func test_togglePersistsIntentAndPreservesEnabledPreferenceOnFailure() async throws {
-        let (manager, preferences, sync, _) = makeSystem()
-        sync.error = SyncError.iCloudUnavailable
-        do {
-            try await manager.setSyncEnabled(true)
-            XCTFail("Expected activation failure")
-        } catch {}
-        XCTAssertTrue(preferences.syncEnabled)
-        XCTAssertNotNil(manager.lastError)
+        XCTAssertEqual(values.last, true)
         try await manager.setSyncEnabled(false)
         XCTAssertFalse(preferences.syncEnabled)
-        XCTAssertEqual(sync.disableCount, 1)
-        XCTAssertNil(manager.lastError)
+        XCTAssertEqual(values.last, false)
+        XCTAssertEqual(persistence.requests, [true, false])
+        withExtendedLifetime(subscription) {}
     }
 
-    func test_accountChangeRevalidatesAndResumesSameAccount() async {
-        let (manager, preferences, sync, center) = makeSystem()
-        let startup = expectation(description: "Disabled startup stays local")
-        startup.isInverted = true
-        sync.onEnable = { startup.fulfill() }
-        manager.start()
-        await fulfillment(of: [startup], timeout: 0.1)
-        preferences.syncEnabled = true
-        let resumed = expectation(description: "Account revalidation")
-        sync.onEnable = { resumed.fulfill() }
-        center.post(name: .CKAccountChanged, object: nil)
-        await fulfillment(of: [resumed], timeout: 1)
-        XCTAssertEqual(sync.disableCount, 1)
-        XCTAssertEqual(sync.enableCount, 1)
+    func test_failedTogglePreservesPreviousPreferenceAndSurfacesError() async {
+        let preferences = MockPreferences()
+        let persistence = CloudPersistenceMock()
+        persistence.error = NSError(domain: "Test", code: 1)
+        let manager = SyncLifecycleManager(preferences: preferences, persistence: persistence, accountStatus: { .available })
+        do { try await manager.setSyncEnabled(true); XCTFail("Expected load failure") } catch {}
+        XCTAssertFalse(preferences.syncEnabled)
+        XCTAssertFalse(manager.syncStatus.isEnabled)
+        XCTAssertNotNil(manager.syncStatus.errorMessage)
+    }
+
+    func test_importAndExportOverlapUntilBothFinish() async throws {
+        let manager = SyncLifecycleManager(preferences: MockPreferences(), persistence: CloudPersistenceMock(), accountStatus: { .available })
+        try await manager.setSyncEnabled(true)
+        let first = UUID(), second = UUID(), date = Date()
+        manager.updateEvent(id: first, type: .import, endDate: nil, succeeded: false, error: nil)
+        manager.updateEvent(id: second, type: .export, endDate: nil, succeeded: false, error: nil)
+        manager.updateEvent(id: first, type: .import, endDate: date, succeeded: true, error: nil)
+        XCTAssertTrue(manager.syncStatus.isSyncing)
+        XCTAssertEqual(manager.syncStatus.lastSuccessfulTransfer, date)
+        manager.updateEvent(id: second, type: .export, endDate: date, succeeded: true, error: nil)
+        XCTAssertFalse(manager.syncStatus.isSyncing)
+    }
+
+    func test_setupDoesNotClaimSuccessfulTransferAndErrorsAreReported() async throws {
+        let manager = SyncLifecycleManager(preferences: MockPreferences(), persistence: CloudPersistenceMock(), accountStatus: { .available })
+        try await manager.setSyncEnabled(true)
+        manager.updateEvent(id: UUID(), type: .setup, endDate: Date(), succeeded: true, error: nil)
+        XCTAssertNil(manager.syncStatus.lastSuccessfulTransfer)
+        manager.updateEvent(id: UUID(), type: .export, endDate: Date(), succeeded: false,
+                            error: NSError(domain: "Offline", code: 1))
+        XCTAssertNotNil(manager.syncStatus.errorMessage)
+        manager.updateEvent(id: UUID(), type: .export, endDate: Date(), succeeded: true, error: nil)
+        XCTAssertNil(manager.syncStatus.errorMessage)
+    }
+
+    func test_disabledModeIgnoresLateEvents() async throws {
+        let manager = SyncLifecycleManager(preferences: MockPreferences(), persistence: CloudPersistenceMock(), accountStatus: { .available })
+        try await manager.setSyncEnabled(true)
+        try await manager.setSyncEnabled(false)
+        manager.updateEvent(id: UUID(), type: .export, endDate: nil, succeeded: false, error: nil)
+        XCTAssertFalse(manager.syncStatus.isSyncing)
+    }
+
+    func test_settingsUsesLifecycleForLiveTogglesAndDisplaysLoadFailure() async {
+        let preferences = MockPreferences()
+        let persistence = CloudPersistenceMock()
+        let lifecycle = SyncLifecycleManager(preferences: preferences, persistence: persistence, accountStatus: { .available })
+        let model = SettingsViewModel(preferences: preferences, activitiesAuthorized: { false },
+                                      syncLifecycleManager: lifecycle)
+        XCTAssertTrue(model.state.syncAvailable)
+        await model.setSyncEnabled(true)
+        XCTAssertTrue(model.state.syncEnabled)
+        XCTAssertFalse(model.state.syncBusy)
+        persistence.error = NSError(domain: "Test", code: 2)
+        await model.setSyncEnabled(false)
+        XCTAssertTrue(model.state.syncEnabled)
+        XCTAssertEqual(model.state.syncMessage, persistence.error?.localizedDescription)
         XCTAssertTrue(preferences.syncEnabled)
-        XCTAssertNil(manager.lastError)
-        await manager.stop()
+        persistence.error = nil
+        await model.setSyncEnabled(false)
+        XCTAssertFalse(model.state.syncEnabled)
+        XCTAssertFalse(preferences.syncEnabled)
     }
 
-    func test_differentAccountSurfacesRejectionWithoutChangingPreference() async {
-        let (manager, preferences, sync, _) = makeSystem()
-        manager.start()
+    func test_unavailableAccountTurnsSwitchOffAndDisablesItWithoutLosingOptIn() async {
+        let preferences = MockPreferences()
         preferences.syncEnabled = true
-        sync.error = SyncError.differentAccount
-        let attempted = expectation(description: "Validate different account")
-        sync.onEnable = { attempted.fulfill() }
-        manager.accountDidChange()
-        await fulfillment(of: [attempted], timeout: 1)
-        guard case SyncError.differentAccount? = manager.lastError else {
-            return XCTFail("Expected different-account rejection")
+        for status in [CKAccountStatus.noAccount, .restricted, .temporarilyUnavailable, .couldNotDetermine] {
+            let persistence = CloudPersistenceMock()
+            let manager = SyncLifecycleManager(preferences: preferences, persistence: persistence,
+                                               accountStatus: { status })
+            let model = SettingsViewModel(preferences: preferences, activitiesAuthorized: { true },
+                                          syncLifecycleManager: manager)
+            await manager.refreshAvailability()
+            model.refresh()
+            XCTAssertFalse(model.state.syncEnabled)
+            XCTAssertFalse(model.state.syncToggleEnabled)
+            XCTAssertTrue(preferences.syncEnabled)
+            XCTAssertEqual(persistence.requests, [false])
+            XCTAssertNotNil(manager.syncStatus.errorMessage)
         }
-        XCTAssertTrue(preferences.syncEnabled)
-        await manager.stop()
     }
 
-    func test_duplicateAccountSignalsAndForegroundShareOneRecovery() async {
-        let (manager, preferences, sync, center) = makeSystem()
-        manager.start()
+    func test_foregroundAndAccountChangeRefreshAvailabilityAndRestoreSavedChoice() async {
+        let preferences = MockPreferences()
         preferences.syncEnabled = true
-        sync.suspendDisable = true
-        let paused = expectation(description: "Recovery pauses engine")
-        sync.onDisable = { paused.fulfill() }
-        manager.accountDidChange()
-        await fulfillment(of: [paused], timeout: 1)
-        manager.accountDidChange()
-        center.post(name: .CKAccountChanged, object: nil)
-        let premature = expectation(description: "Foreground waits for recovery")
-        premature.isInverted = true
-        sync.onEnable = { premature.fulfill() }
-        center.post(name: UIApplication.didBecomeActiveNotification, object: nil)
-        await fulfillment(of: [premature], timeout: 0.1)
-        XCTAssertEqual(sync.disableCount, 1)
-        let resumed = expectation(description: "Single recovery resumes")
-        sync.onEnable = { resumed.fulfill() }
-        sync.resumeDisable(at: 0)
-        await fulfillment(of: [resumed], timeout: 1)
-        sync.onDisable = nil
-        sync.suspendDisable = false
-        await manager.stop()
-    }
-
-    func test_stopDuringDisablePreventsRecoveryActivation() async {
-        let (manager, preferences, sync, _) = makeSystem()
+        let persistence = CloudPersistenceMock()
+        let center = NotificationCenter()
+        var status = CKAccountStatus.available
+        let manager = SyncLifecycleManager(preferences: preferences, persistence: persistence,
+                                           notificationCenter: center, accountStatus: { status })
+        let started = expectation(description: "Initial availability checked")
+        let first = manager.syncStatusPublisher.first {
+            $0.isEnabled && !$0.isCheckingAvailability
+        }.sink { _ in started.fulfill() }
         manager.start()
-        preferences.syncEnabled = true
-        sync.suspendDisable = true
-        let paused = expectation(description: "Disable suspended")
-        sync.onDisable = { paused.fulfill() }
-        manager.accountDidChange()
-        await fulfillment(of: [paused], timeout: 1)
-        sync.onDisable = nil
-        sync.suspendDisable = false
-        await manager.stop()
-        let resumed = expectation(description: "Stopped recovery must not activate")
-        resumed.isInverted = true
-        sync.onEnable = { resumed.fulfill() }
-        sync.resumeDisable(at: 0)
-        await fulfillment(of: [resumed], timeout: 0.1)
-        XCTAssertTrue(preferences.syncEnabled)
-    }
-
-    func test_oldRecoveryCleanupDoesNotClearRestartedRecovery() async {
-        let (manager, preferences, sync, _) = makeSystem()
-        manager.start()
-        preferences.syncEnabled = true
-        sync.suspendDisable = true
-        let first = expectation(description: "Old recovery suspended")
-        sync.onDisable = { first.fulfill() }
-        manager.accountDidChange()
-        await fulfillment(of: [first], timeout: 1)
-        sync.onDisable = nil
-        sync.suspendDisable = false
-        await manager.stop()
-        sync.suspendDisable = true
-        manager.start()
-        let second = expectation(description: "New recovery suspended")
-        sync.onDisable = { second.fulfill() }
-        manager.accountDidChange()
-        await fulfillment(of: [second], timeout: 1)
-        let noActivation = expectation(description: "Old recovery cannot resume")
-        noActivation.isInverted = true
-        sync.onEnable = { noActivation.fulfill() }
-        sync.resumeDisable(at: 0)
-        await fulfillment(of: [noActivation], timeout: 0.1)
-        manager.accountDidChange()
-        XCTAssertEqual(sync.disableCount, 3)
-        let resumed = expectation(description: "New recovery resumes")
-        sync.onEnable = { resumed.fulfill() }
-        sync.resumeDisable(at: 1)
-        await fulfillment(of: [resumed], timeout: 1)
-        sync.onDisable = nil
-        sync.suspendDisable = false
-        await manager.stop()
-    }
-
-    func test_stopDuringEnableCancelsUnderlyingActivationAndPreservesPreference() async {
-        let (manager, preferences, sync, _) = makeSystem()
-        manager.start()
-        preferences.syncEnabled = true
-        sync.suspendEnable = true
-        let started = expectation(description: "Recovery activation suspended")
-        sync.onEnable = { started.fulfill() }
-        manager.accountDidChange()
         await fulfillment(of: [started], timeout: 1)
-        let completed = expectation(description: "Underlying activation exits")
-        sync.onEnableCompleted = { completed.fulfill() }
-        await manager.stop()
-        await fulfillment(of: [completed], timeout: 1)
-        XCTAssertEqual(sync.disableCount, 2)
-        XCTAssertFalse(sync.isActive)
+        status = .noAccount
+        let unavailable = expectation(description: "Foreground disables unavailable sync")
+        let second = manager.syncStatusPublisher.first {
+            !$0.isAvailable && !$0.isCheckingAvailability && $0.errorMessage != nil
+        }.sink { _ in unavailable.fulfill() }
+        center.post(name: UIApplication.didBecomeActiveNotification, object: nil)
+        await fulfillment(of: [unavailable], timeout: 1)
+        XCTAssertFalse(manager.syncStatus.isEnabled)
         XCTAssertTrue(preferences.syncEnabled)
-        XCTAssertNil(manager.lastError)
+
+        status = .available
+        let restored = expectation(description: "Account access restores saved sync")
+        let third = manager.syncStatusPublisher.first {
+            $0.isEnabled && !$0.isCheckingAvailability
+        }.sink { _ in restored.fulfill() }
+        center.post(name: .CKAccountChanged, object: nil)
+        await fulfillment(of: [restored], timeout: 1)
+        XCTAssertEqual(persistence.requests, [true, false, true])
+        XCTAssertNil(manager.syncStatus.errorMessage)
+        await manager.stop()
+        withExtendedLifetime([first, second, third]) {}
     }
 
-    func test_stopRemovesObserversDisablesEngineAndPreservesPreference() async throws {
-        let (manager, preferences, sync, center) = makeSystem()
-        manager.start()
+    func test_accountCheckFailureDoesNotErasePreferenceAndCanRecover() async {
+        let preferences = MockPreferences()
+        preferences.syncEnabled = true
+        let persistence = CloudPersistenceMock()
+        var fail = true
+        let manager = SyncLifecycleManager(preferences: preferences, persistence: persistence, accountStatus: {
+            if fail { throw NSError(domain: "Offline", code: 1) }
+            return .available
+        })
+        await manager.refreshAvailability()
+        XCTAssertFalse(manager.syncStatus.isAvailable)
+        XCTAssertFalse(manager.syncStatus.isEnabled)
+        XCTAssertTrue(preferences.syncEnabled)
+        fail = false
+        await manager.refreshAvailability()
+        XCTAssertTrue(manager.syncStatus.isAvailable)
+        XCTAssertTrue(manager.syncStatus.isEnabled)
+    }
+
+    func test_oldAvailabilityResultCannotReenableAfterUserTurnsSyncOff() async throws {
+        let preferences = MockPreferences()
+        preferences.syncEnabled = true
+        let persistence = CloudPersistenceMock()
+        let checking = expectation(description: "Availability check suspended")
+        var continuation: CheckedContinuation<CKAccountStatus, Error>?
+        let manager = SyncLifecycleManager(preferences: preferences, persistence: persistence, accountStatus: {
+            try await withCheckedThrowingContinuation { pending in
+                continuation = pending
+                checking.fulfill()
+            }
+        })
+        let task = Task { await manager.refreshAvailability() }
+        await fulfillment(of: [checking], timeout: 1)
+        try await manager.setSyncEnabled(false)
+        continuation?.resume(returning: .available)
+        await task.value
+        XCTAssertFalse(preferences.syncEnabled)
+        XCTAssertFalse(manager.syncStatus.isEnabled)
+        XCTAssertFalse(manager.syncStatus.isCheckingAvailability)
+        XCTAssertEqual(persistence.requests, [false])
+    }
+
+    func test_stoppingObservationPreservesPreferenceAndMirroring() async throws {
+        let preferences = MockPreferences()
+        let persistence = CloudPersistenceMock()
+        let manager = SyncLifecycleManager(preferences: preferences, persistence: persistence, accountStatus: { .available })
         try await manager.setSyncEnabled(true)
         await manager.stop()
-        let event = expectation(description: "No events after observation stops")
-        event.isInverted = true
-        sync.onEnable = { event.fulfill() }
-        sync.onDisable = { event.fulfill() }
-        center.post(name: UIApplication.didBecomeActiveNotification, object: nil)
-        center.post(name: .CKAccountChanged, object: nil)
-        await fulfillment(of: [event], timeout: 0.1)
         XCTAssertTrue(preferences.syncEnabled)
-        XCTAssertEqual(sync.disableCount, 1)
-    }
-
-    func test_disableSupersedesSuspendedEnable() async throws {
-        let (manager, preferences, sync, _) = makeSystem()
-        let started = expectation(description: "Enable suspended")
-        sync.suspendEnable = true
-        sync.onEnable = { started.fulfill() }
-        let task = Task { try await manager.setSyncEnabled(true) }
-        await fulfillment(of: [started], timeout: 1)
-        try await manager.setSyncEnabled(false)
-        sync.resumeEnable()
-        do {
-            try await task.value
-            XCTFail("Superseded enable must report cancellation")
-        } catch is CancellationError {} catch { XCTFail("Unexpected error: \(error)") }
-        XCTAssertFalse(preferences.syncEnabled)
-        XCTAssertNil(manager.lastError)
-    }
-
-    private func makeSystem() -> (SyncLifecycleManager, MockPreferences, LifecycleSyncMock, NotificationCenter) {
-        let preferences = MockPreferences()
-        let sync = LifecycleSyncMock()
-        let center = NotificationCenter()
-        return (SyncLifecycleManager(preferences: preferences, sync: sync, notificationCenter: center), preferences, sync, center)
+        XCTAssertEqual(persistence.requests, [true])
     }
 }
 
-@MainActor
-private final class LifecycleSyncMock: OnboardingSyncControlling {
-    var enableCount = 0
-    var disableCount = 0
+private final class CloudPersistenceMock: CloudSyncPersistence {
+    var requests: [Bool] = []
     var error: Error?
-    var onEnable: (() -> Void)?
-    var onDisable: (() -> Void)?
-    var suspendDisable = false
-    var onEnableCompleted: (() -> Void)?
-    private var disableContinuations: [CheckedContinuation<Void, Never>?] = []
-    var suspendEnable = false
-    private var continuation: CheckedContinuation<Void, Error>?
-    private(set) var isActive = false
-
-    func enableSync() async throws {
-        enableCount += 1
-        defer { onEnableCompleted?() }
-        if suspendEnable {
-            try await withCheckedThrowingContinuation { continuation in
-                self.continuation = continuation
-                onEnable?()
-            }
-        } else {
-            onEnable?()
-        }
+    var onChange: (() -> Void)?
+    func setCloudSyncEnabled(_ enabled: Bool) async throws {
+        requests.append(enabled)
+        onChange?()
         if let error { throw error }
-        isActive = true
-    }
-    func resumeEnable() {
-        continuation?.resume()
-        continuation = nil
-    }
-    func disableSync() async {
-        disableCount += 1
-        isActive = false
-        continuation?.resume(throwing: CancellationError())
-        continuation = nil
-        if suspendDisable {
-            await withCheckedContinuation { continuation in
-                disableContinuations.append(continuation)
-                onDisable?()
-            }
-        } else {
-            onDisable?()
-        }
-    }
-    func resumeDisable(at index: Int) {
-        disableContinuations[index]?.resume()
-        disableContinuations[index] = nil
     }
 }

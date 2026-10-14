@@ -11,6 +11,13 @@ import Foundation
 
 // Mock implementation of CatodoroPreferencesProtocol
 final class MockPreferences: CatodoroPreferencesProtocol {
+    var theme: ThemeOption = .system {
+        didSet { themeSubject.send(theme) }
+    }
+    private let themeSubject = CurrentValueSubject<ThemeOption, Never>(.system)
+    var themePublisher: AnyPublisher<ThemeOption, Never> { themeSubject.eraseToAnyPublisher() }
+    func setTheme(_ theme: ThemeOption) { self.theme = theme }
+
     var hasCompletedOnboarding = false
     var syncEnabled = false
 

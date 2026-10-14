@@ -1,17 +1,11 @@
 //
-//  OnboardingSyncControlling.swift
+//  OnboardingViewModel.swift
 //  Catodoro
 //
 //  Created by Suguru Tokuda on 10/12/26.
 //
 
 import Foundation
-
-@MainActor
-protocol OnboardingSyncControlling: AnyObject {
-    func enableSync() async throws
-    func disableSync() async
-}
 
 @MainActor
 final class OnboardingViewModel {
@@ -47,7 +41,7 @@ final class OnboardingViewModel {
         } catch is CancellationError {
             // Superseded activation
         } catch {
-            errorMessage = "Couldn’t connect to iCloud. Check your connection and iCloud sign-in, then retry—or continue on this device."
+            errorMessage = "Couldn’t enable iCloud Sync. Please try again, or continue on this device."
         }
     }
 

@@ -13,13 +13,16 @@ class SettingsCoordinator: Coordinator {
     var childCoordinators: [Coordinator] = []
     var navigationController: UINavigationController
     var preferences: CatodoroPreferencesProtocol?
+    private let syncLifecycleManager: SyncLifecycleManaging?
 
-    init(navigationController: UINavigationController = BaseNavigationController()) {
+    init(navigationController: UINavigationController = BaseNavigationController(),
+         syncLifecycleManager: SyncLifecycleManaging? = nil) {
+        self.syncLifecycleManager = syncLifecycleManager
         self.navigationController = navigationController
     }
 
     func start() {
-        let settingsViewController = SettingsViewController(preferences: preferences)
+        let settingsViewController = SettingsViewController(preferences: preferences, syncLifecycleManager: syncLifecycleManager)
         settingsViewController.delegate = self
         navigationController.pushViewController(settingsViewController, animated: false)
     }
