@@ -5,115 +5,128 @@
 //  Created by Suguru Tokuda on 12/25/24.
 //
 
+import CoreData
 import XCTest
 @testable import Catodoro
 
+@MainActor
 final class AddPresetViewControllerTests: XCTestCase {
-
-    var viewController: AddPresetViewController!
-    var mockPreferences: MockPreferences!
-    var mockCoordinator: MockCoordinator!
-    var mockViewModel: MockTimerConfigViewModel!
-    
-    override func setUp() {
-        super.setUp()
-        
-        // Mock preferences and coordinator
-        mockPreferences = MockPreferences()
-        mockCoordinator = MockCoordinator()
-        
-        // Mock view model
-        mockViewModel = MockTimerConfigViewModel()
-        
-        // Initialize the view controller with the mock objects
-        viewController = AddPresetViewController(preferences: mockPreferences)
-        
-        // Swap out the view model with the mock
-        viewController.testHooks.setViewModel(viewModel: mockViewModel)
-        
-        // Load the view hierarchy
-        _ = viewController.view
+    func test_editorRequiresNameAndTrimsItWhenSaving() async throws {
+        let store = RecordingPresetStore()
+        let model = PresetEditorViewModel(coreDataManager: store)
+        XCTAssertFalse(model.canSave)
+        model.name = "   Study time \n"
+        model.pose = .stretching
+        XCTAssertTrue(model.canSave)
+        try await model.save()
+        XCTAssertEqual(store.saved?.name, "Study time")
+        XCTAssertEqual(store.saved?.imageIdentifier, "CatStretching")
+        XCTAssertEqual(store.saved?.intervals, 4)
     }
 
-    override func tearDown() {
-        viewController = nil
-        mockPreferences = nil
-        mockCoordinator = nil
-        mockViewModel = nil
-        super.tearDown()
+    func test_editPreservesIdentifierAndExistingRoutine() async throws {
+        let store = RecordingPresetStore()
+        let preset = PresetModel(id: UUID(), totalDuration: 3000, intervalDuration: 600, intervals: 3, name: "Read", imageIdentifier: "CatSleeping")
+        let model = PresetEditorViewModel(preset: preset, coreDataManager: store)
+        XCTAssertEqual(model.pose, .sleeping)
+        model.name = "Reading hour"
+        try await model.save()
+        XCTAssertEqual(store.saved?.id, preset.id)
+        XCTAssertEqual(store.saved?.totalDuration, 3000)
+        XCTAssertEqual(store.saved?.name, "Reading hour")
     }
 
-    func test_viewDidLoad_setsUpSubviews() {
-        // When
-        _ = viewController.view // Trigger viewDidLoad
-        
-        // Then
-        XCTAssertNotNil(viewController.view.subviews.first(where: { $0 is TimerConfigView }), "TimerConfigView should be added as a subview.")
-        XCTAssertEqual(viewController.navigationItem.title, "Add Preset", "The navigation title should be set correctly.")
-    }
-
-    func test_onTotalDurationSelect_setsViewModelTimerModel() {
-        // Given
-        let hours = 1
-        let minutes = 30
-        let seconds = 45
-        
-        // When
-        viewController.testHooks.timerConfigView.onTotalDurationSelect?(hours, minutes, seconds)
-        
-        // Then
-        XCTAssertEqual(mockViewModel.timerModel.mainTimer.hours, hours, "The hours should be set correctly in the view model.")
-        XCTAssertEqual(mockViewModel.timerModel.mainTimer.minutes, minutes, "The minutes should be set correctly in the view model.")
-        XCTAssertEqual(mockViewModel.timerModel.mainTimer.seconds, seconds, "The seconds should be set correctly in the view model.")
-    }
-
-    func test_onIntervalDurationSelect_setsViewModelInterval() {
-        // Given
-        let hours = 0
-        let minutes = 5
-        let seconds = 0
-        
-        // When
-        viewController.testHooks.timerConfigView.onIntervalDurationSelect?(hours, minutes, seconds)
-        
-        // Then
-        XCTAssertEqual(mockViewModel.timerModel.interval.hours, hours, "The hours for interval should be set correctly.")
-        XCTAssertEqual(mockViewModel.timerModel.interval.minutes, minutes, "The minutes for interval should be set correctly.")
-        XCTAssertEqual(mockViewModel.timerModel.interval.seconds, seconds, "The seconds for interval should be set correctly.")
-    }
-
-    func test_onIntervalSelect_setsViewModelIntervals() {
-        // Given
-        let intervals = 5
-        
-        // When
-        viewController.testHooks.timerConfigView.onIntervalSelect?(intervals)
-        
-        // Then
-        XCTAssertEqual(mockViewModel.timerModel.intervals, intervals, "The number of intervals should be set correctly.")
-    }
-
-    func test_onStartButtonTap_callsAddPreset() {
-        let expectation = expectation(description: "Add Preset")
-        // Given
-        var didCallAddPreset = false
-        mockViewModel.addPresetClosure = {
-            didCallAddPreset = true
+    func test_failedSaveKeepsDraftAndAllowsRetry() async {
+        let store = RecordingPresetStore()
+        store.shouldFail = true
+        let model = PresetEditorViewModel(coreDataManager: store)
+        model.name = "Work"
+        do {
+            try await model.save()
+            XCTFail("Expected save failure")
+        } catch {
+            XCTAssertEqual(model.name, "Work")
+            XCTAssertTrue(model.canSave)
         }
-        
-        // When
-        viewController.testHooks.timerConfigView.onStartButtonTap?()
+    }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-            guard self != nil else {
-                XCTFail("self is nil")
-                return
+    func test_coreDataMigratesLegacyPresetAndPersistsNameAndImage() async throws {
+        let bundle = Bundle(for: CatodoroCoreDataManager.self)
+        let directory = try XCTUnwrap(bundle.url(forResource: "CatodoroCoreData", withExtension: "momd"))
+        let legacyModel = try XCTUnwrap(NSManagedObjectModel(contentsOf: directory.appendingPathComponent("CatodoroCoreData.mom")))
+        let currentModel = try XCTUnwrap(NSManagedObjectModel(contentsOf: directory))
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".sqlite")
+        defer {
+            for suffix in ["", "-wal", "-shm"] {
+                try? FileManager.default.removeItem(atPath: url.path + suffix)
             }
-            expectation.fulfill()
-            // Then
-            XCTAssertTrue(didCallAddPreset, "The addPreset method should be called when the start button is tapped.")
         }
 
-        waitForExpectations(timeout: 1.0)
+        let coordinator = NSPersistentStoreCoordinator(managedObjectModel: legacyModel)
+        let legacyStore = try coordinator.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: url)
+        let context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
+        context.persistentStoreCoordinator = coordinator
+        let entity = NSEntityDescription.insertNewObject(forEntityName: "PresetEntity", into: context)
+        let id = UUID()
+        entity.setValue(id, forKey: "id")
+        entity.setValue(1500.0, forKey: "totalDuration")
+        entity.setValue(300.0, forKey: "intervalDuration")
+        entity.setValue(4, forKey: "intervals")
+        try context.save()
+        try coordinator.remove(legacyStore)
+
+        let container = NSPersistentContainer(name: "CatodoroCoreData", managedObjectModel: currentModel)
+        let description = NSPersistentStoreDescription(url: url)
+        description.shouldMigrateStoreAutomatically = true
+        description.shouldInferMappingModelAutomatically = true
+        container.persistentStoreDescriptions = [description]
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            container.loadPersistentStores { _, error in
+                if let error {
+                    continuation.resume(throwing: error)
+                } else {
+                    continuation.resume()
+                }
+            }
+        }
+
+        let manager = CatodoroCoreDataManager(context: container.newBackgroundContext())
+        let records = try await manager.getPresets()
+        let migrated = try XCTUnwrap(records.first)
+        XCTAssertEqual(migrated.id, id)
+        XCTAssertEqual(migrated.displayName, "25 min focus")
+        XCTAssertEqual(migrated.catPose, .sitting)
+        let updated = PresetModel(id: id, totalDuration: 1500, intervalDuration: 300, intervals: 4, name: "Study", imageIdentifier: "CatPlayful")
+        try await manager.savePreset(updated)
+        let reloaded = try await manager.getPresets()
+        XCTAssertEqual(reloaded, [updated])
+        try await manager.deletePreset(id.uuidString)
+        let remaining = try await manager.getPresets()
+        XCTAssertTrue(remaining.isEmpty)
+    }
+}
+
+private final class RecordingPresetStore: CatodoroCoreDataManaging {
+    var saved: PresetModel?
+    var shouldFail = false
+
+    func getPresets() async throws -> [PresetModel] {
+        saved.map { [$0] } ?? []
+    }
+
+    func getPreset(id: String) async throws -> PresetModel? {
+        saved
+    }
+
+    func savePreset(_ preset: PresetModel) async throws {
+        if shouldFail {
+            throw CoreDataError.save
+        }
+
+        saved = preset
+    }
+
+    func deletePreset(_ id: String) async throws {
+        saved = nil
     }
 }

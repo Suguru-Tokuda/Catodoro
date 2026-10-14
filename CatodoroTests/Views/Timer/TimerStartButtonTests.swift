@@ -75,8 +75,8 @@ class TimerStartButtonTests: XCTestCase {
     
     func test_imageViews_shouldHaveCorrectTintColor() {
         // Assert
-        XCTAssertEqual(button.leadingImageView.tintColor, .white, "Leading image view should have white tint color")
-        XCTAssertEqual(button.trailingImageView.tintColor, .white, "Trailing image view should have white tint color")
+        XCTAssertEqual(button.leadingImageView.tintColor, CatTheme.onAccent, "Leading image view should have white tint color")
+        XCTAssertEqual(button.trailingImageView.tintColor, CatTheme.onAccent, "Trailing image view should have white tint color")
     }
 
     // MARK: - Test Hooks (Private Component Access)
@@ -87,7 +87,7 @@ class TimerStartButtonTests: XCTestCase {
         
         // Assert
         XCTAssertNotNil(label, "Test hooks should allow access to button label")
-        XCTAssertEqual(label.font, .systemFont(ofSize: 28, weight: .bold), "Label font should be system font with size 28 and bold weight")
+        XCTAssertEqual(label.font, CatTheme.font(.headline, weight: .semibold), "Label font should be system font with size 28 and bold weight")
     }
 }
 
@@ -101,5 +101,38 @@ extension TimerStartButtonTests {
         color2.getRed(&r2, green: &g2, blue: &b2, alpha: &a2)
         
         return abs(r1 - r2) < tolerance && abs(g1 - g2) < tolerance && abs(b1 - b2) < tolerance && abs(a1 - a2) < tolerance
+    }
+}
+
+final class CatThemeTests: XCTestCase {
+    private func luminance(_ color: UIColor, traits: UITraitCollection) -> CGFloat {
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        color.resolvedColor(with: traits).getRed(&r, green: &g, blue: &b, alpha: &a)
+        func linear(_ value: CGFloat) -> CGFloat {
+            value <= 0.04045 ? value / 12.92 : pow((value + 0.055) / 1.055, 2.4)
+        }
+        return 0.2126 * linear(r) + 0.7152 * linear(g) + 0.0722 * linear(b)
+    }
+
+    func test_allAccentsHaveReadableButtonTextInBothAppearances() {
+        for style in [UIUserInterfaceStyle.light, .dark] {
+            let traits = UITraitCollection(userInterfaceStyle: style)
+            for option in ColorOptions.allCases {
+                let background = luminance(option.color, traits: traits)
+                let text = luminance(CatTheme.onAccent, traits: traits)
+                let contrast = (max(background, text) + 0.05) / (min(background, text) + 0.05)
+                XCTAssertGreaterThanOrEqual(contrast, 4.5, "\(option) in \(style)")
+                XCTAssertEqual(ColorOptions(option.code), option)
+            }
+        }
+    }
+
+    func test_eachCatPoseLoadsAsOriginalArtwork() {
+        for pose in CatPose.allCases {
+            let view = CatIllustrationView(pose: pose)
+            XCTAssertNotNil(view.image, pose.rawValue)
+            XCTAssertFalse(view.isAccessibilityElement)
+            XCTAssertFalse(view.isUserInteractionEnabled)
+        }
     }
 }

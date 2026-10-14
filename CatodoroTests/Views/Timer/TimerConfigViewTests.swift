@@ -13,7 +13,7 @@ final class TimerConfigViewTests: XCTestCase {
         // Assert
         XCTAssertTrue(view.subviews.contains(view.testHooks.scrollView), "scrollView should be a subview.")
         XCTAssertTrue(view.testHooks.scrollView.subviews.contains(view.testHooks.stackView), "stackView should be a subview of scrollView.")
-        XCTAssertTrue(view.testHooks.stackView.arrangedSubviews.contains(view.testHooks.totalDurationLabel), "totalDurationLabel should be arranged in stackView.")
+        XCTAssertTrue(view.testHooks.focusRow.isDescendant(of: view.testHooks.stackView), "totalDurationLabel should be arranged in stackView.")
         XCTAssertTrue(view.testHooks.stackView.arrangedSubviews.contains(view.testHooks.startButton), "startButton should be arranged in stackView.")
     }
     
@@ -26,7 +26,7 @@ final class TimerConfigViewTests: XCTestCase {
         view.model = defaultModel
         
         // Assert
-        XCTAssertEqual(view.testHooks.startButton.model?.buttonLabelText, "Start", "Start button text should match the default model's startLabelText.")
+        XCTAssertEqual(view.testHooks.startButton.model?.buttonLabelText, "Start focusing", "Start button text should match the default model's startLabelText.")
         XCTAssertEqual(view.testHooks.startButton.model?.color, ColorOptions.neonBlue.color, "Start button color should match the default model's color.")
     }
     
@@ -73,25 +73,30 @@ final class TimerConfigViewTests: XCTestCase {
         XCTAssertTrue(view.testHooks.startButton.isEnabled, "Start button should be enabled.")
     }
     
-    func test_eventHandlers_shouldPropagatePickerSelections() {
-        // Arrange
+    func test_rowsRequestSelectionWithoutLayoutPass() {
         let view = TimerConfigView()
-        
-        let totalDurationExpectation = XCTestExpectation(description: "Total duration picker onSelect should trigger.")
-        let intervalDurationExpectation = XCTestExpectation(description: "Interval duration picker onSelect should trigger.")
-        let intervalExpectation = XCTestExpectation(description: "Interval picker onSelect should trigger.")
+        var selections: [RoutineSelection] = []
+        view.onSelectionRequest = { selections.append($0) }
 
-        view.onTotalDurationSelect = { _, _, _ in totalDurationExpectation.fulfill() }
-        view.onIntervalDurationSelect = { _, _, _ in intervalDurationExpectation.fulfill() }
-        view.onIntervalSelect = { _ in intervalExpectation.fulfill() }
+        view.testHooks.focusRow.sendActions(for: .touchUpInside)
+        view.testHooks.breakRow.sendActions(for: .touchUpInside)
+        view.testHooks.sessionsRow.sendActions(for: .touchUpInside)
 
-        view.testHooks.setupEventHandlers() // Explicitly set up event handlers
-        // Act
-        view.testHooks.totalDurationPicker.onSelect?(1, 2, 3)
-        view.testHooks.intervalDurationPicker.onSelect?(4, 5, 6)
-        view.testHooks.intervalPicker.onSelect?(7)
-        
-        // Assert
-        wait(for: [totalDurationExpectation, intervalDurationExpectation, intervalExpectation], timeout: 1.0)
+        XCTAssertEqual(selections, [.focus, .catnap, .sessions])
+    }
+
+    func test_renderUsesConfirmedRoutine() {
+        let view = TimerConfigView()
+        var routine = TimerConfigModel.standard
+        view.render(routine)
+
+        XCTAssertEqual(view.testHooks.focusRow.accessibilityValue, "25 min")
+        XCTAssertEqual(view.testHooks.summaryLabel.text, "About 1 hr 55 min, including breaks.")
+        XCTAssertTrue(view.testHooks.startButton.isEnabled)
+
+        routine.interval = .init(hours: 0, minutes: 0, seconds: 0)
+        view.render(routine)
+        XCTAssertEqual(view.testHooks.breakRow.accessibilityValue, "No break")
+        XCTAssertEqual(view.testHooks.summaryLabel.text, "About 1 hr 40 min of focus time.")
     }
 }

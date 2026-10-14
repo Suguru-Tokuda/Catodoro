@@ -42,7 +42,7 @@ final class BaseOptionSelectionViewControllerTests: XCTestCase {
         _ = viewController.view // Trigger viewDidLoad
         
         // Then
-        XCTAssertEqual(viewController.view.backgroundColor, .systemBackground, "View background color should be system background")
+        XCTAssertEqual(viewController.view.backgroundColor, CatTheme.background, "View background color should be system background")
     }
 
     func test_setupSubviews_expectSubviewsAddedToView() {

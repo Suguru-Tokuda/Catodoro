@@ -11,6 +11,39 @@ import Foundation
 
 // Mock implementation of CatodoroPreferencesProtocol
 final class MockPreferences: CatodoroPreferencesProtocol {
+    var theme: ThemeOption = .system {
+        didSet { themeSubject.send(theme) }
+    }
+    private let themeSubject = CurrentValueSubject<ThemeOption, Never>(.system)
+    var themePublisher: AnyPublisher<ThemeOption, Never> { themeSubject.eraseToAnyPublisher() }
+    func setTheme(_ theme: ThemeOption) { self.theme = theme }
+
+    var hasCompletedOnboarding = false
+    var syncEnabled = false
+
+    func setSyncEnabled(_ enabled: Bool) { syncEnabled = enabled }
+
+    func completeOnboarding(syncEnabled: Bool) {
+        self.syncEnabled = syncEnabled
+        hasCompletedOnboarding = true
+    }
+
+    var liveActivityEnabled = true {
+        didSet {
+            liveActivitySubject.send(liveActivityEnabled)
+        }
+    }
+
+    private let liveActivitySubject = CurrentValueSubject<Bool, Never>(true)
+
+    var liveActivityPublisher: AnyPublisher<Bool, Never> {
+        liveActivitySubject.eraseToAnyPublisher()
+    }
+
+    func setLiveActivityEnabled(_ enabled: Bool) {
+        liveActivityEnabled = enabled
+    }
+
     var color: String? {
         didSet {
             colorSubject.send(color)
@@ -35,10 +68,10 @@ final class MockPreferences: CatodoroPreferencesProtocol {
     }
 
     func setColor(_ newColor: ColorOptions) {
-        color = newColor.rawValue
+        color = newColor.code
     }
 
     func setSound(_ newSound: SoundOptions) {
-        sound = newSound.rawValue
+        sound = newSound.id
     }
 }
