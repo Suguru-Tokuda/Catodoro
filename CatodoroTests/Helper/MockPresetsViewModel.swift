@@ -10,6 +10,11 @@ import Combine
 import Foundation
 
 class MockPresetsViewModel: PresetsViewModelProtocol {   
+    @Published var loadingState: LoadingState = .idle
+    var loadingStatePublisher: AnyPublisher<LoadingState, Never> {
+        $loadingState.eraseToAnyPublisher()
+    }
+
     @Published var presets: [PresetModel] = []
     var coreDataError: CoreDataError?
     

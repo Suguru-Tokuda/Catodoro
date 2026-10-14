@@ -11,10 +11,35 @@ import Combine
 
 class PresetsViewControllerTests: XCTestCase {
     @MainActor
+    func test_loadingSpinnerIsCenteredAndTerminalStatesRestoreTableBackground() throws {
+        let view = PresetsView(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+        view.render(isEmpty: true, showLoading: true)
+        view.layoutIfNeeded()
+        let background = try XCTUnwrap(view.tableView.backgroundView)
+        background.layoutIfNeeded()
+        let spinner = try XCTUnwrap(background.subviews.compactMap { $0 as? UIActivityIndicatorView }.first)
+        XCTAssertTrue(spinner.isAnimating)
+        XCTAssertGreaterThan(spinner.bounds.width, 0)
+        XCTAssertGreaterThan(spinner.bounds.height, 0)
+        XCTAssertEqual(spinner.center.x, background.bounds.midX, accuracy: 0.5)
+        XCTAssertEqual(spinner.center.y, background.bounds.midY, accuracy: 0.5)
+        XCTAssertFalse(spinner.hasAmbiguousLayout)
+
+        view.render(isEmpty: true, showLoading: false)
+        XCTAssertFalse(spinner.isAnimating)
+        XCTAssertTrue(view.tableView.backgroundView is UIContentUnavailableView)
+        // A repeated stop must not erase the rendered empty state.
+        view.hideLoading()
+        XCTAssertTrue(view.tableView.backgroundView is UIContentUnavailableView)
+        view.render(isEmpty: false, showLoading: false)
+        XCTAssertNil(view.tableView.backgroundView)
+    }
+
+    @MainActor
     func test_presetsViewUsesSavedAccentAndRefreshesAfterPreferenceChanges() async throws {
         let preferences = MockPreferences()
         preferences.setColor(.neonPink)
-        let controller = PresetsViewController(preferences: preferences)
+        let controller = PresetsViewController(preferences: preferences, viewModel: MockPresetsViewModel())
         let model = MockPresetsViewModel()
         model.presets = [PresetModel(id: UUID(), totalDuration: 1500, intervalDuration: 300, intervals: 4)]
         controller.testHooks.setViewModel(viewModel: model)
@@ -41,7 +66,7 @@ class PresetsViewControllerTests: XCTestCase {
     override func setUp() {
         super.setUp()
         // Initialize the view controller
-        sut = PresetsViewController()
+        sut = PresetsViewController(viewModel: MockPresetsViewModel())
         
         // Create a mock delegate and set it
         mockDelegate = MockPresetsViewControllerDelegate()
@@ -64,7 +89,7 @@ class PresetsViewControllerTests: XCTestCase {
 
     @MainActor
     func test_presetTimerUsesPresetsNavigationStackWithoutSwitchingTabs() throws {
-        let tabs = TabCoordinator(preferences: nil, liveActivityManager: nil)
+        let tabs = TabCoordinator(preferences: nil, liveActivityManager: nil, coreDataManager: InMemoryPresetStore())
         tabs.start()
         tabs.selectPage(.presets)
         let presets = try XCTUnwrap(tabs.presetsCoordiantor)

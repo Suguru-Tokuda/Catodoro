@@ -165,7 +165,7 @@ final class RoutineSelectionTests: XCTestCase {
     }
 
     func test_sessionsClampDraftAndCommitWithoutChangingOtherFields() {
-        let host = AddPresetViewController(preferences: nil)
+        let host = AddPresetViewController(preferences: nil, viewModel: PresetEditorViewModel(coreDataManager: InMemoryPresetStore()))
         var routine = TimerConfigModel.standard
         let editor = host.makeRoutineSelectionEditor(.sessions, configuration: routine) { routine = $0 }
             as! SessionSelectionViewController

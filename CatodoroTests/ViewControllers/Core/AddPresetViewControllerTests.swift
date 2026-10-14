@@ -90,7 +90,7 @@ final class AddPresetViewControllerTests: XCTestCase {
             }
         }
 
-        let manager = CatodoroCoreDataManager(container: container)
+        let manager = CatodoroCoreDataManager(context: container.newBackgroundContext())
         let records = try await manager.getPresets()
         let migrated = try XCTUnwrap(records.first)
         XCTAssertEqual(migrated.id, id)
