@@ -11,6 +11,16 @@ import Foundation
 
 // Mock implementation of CatodoroPreferencesProtocol
 final class MockPreferences: CatodoroPreferencesProtocol {
+    var hasCompletedOnboarding = false
+    var syncEnabled = false
+
+    func setSyncEnabled(_ enabled: Bool) { syncEnabled = enabled }
+
+    func completeOnboarding(syncEnabled: Bool) {
+        self.syncEnabled = syncEnabled
+        hasCompletedOnboarding = true
+    }
+
     var liveActivityEnabled = true {
         didSet {
             liveActivitySubject.send(liveActivityEnabled)

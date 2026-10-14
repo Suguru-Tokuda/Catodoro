@@ -14,7 +14,7 @@ class PresetsViewControllerTests: XCTestCase {
     func test_presetsViewUsesSavedAccentAndRefreshesAfterPreferenceChanges() async throws {
         let preferences = MockPreferences()
         preferences.setColor(.neonPink)
-        let controller = PresetsViewController(preferences: preferences)
+        let controller = PresetsViewController(preferences: preferences, viewModel: MockPresetsViewModel())
         let model = MockPresetsViewModel()
         model.presets = [PresetModel(id: UUID(), totalDuration: 1500, intervalDuration: 300, intervals: 4)]
         controller.testHooks.setViewModel(viewModel: model)
@@ -41,7 +41,7 @@ class PresetsViewControllerTests: XCTestCase {
     override func setUp() {
         super.setUp()
         // Initialize the view controller
-        sut = PresetsViewController()
+        sut = PresetsViewController(viewModel: MockPresetsViewModel())
         
         // Create a mock delegate and set it
         mockDelegate = MockPresetsViewControllerDelegate()
@@ -64,7 +64,7 @@ class PresetsViewControllerTests: XCTestCase {
 
     @MainActor
     func test_presetTimerUsesPresetsNavigationStackWithoutSwitchingTabs() throws {
-        let tabs = TabCoordinator(preferences: nil, liveActivityManager: nil)
+        let tabs = TabCoordinator(preferences: nil, liveActivityManager: nil, coreDataManager: InMemoryPresetStore())
         tabs.start()
         tabs.selectPage(.presets)
         let presets = try XCTUnwrap(tabs.presetsCoordiantor)
