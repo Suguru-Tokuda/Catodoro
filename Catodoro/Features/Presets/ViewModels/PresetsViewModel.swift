@@ -28,6 +28,8 @@ class PresetsViewModel: PresetsViewModelProtocol {
     }
     var coreDataError: CoreDataError?
     private var cancellables: Set<AnyCancellable> = .init()
+    private var isLoading = false
+    private var reloadRequested = false
 
     // MARK: - Dependencies
 
@@ -43,23 +45,35 @@ class PresetsViewModel: PresetsViewModelProtocol {
             .store(in: &cancellables)
     }
 
+    /// Requests that arrive while a fetch is running (e.g. iCloud imports) trigger one more
+    /// fetch afterwards instead of being dropped.
     @MainActor
     func loadPresets() async {
-        guard loadingState != .loading else { return }
-
-        do {
-            if presets.isEmpty {
-                loadingState = .loading
-            }
-
-            let loaded = try await self.coreDataManager?.getPresets() ?? []
-            coreDataError = nil
-            presets = loaded.sorted(by: { $0.displayName < $1.displayName })
-            loadingState = .loaded
-        } catch {
-            coreDataError = error as? CoreDataError ?? .get
-            loadingState = .failed(error)
+        guard !isLoading else {
+            reloadRequested = true
+            return
         }
+
+        isLoading = true
+        defer { isLoading = false }
+
+        repeat {
+            reloadRequested = false
+
+            do {
+                if presets.isEmpty {
+                    loadingState = .loading
+                }
+
+                let loaded = try await self.coreDataManager?.getPresets() ?? []
+                coreDataError = nil
+                presets = loaded.sorted(by: { $0.displayName < $1.displayName })
+                loadingState = .loaded
+            } catch {
+                coreDataError = error as? CoreDataError ?? .get
+                loadingState = .failed(error)
+            }
+        } while reloadRequested
     }
 
     func deletePreset(_ preset: PresetModel) async {

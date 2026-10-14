@@ -15,8 +15,8 @@ class BaseNavigationController: UINavigationController {
         self.delegate = self
         view.backgroundColor = CatTheme.background
         let appearance = UINavigationBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = .clear
+        // Opaque + clear has neither fill nor blur; the default background uses the system material.
+        appearance.configureWithDefaultBackground()
         appearance.shadowColor = .clear
         appearance.titleTextAttributes = [.foregroundColor: CatTheme.text, .font: CatTheme.font(.headline, weight: .bold)]
         navigationBar.standardAppearance = appearance

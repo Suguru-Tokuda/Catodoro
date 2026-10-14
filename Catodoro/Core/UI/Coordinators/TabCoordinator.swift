@@ -127,13 +127,14 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
         tabBarController.selectedIndex = TabBarPage.timer.tabOrderNumber
         /// Styling
         let appearance = UITabBarAppearance()
-        appearance.configureWithTransparentBackground()
+        // Default background = system material: blur on iOS 18, Liquid Glass on iOS 26.
+        // A transparent background leaves the items floating over content on iOS 18.
+        appearance.configureWithDefaultBackground()
         tabBarController.tabBar.standardAppearance = appearance
         tabBarController.tabBar.scrollEdgeAppearance = appearance
         tabBarController.tabBar.unselectedItemTintColor = CatTheme.secondaryText
         tabBarController.tabBar.tintColor = ColorOptions(preferences?.color ?? "").color
         tabBarController.view.backgroundColor = .clear
-        tabBarController.tabBar.backgroundColor = .clear
         tabBarController.tabBar.isTranslucent = true
 
         /// In this step, we attach tabBarController to navigation controller associated with this coordiantor

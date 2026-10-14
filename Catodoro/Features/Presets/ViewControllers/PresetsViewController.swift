@@ -104,7 +104,9 @@ class PresetsViewController: BaseViewController {
             .store(in: &cancellables)
 
 
-        viewModel.presetsPublisher.receive(on: DispatchQueue.main)
+        // Presets change on the main actor; reload synchronously so the table never
+        // asks for rows of an array that has already shrunk (e.g. an iCloud deletion).
+        viewModel.presetsPublisher
             .sink { [weak self] _ in
                 guard let self else { return }
 
@@ -146,16 +148,22 @@ extension PresetsViewController {
 extension PresetsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        guard viewModel.presets.indices.contains(indexPath.row) else { return }
+
         delegate?.presetsViewControllerDidRequestEdit(self, preset: viewModel.presets[indexPath.row])
     }
 
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            let preset = viewModel.presets[indexPath.row]
-            Task(priority: .utility) {
-                await viewModel.deletePreset(preset)
-                showPersistenceErrorIfNeeded()
+        guard editingStyle == .delete, viewModel.presets.indices.contains(indexPath.row) else { return }
+
+        let preset = viewModel.presets[indexPath.row]
+        Task(priority: .utility) {
+            await viewModel.deletePreset(preset)
+            if viewModel.coreDataError != nil {
+                // Nothing changed, so close the open swipe action ourselves.
+                presetsView.tableView.reloadData()
             }
+            showPersistenceErrorIfNeeded()
         }
     }
 }
@@ -168,6 +176,8 @@ extension PresetsViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let cell = tableView.dequeueReusableCell(withIdentifier: PresetListViewCell.reuseIdentifier,
                                                     for: indexPath) as? PresetListViewCell {
+            guard viewModel.presets.indices.contains(indexPath.row) else { return cell }
+
             let presetModel = viewModel.presets[indexPath.row]
             cell.accent = accent
             cell.model = presetModel

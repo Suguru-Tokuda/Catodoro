@@ -46,6 +46,8 @@ final class SettingsViewModel {
     private let activitiesAuthorized: () -> Bool
     private let syncLifecycleManager: SyncLifecycleManaging?
     private var syncBusy = false
+    /// The value the user just chose, shown until the lifecycle manager settles.
+    private var pendingSyncValue: Bool?
     private var subscriptions = Set<AnyCancellable>()
 
     init(preferences: CatodoroPreferencesProtocol? = nil,
@@ -99,8 +101,9 @@ final class SettingsViewModel {
     func setSyncEnabled(_ enabled: Bool) async {
         guard !syncBusy, let syncLifecycleManager else { return }
         syncBusy = true
+        pendingSyncValue = enabled
         refresh()
-        defer { syncBusy = false; refresh() }
+        defer { syncBusy = false; pendingSyncValue = nil; refresh() }
         do { try await syncLifecycleManager.setSyncEnabled(enabled) }
         catch { /* The lifecycle manager publishes the error. */ }
     }
@@ -113,7 +116,7 @@ final class SettingsViewModel {
         next.syncAvailable = syncLifecycleManager != nil
         next.syncBusy = syncBusy
         let status = syncLifecycleManager?.syncStatus
-        next.syncEnabled = status?.isAvailable == true && status?.isEnabled == true
+        next.syncEnabled = pendingSyncValue ?? (status?.isAvailable == true && status?.isEnabled == true)
         next.syncToggleEnabled = status?.isAvailable == true
             && status?.isCheckingAvailability == false && !syncBusy
         if status?.isCheckingAvailability == true {

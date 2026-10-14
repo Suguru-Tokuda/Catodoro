@@ -76,7 +76,11 @@ final class CatodoroPersistentController: CloudSyncPersistence, @unchecked Senda
             } catch {
                 // Restore the previous configuration if reopening failed. Never delete the database.
                 description.cloudKitContainerOptions = previousOptions
-                try Self.loadStores(in: container)
+                do {
+                    try Self.loadStores(in: container)
+                } catch let restoreError {
+                    assertionFailure("Couldn't reopen the local store: \(restoreError)")
+                }
                 throw error
             }
         }

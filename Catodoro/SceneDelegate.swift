@@ -19,6 +19,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(frame: windowScene.coordinateSpace.bounds)
         window?.backgroundColor = CatTheme.background
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        // Timer state isn't restored across launches, so any existing activity is orphaned.
+        liveActivityManager.endStaleActivities()
         let dependencies = appDelegate.dependencies
         let coordinator = MainCoordinator(preferences: dependencies.preferences, liveActivityManager: liveActivityManager,
                                           coreDataManager: dependencies.coreDataManager,
