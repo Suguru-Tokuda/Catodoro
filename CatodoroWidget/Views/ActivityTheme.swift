@@ -62,31 +62,29 @@ struct ActivityCountdown: View {
 
 struct ActivityProgress: View {
     let state: TimerAttributes.ContentState
-    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
-        if state.timerStatus == .playing, let duration = state.phaseDuration, duration > 0 {
-            ProgressView(timerInterval: state.endTime.addingTimeInterval(-duration)...state.endTime, countsDown: false)
-                .labelsHidden()
-                .progressViewStyle(.linear)
-                .accessibilityHidden(true)
-        } else {
-            GeometryReader { geometry in
-                Capsule()
-                    .fill(accent.opacity(0.18))
-                    .overlay(alignment: .leading) {
-                        Capsule()
-                            .fill(accent)
-                            .frame(width: geometry.size.width * (state.timerStatus == .finished ? 1 : progress))
-                    }
+        Group {
+            if state.timerStatus == .playing, let duration = state.phaseDuration, duration > 0 {
+                ProgressView(timerInterval: state.endTime.addingTimeInterval(-duration)...state.endTime, countsDown: false) {
+                    EmptyView()
+                } currentValueLabel: {
+                    EmptyView()
+                }
+                .transition(.identity)
+            } else {
+                ProgressView(value: state.timerStatus == .finished ? 1 : progress) {
+                    EmptyView()
+                } currentValueLabel: {
+                    EmptyView()
+                }
+                .transition(.identity)
             }
-                .frame(height: 4)
-                .accessibilityHidden(true)
         }
-    }
-
-    private var accent: Color {
-        ActivityTheme.accent(state.accentCode, scheme: colorScheme)
+        .progressViewStyle(.linear)
+        .frame(height: 4, alignment: .center)
+        .animation(nil, value: state.timerStatus)
+        .accessibilityHidden(true)
     }
 
     private var progress: Double {
@@ -106,15 +104,22 @@ struct ActivityControls: View {
             if state.timerStatus == .finished {
                 Button(intent: RepeatTimerIntent()) {
                     Label("Focus again", systemImage: "arrow.clockwise")
+                        .transition(.identity)
                 }
+                
             } else if state.canSkipBreak {
                 Button(intent: SkipBreakIntent()) {
                     Label("Skip break", systemImage: "forward.end.fill")
+                        .transition(.identity)
                 }
             } else {
                 Button(intent: PlayTimerIntent()) {
-                    Label(state.timerStatus == .paused ? "Resume" : "Pause",
-                          systemImage: state.timerStatus == .paused ? "play.fill" : "pause.fill")
+                    Label(
+                        state.timerStatus == .paused ? "Resume" : "Pause",
+                        systemImage: state.timerStatus == .paused ? "play.fill" : "pause.fill"
+                    )
+                    .frame(width: 80)
+                    .transition(.identity)
                 }
             }
 
@@ -126,5 +131,7 @@ struct ActivityControls: View {
         .buttonStyle(.bordered)
         .buttonBorderShape(.capsule)
         .tint(ActivityTheme.accent(state.accentCode, scheme: island ? .dark : colorScheme))
+        .contentTransition(.identity)
+        
     }
 }

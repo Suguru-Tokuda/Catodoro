@@ -217,33 +217,63 @@ final class Task6Tests: XCTestCase {
         }
     }
 
-    func test_renderLiveActivityCardsAndExpandedIsland() throws {
-        for scheme in [ColorScheme.light, .dark] {
-            for phase in [TimerType.main, .interval] {
-                let state = TimerAttributes.ContentState(currentTimerValue: 252, endTime: .now + 252,
-                                                        intervals: 4, interval: 2, timerType: phase,
-                                                        timerStatus: .paused, phaseDuration: 300)
-                let view = TimerLiveActivityCard(state: state).frame(width: 370)
-                    .environment(\.colorScheme, scheme)
-                let renderer = ImageRenderer(content: view)
-                renderer.scale = 3
-                let image = try XCTUnwrap(renderer.uiImage)
-                XCTAssertGreaterThan(image.size.height, 100)
-                let attachment = XCTAttachment(image: image)
-                attachment.name = "Activity-\(phase.rawValue)-\(scheme)"
-                attachment.lifetime = .keepAlways
-                add(attachment)
+    func test_progressLayoutHeightStaysConstantAcrossPauseResumeAndCompletion() {
+        let end = Date.now + 252
+        for width in [CGFloat(180), 250, 370] {
+            let host = UIHostingController(rootView: ActivityProgress(state:
+                .init(currentTimerValue: 252, endTime: end, intervals: 4, interval: 1,
+                      timerType: .main, timerStatus: .playing, phaseDuration: 300)))
+            for status in [TimerStatus.playing, .paused, .playing, .finished] {
+                host.rootView = ActivityProgress(state:
+                    .init(currentTimerValue: status == .finished ? 0 : 252, endTime: end,
+                          intervals: 4, interval: 1, timerType: .main,
+                          timerStatus: status, phaseDuration: 300))
+                let size = host.sizeThatFits(in: CGSize(width: width, height: 1000))
+                XCTAssertEqual(size.height, 4, accuracy: 0.01, "\(status) at width \(width)")
             }
         }
-        let state = TimerAttributes.ContentState(currentTimerValue: 252, endTime: .now + 252,
-                                                intervals: 4, interval: 2, timerType: .interval,
-                                                timerStatus: .paused, phaseDuration: 300)
-        let renderer = ImageRenderer(content: ExpandedTimerActivity(state: state)
-            .padding(16).frame(width: 350).background(.black).environment(\.colorScheme, .dark))
-        renderer.scale = 3
-        let attachment = XCTAttachment(image: try XCTUnwrap(renderer.uiImage))
-        attachment.name = "Expanded Island break"
-        attachment.lifetime = .keepAlways
-        add(attachment)
+    }
+
+    func test_renderLiveActivityCardsAndExpandedIsland() throws {
+        let end = Date.now + 252
+        for scheme in [ColorScheme.light, .dark] {
+            for phase in [TimerType.main, .interval] {
+                var cardHeight: CGFloat?
+                var islandHeight: CGFloat?
+                for status in [TimerStatus.playing, .paused] {
+                    let state = TimerAttributes.ContentState(currentTimerValue: 252, endTime: end,
+                                                            intervals: 4, interval: 2, timerType: phase,
+                                                            timerStatus: status, phaseDuration: 300)
+                    let view = TimerLiveActivityCard(state: state).frame(width: 370)
+                        .environment(\.colorScheme, scheme)
+                    let renderer = ImageRenderer(content: view)
+                    renderer.scale = 3
+                    let image = try XCTUnwrap(renderer.uiImage)
+                    XCTAssertGreaterThan(image.size.height, 100)
+                    if let cardHeight {
+                        XCTAssertEqual(image.size.height, cardHeight, accuracy: 0.01,
+                                       "Lock Screen layout changed on pause: \(phase), \(scheme)")
+                    }
+                    cardHeight = image.size.height
+                    let attachment = XCTAttachment(image: image)
+                    attachment.name = "Activity-\(phase.rawValue)-\(scheme)-\(status)"
+                    attachment.lifetime = .keepAlways
+                    add(attachment)
+                    let islandRenderer = ImageRenderer(content: ExpandedTimerActivity(state: state)
+                        .padding(16).frame(width: 350).background(.black).environment(\.colorScheme, scheme))
+                    islandRenderer.scale = 3
+                    let islandImage = try XCTUnwrap(islandRenderer.uiImage)
+                    if let islandHeight {
+                        XCTAssertEqual(islandImage.size.height, islandHeight, accuracy: 0.01,
+                                       "Expanded Island layout changed on pause: \(phase), \(scheme)")
+                    }
+                    islandHeight = islandImage.size.height
+                    let islandAttachment = XCTAttachment(image: islandImage)
+                    islandAttachment.name = "Expanded-Island-\(phase.rawValue)-\(scheme)-\(status)"
+                    islandAttachment.lifetime = .keepAlways
+                    add(islandAttachment)
+                }
+            }
+        }
     }
 }
