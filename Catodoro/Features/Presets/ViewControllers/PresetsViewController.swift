@@ -18,6 +18,7 @@ class PresetsViewController: BaseViewController {
     weak var delegate: PresetsViewControllerDelegate?
     private var viewModel: PresetsViewModelProtocol
     private var cancellables: Set<AnyCancellable> = .init()
+    private var displayedPresets: [PresetModel] = []
 
     private let presetsView = PresetsView()
     private weak var preferences: CatodoroPreferencesProtocol?
@@ -104,12 +105,13 @@ class PresetsViewController: BaseViewController {
             .store(in: &cancellables)
 
 
-        // Presets change on the main actor; reload synchronously so the table never
-        // asks for rows of an array that has already shrunk (e.g. an iCloud deletion).
+        // @Published emits before storing the new value. Keep the table data source
+        // on the emitted snapshot before synchronously reloading its rows.
         viewModel.presetsPublisher
-            .sink { [weak self] _ in
+            .sink { [weak self] presets in
                 guard let self else { return }
 
+                displayedPresets = presets
                 presetsView.tableView.reloadData()
                 updateEmptyState()
             }
@@ -120,7 +122,7 @@ class PresetsViewController: BaseViewController {
                 guard let self else { return }
 
                 presetsView.render(
-                    isEmpty: viewModel.presets.isEmpty,
+                    isEmpty: displayedPresets.isEmpty,
                     showLoading: loadingState == .loading
                 )
             }
@@ -129,7 +131,7 @@ class PresetsViewController: BaseViewController {
 
     private func updateEmptyState() {
         presetsView.render(
-            isEmpty: viewModel.presets.isEmpty,
+            isEmpty: displayedPresets.isEmpty,
             showLoading: viewModel.loadingState == .loading
         )
     }
@@ -148,15 +150,15 @@ extension PresetsViewController {
 extension PresetsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        guard viewModel.presets.indices.contains(indexPath.row) else { return }
+        guard displayedPresets.indices.contains(indexPath.row) else { return }
 
-        delegate?.presetsViewControllerDidRequestEdit(self, preset: viewModel.presets[indexPath.row])
+        delegate?.presetsViewControllerDidRequestEdit(self, preset: displayedPresets[indexPath.row])
     }
 
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        guard editingStyle == .delete, viewModel.presets.indices.contains(indexPath.row) else { return }
+        guard editingStyle == .delete, displayedPresets.indices.contains(indexPath.row) else { return }
 
-        let preset = viewModel.presets[indexPath.row]
+        let preset = displayedPresets[indexPath.row]
         Task(priority: .utility) {
             await viewModel.deletePreset(preset)
             if viewModel.coreDataError != nil {
@@ -170,15 +172,15 @@ extension PresetsViewController: UITableViewDelegate {
 
 extension PresetsViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.presets.count
+        displayedPresets.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let cell = tableView.dequeueReusableCell(withIdentifier: PresetListViewCell.reuseIdentifier,
                                                     for: indexPath) as? PresetListViewCell {
-            guard viewModel.presets.indices.contains(indexPath.row) else { return cell }
+            guard displayedPresets.indices.contains(indexPath.row) else { return cell }
 
-            let presetModel = viewModel.presets[indexPath.row]
+            let presetModel = displayedPresets[indexPath.row]
             cell.accent = accent
             cell.model = presetModel
             cell.onPlayButtonTapped = { [weak self] in

@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 8/21/24.
 //
 
+import CatodoroShared
 import Combine
 import UIKit
 
@@ -77,6 +78,7 @@ final class TimerViewController: BaseViewController {
 
     func configure(timerConfigViewModel: TimerConfigViewModel) {
         let routine = timerConfigViewModel.timerModel
+        TimerController.shared.activeTimer = viewModel
         viewModel.configure(totalDuration: routine.mainTimer.duration,
                             intervalDuration: routine.interval.duration,
                             intervals: routine.intervals)

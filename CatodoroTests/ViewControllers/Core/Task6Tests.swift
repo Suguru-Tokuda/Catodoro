@@ -117,6 +117,74 @@ final class Task6Tests: XCTestCase {
         XCTAssertEqual(activity.lastState?.phaseDuration, 10)
     }
 
+    func test_playIntentUpdatesRegisteredTimerOnPauseAndResume() async throws {
+        let activities = MockLiveActivityManager()
+        let model = timer(activities: activities)
+        let previousTimer = TimerController.shared.activeTimer
+        TimerController.shared.activeTimer = model
+        defer { TimerController.shared.activeTimer = previousTimer }
+
+        instant += 2
+        _ = try await PlayTimerIntent().perform()
+        XCTAssertEqual(model.timerStatus, .paused)
+        XCTAssertEqual(activities.lastState?.timerStatus, .paused)
+        XCTAssertEqual(activities.lastState?.currentTimerValue, 8)
+
+        instant += 20
+        _ = try await PlayTimerIntent().perform()
+        XCTAssertEqual(model.timerStatus, .playing)
+        XCTAssertEqual(activities.lastState?.timerStatus, .playing)
+        XCTAssertEqual(activities.lastState?.currentTimerValue, 8)
+        XCTAssertEqual(activities.lastState?.endTime, instant + 8)
+    }
+
+    func test_playIntentWaitsForLiveActivityUpdateBeforeReturning() async throws {
+        let activities = MockLiveActivityManager()
+        let model = timer(activities: activities)
+        let previousTimer = TimerController.shared.activeTimer
+        TimerController.shared.activeTimer = model
+        defer { TimerController.shared.activeTimer = previousTimer }
+
+        let updateStarted = expectation(description: "Activity update started")
+        var releaseUpdate: CheckedContinuation<Void, Never>?
+        activities.beforeUpdate = {
+            await withCheckedContinuation { continuation in
+                releaseUpdate = continuation
+                updateStarted.fulfill()
+            }
+        }
+        var intentReturned = false
+        let operation = Task { @MainActor in
+            _ = try await PlayTimerIntent().perform()
+            intentReturned = true
+        }
+
+        await fulfillment(of: [updateStarted], timeout: 2)
+        XCTAssertEqual(model.timerStatus, .paused)
+        XCTAssertFalse(intentReturned, "The intent must await the activity update")
+        XCTAssertNil(activities.lastState)
+
+        releaseUpdate?.resume()
+        try await operation.value
+        XCTAssertTrue(intentReturned)
+        XCTAssertEqual(activities.lastState?.timerStatus, .paused)
+    }
+
+    func test_playIntentThrowsWhenNoTimerIsRegistered() async {
+        let previousTimer = TimerController.shared.activeTimer
+        TimerController.shared.activeTimer = nil
+        defer { TimerController.shared.activeTimer = previousTimer }
+
+        do {
+            _ = try await PlayTimerIntent().perform()
+            XCTFail("Expected noActiveTimer")
+        } catch TimerController.TimerError.noActiveTimer {
+            // Expected: an intent without an active routine cannot toggle a timer.
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+
     func test_disabledPreferencePreventsActivityWithoutStoppingTimer() {
         let preferences = MockPreferences()
         preferences.setLiveActivityEnabled(false)
@@ -217,33 +285,63 @@ final class Task6Tests: XCTestCase {
         }
     }
 
-    func test_renderLiveActivityCardsAndExpandedIsland() throws {
-        for scheme in [ColorScheme.light, .dark] {
-            for phase in [TimerType.main, .interval] {
-                let state = TimerAttributes.ContentState(currentTimerValue: 252, endTime: .now + 252,
-                                                        intervals: 4, interval: 2, timerType: phase,
-                                                        timerStatus: .paused, phaseDuration: 300)
-                let view = TimerLiveActivityCard(state: state).frame(width: 370)
-                    .environment(\.colorScheme, scheme)
-                let renderer = ImageRenderer(content: view)
-                renderer.scale = 3
-                let image = try XCTUnwrap(renderer.uiImage)
-                XCTAssertGreaterThan(image.size.height, 100)
-                let attachment = XCTAttachment(image: image)
-                attachment.name = "Activity-\(phase.rawValue)-\(scheme)"
-                attachment.lifetime = .keepAlways
-                add(attachment)
+    func test_progressLayoutHeightStaysConstantAcrossPauseResumeAndCompletion() {
+        let end = Date.now + 252
+        for width in [CGFloat(180), 250, 370] {
+            let host = UIHostingController(rootView: ActivityProgress(state:
+                .init(currentTimerValue: 252, endTime: end, intervals: 4, interval: 1,
+                      timerType: .main, timerStatus: .playing, phaseDuration: 300)))
+            for status in [TimerStatus.playing, .paused, .playing, .finished] {
+                host.rootView = ActivityProgress(state:
+                    .init(currentTimerValue: status == .finished ? 0 : 252, endTime: end,
+                          intervals: 4, interval: 1, timerType: .main,
+                          timerStatus: status, phaseDuration: 300))
+                let size = host.sizeThatFits(in: CGSize(width: width, height: 1000))
+                XCTAssertEqual(size.height, 4, accuracy: 0.01, "\(status) at width \(width)")
             }
         }
-        let state = TimerAttributes.ContentState(currentTimerValue: 252, endTime: .now + 252,
-                                                intervals: 4, interval: 2, timerType: .interval,
-                                                timerStatus: .paused, phaseDuration: 300)
-        let renderer = ImageRenderer(content: ExpandedTimerActivity(state: state)
-            .padding(16).frame(width: 350).background(.black).environment(\.colorScheme, .dark))
-        renderer.scale = 3
-        let attachment = XCTAttachment(image: try XCTUnwrap(renderer.uiImage))
-        attachment.name = "Expanded Island break"
-        attachment.lifetime = .keepAlways
-        add(attachment)
+    }
+
+    func test_renderLiveActivityCardsAndExpandedIsland() throws {
+        let end = Date.now + 252
+        for scheme in [ColorScheme.light, .dark] {
+            for phase in [TimerType.main, .interval] {
+                var cardHeight: CGFloat?
+                var islandHeight: CGFloat?
+                for status in [TimerStatus.playing, .paused] {
+                    let state = TimerAttributes.ContentState(currentTimerValue: 252, endTime: end,
+                                                            intervals: 4, interval: 2, timerType: phase,
+                                                            timerStatus: status, phaseDuration: 300)
+                    let view = TimerLiveActivityCard(state: state).frame(width: 370)
+                        .environment(\.colorScheme, scheme)
+                    let renderer = ImageRenderer(content: view)
+                    renderer.scale = 3
+                    let image = try XCTUnwrap(renderer.uiImage)
+                    XCTAssertGreaterThan(image.size.height, 100)
+                    if let cardHeight {
+                        XCTAssertEqual(image.size.height, cardHeight, accuracy: 0.01,
+                                       "Lock Screen layout changed on pause: \(phase), \(scheme)")
+                    }
+                    cardHeight = image.size.height
+                    let attachment = XCTAttachment(image: image)
+                    attachment.name = "Activity-\(phase.rawValue)-\(scheme)-\(status)"
+                    attachment.lifetime = .keepAlways
+                    add(attachment)
+                    let islandRenderer = ImageRenderer(content: ExpandedTimerActivity(state: state)
+                        .padding(16).frame(width: 350).background(.black).environment(\.colorScheme, scheme))
+                    islandRenderer.scale = 3
+                    let islandImage = try XCTUnwrap(islandRenderer.uiImage)
+                    if let islandHeight {
+                        XCTAssertEqual(islandImage.size.height, islandHeight, accuracy: 0.01,
+                                       "Expanded Island layout changed on pause: \(phase), \(scheme)")
+                    }
+                    islandHeight = islandImage.size.height
+                    let islandAttachment = XCTAttachment(image: islandImage)
+                    islandAttachment.name = "Expanded-Island-\(phase.rawValue)-\(scheme)-\(status)"
+                    islandAttachment.lifetime = .keepAlways
+                    add(islandAttachment)
+                }
+            }
+        }
     }
 }

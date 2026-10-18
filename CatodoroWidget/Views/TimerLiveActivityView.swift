@@ -35,8 +35,8 @@ struct TimerLiveActivityCard: View {
                     .foregroundStyle(accent)
                 ActivityCountdown(state: state)
                     .font(.system(size: 32, weight: .semibold, design: .rounded))
-                    .minimumScaleFactor(0.65)
                     .lineLimit(1)
+                    .transition(.identity)
                 Text(state.sessionSummary)
                     .font(.system(.caption, design: .rounded))
                     .fixedSize(horizontal: false, vertical: true)
@@ -50,6 +50,7 @@ struct TimerLiveActivityCard: View {
         .padding(16)
         .foregroundStyle(ActivityTheme.text(colorScheme))
         .background(ActivityTheme.background(colorScheme))
+        .contentTransition(.identity)
     }
 
     private var accent: Color {

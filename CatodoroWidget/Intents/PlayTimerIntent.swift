@@ -14,8 +14,7 @@ struct PlayTimerIntent: AppIntent & LiveActivityIntent {
     
     @MainActor
     func perform() async throws -> some IntentResult {
-        NotificationCenter.default.post(name: .playTimerActionTriggered, object: nil)
+        try await TimerController.shared.togglePauseResume()
         return .result()
     }
 }
-
