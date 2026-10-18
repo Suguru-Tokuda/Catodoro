@@ -5,6 +5,8 @@
 import XCTest
 import Combine
 import UIKit
+import AppIntents
+import CatodoroShared
 @testable import Catodoro
 
 final class TimerViewModelTests: XCTestCase {
@@ -222,11 +224,14 @@ final class TimerPresentationTests: XCTestCase {
         XCTAssertEqual(model.timerStatus, .finished)
     }
 
-    func test_remoteControlsPauseResumeRepeatAndStop() {
+    func test_remoteControlsPauseResumeRepeatAndStop() async throws {
         let model = makeTimer(count: 1)
-        NotificationCenter.default.post(name: .playTimerActionTriggered, object: nil)
+        let previousTimer = TimerController.shared.activeTimer
+        TimerController.shared.activeTimer = model
+        defer { TimerController.shared.activeTimer = previousTimer }
+        _ = try await PlayTimerIntent().perform()
         XCTAssertEqual(model.timerStatus, .paused)
-        NotificationCenter.default.post(name: .playTimerActionTriggered, object: nil)
+        _ = try await PlayTimerIntent().perform()
         XCTAssertEqual(model.timerStatus, .playing)
         instant.addTimeInterval(10)
         model.refresh()

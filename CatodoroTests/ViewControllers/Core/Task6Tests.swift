@@ -117,6 +117,74 @@ final class Task6Tests: XCTestCase {
         XCTAssertEqual(activity.lastState?.phaseDuration, 10)
     }
 
+    func test_playIntentUpdatesRegisteredTimerOnPauseAndResume() async throws {
+        let activities = MockLiveActivityManager()
+        let model = timer(activities: activities)
+        let previousTimer = TimerController.shared.activeTimer
+        TimerController.shared.activeTimer = model
+        defer { TimerController.shared.activeTimer = previousTimer }
+
+        instant += 2
+        _ = try await PlayTimerIntent().perform()
+        XCTAssertEqual(model.timerStatus, .paused)
+        XCTAssertEqual(activities.lastState?.timerStatus, .paused)
+        XCTAssertEqual(activities.lastState?.currentTimerValue, 8)
+
+        instant += 20
+        _ = try await PlayTimerIntent().perform()
+        XCTAssertEqual(model.timerStatus, .playing)
+        XCTAssertEqual(activities.lastState?.timerStatus, .playing)
+        XCTAssertEqual(activities.lastState?.currentTimerValue, 8)
+        XCTAssertEqual(activities.lastState?.endTime, instant + 8)
+    }
+
+    func test_playIntentWaitsForLiveActivityUpdateBeforeReturning() async throws {
+        let activities = MockLiveActivityManager()
+        let model = timer(activities: activities)
+        let previousTimer = TimerController.shared.activeTimer
+        TimerController.shared.activeTimer = model
+        defer { TimerController.shared.activeTimer = previousTimer }
+
+        let updateStarted = expectation(description: "Activity update started")
+        var releaseUpdate: CheckedContinuation<Void, Never>?
+        activities.beforeUpdate = {
+            await withCheckedContinuation { continuation in
+                releaseUpdate = continuation
+                updateStarted.fulfill()
+            }
+        }
+        var intentReturned = false
+        let operation = Task { @MainActor in
+            _ = try await PlayTimerIntent().perform()
+            intentReturned = true
+        }
+
+        await fulfillment(of: [updateStarted], timeout: 2)
+        XCTAssertEqual(model.timerStatus, .paused)
+        XCTAssertFalse(intentReturned, "The intent must await the activity update")
+        XCTAssertNil(activities.lastState)
+
+        releaseUpdate?.resume()
+        try await operation.value
+        XCTAssertTrue(intentReturned)
+        XCTAssertEqual(activities.lastState?.timerStatus, .paused)
+    }
+
+    func test_playIntentThrowsWhenNoTimerIsRegistered() async {
+        let previousTimer = TimerController.shared.activeTimer
+        TimerController.shared.activeTimer = nil
+        defer { TimerController.shared.activeTimer = previousTimer }
+
+        do {
+            _ = try await PlayTimerIntent().perform()
+            XCTFail("Expected noActiveTimer")
+        } catch TimerController.TimerError.noActiveTimer {
+            // Expected: an intent without an active routine cannot toggle a timer.
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+
     func test_disabledPreferencePreventsActivityWithoutStoppingTimer() {
         let preferences = MockPreferences()
         preferences.setLiveActivityEnabled(false)

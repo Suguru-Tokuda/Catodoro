@@ -16,6 +16,7 @@ final class MockLiveActivityManager: LiveActivityManaging {
     private(set) var lastState: TimerAttributes.ContentState?
 
     var onUpdate: ((TimerStatus) -> Void)?
+    var beforeUpdate: (@MainActor () async -> Void)?
 
     private(set) var didStartLiveActivity = false
     private(set) var didUpdateLiveActivity = false
@@ -48,6 +49,7 @@ final class MockLiveActivityManager: LiveActivityManaging {
                             soundName: String?,
                             phaseDuration: TimeInterval,
                             accentCode: String?) async {
+        await beforeUpdate?()
         lastState = .init(currentTimerValue: currentTimerValue, endTime: endTime,
                           intervals: intervals, interval: interval,
                           timerType: timerType, timerStatus: timerStatus,

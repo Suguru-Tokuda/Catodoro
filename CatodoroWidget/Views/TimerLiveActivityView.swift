@@ -51,7 +51,6 @@ struct TimerLiveActivityCard: View {
         .foregroundStyle(ActivityTheme.text(colorScheme))
         .background(ActivityTheme.background(colorScheme))
         .contentTransition(.identity)
-        
     }
 
     private var accent: Color {

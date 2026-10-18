@@ -11,6 +11,27 @@ import Combine
 
 class PresetsViewControllerTests: XCTestCase {
     @MainActor
+    func test_publishedPresetsReloadTableUsingIncomingSnapshot() throws {
+        let model = MockPresetsViewModel()
+        let controller = PresetsViewController(viewModel: model)
+        controller.loadViewIfNeeded()
+        let table = controller.testHooks.presetsTableView
+        XCTAssertEqual(table.numberOfRows(inSection: 0), 0)
+
+        let preset = PresetModel(id: UUID(), totalDuration: 1500, intervalDuration: 300,
+                                 intervals: 4, name: "Saved routine")
+        model.presets = [preset]
+        XCTAssertEqual(table.numberOfRows(inSection: 0), 1)
+        let cell = try XCTUnwrap(controller.tableView(table, cellForRowAt: IndexPath(row: 0, section: 0))
+            as? PresetListViewCell)
+        XCTAssertEqual(cell.timerLabel.text, "Saved routine")
+
+        model.presets = []
+        XCTAssertEqual(table.numberOfRows(inSection: 0), 0)
+        XCTAssertTrue(table.backgroundView is UIContentUnavailableView)
+    }
+
+    @MainActor
     func test_loadingSpinnerIsCenteredAndTerminalStatesRestoreTableBackground() throws {
         let view = PresetsView(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
         view.render(isEmpty: true, showLoading: true)

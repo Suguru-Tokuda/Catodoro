@@ -161,6 +161,8 @@ class TimerViewModel {
             resumeTimer()
         case .finished:
             repeatTimer()
+        @unknown default:
+            break
         }
     }
 
@@ -500,6 +502,14 @@ extension TimerViewModel {
         liveActivityTask?.cancel()
         guard let liveActivityManager else { return }
         liveActivityManager.endLiveActivity()
+    }
+}
+
+extension TimerViewModel: ActiveTimer {
+    @MainActor
+    func togglePauseResumeAndUpdateActivity() async {
+        handlePlayPauseButtonTap()
+        await liveActivityTask?.value
     }
 }
 

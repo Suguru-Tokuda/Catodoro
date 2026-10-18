@@ -51,6 +51,9 @@ final class CatodoroUITests: XCTestCase {
         capture(app, name: "Preset image picker")
         app.buttons["CatSleeping"].tap()
         app.buttons["savePreset"].tap()
+        // Saving is asynchronous; the editor dismisses only after the store save succeeds.
+        XCTAssertTrue(app.navigationBars.buttons["Add"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts[name].waitForExistence(timeout: 5))
         app.terminate()
         launchLocally(app)
         app.tabBars.buttons["Presets"].tap()
