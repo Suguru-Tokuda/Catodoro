@@ -15,7 +15,7 @@ struct CatodoroWidgetLiveActivity: Widget {
         ActivityConfiguration(for: TimerAttributes.self) { context in
             TimerLiveActivityView(context: context)
                 .activityBackgroundTint(.clear)
-                .activitySystemActionForegroundColor(ActivityTheme.accent(context.state.accentCode, scheme: .dark))
+                .activitySystemActionForegroundColor(.black)
         } dynamicIsland: { context in
             let state = context.state
             let accent = ActivityTheme.accent(state.accentCode, scheme: .dark)

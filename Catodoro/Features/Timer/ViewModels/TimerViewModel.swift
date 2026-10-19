@@ -70,6 +70,9 @@ class TimerViewModel {
     private let now: () -> Date
     private let schedulesTicks: Bool
     private let applicationIsActive: () -> Bool
+    private let beginBackgroundTask: (@escaping () -> Void) -> UIBackgroundTaskIdentifier
+    private let endBackgroundTask: (UIBackgroundTaskIdentifier) -> Void
+    private var backgroundTask = UIBackgroundTaskIdentifier.invalid
     private var preferenceSubscription: AnyCancellable?
     private var liveActivityTask: Task<Void, Never>?
     private var liveActivityGeneration = 0
@@ -96,13 +99,21 @@ class TimerViewModel {
          liveActivityManager: LiveActivityManaging? = LiveActivityManager(),
          now: @escaping () -> Date = Date.init,
          schedulesTicks: Bool = true,
-         applicationIsActive: @escaping () -> Bool = { UIApplication.shared.applicationState == .active }) {
+         applicationIsActive: @escaping () -> Bool = { UIApplication.shared.applicationState == .active },
+         beginBackgroundTask: @escaping (@escaping () -> Void) -> UIBackgroundTaskIdentifier = {
+             UIApplication.shared.beginBackgroundTask(withName: "Timer phase transition", expirationHandler: $0)
+         },
+         endBackgroundTask: @escaping (UIBackgroundTaskIdentifier) -> Void = {
+             UIApplication.shared.endBackgroundTask($0)
+         }) {
         self.audioManager = audioManager
         self.preferences = preferences
         self.liveActivityManager = liveActivityManager
         self.now = now
         self.schedulesTicks = schedulesTicks
         self.applicationIsActive = applicationIsActive
+        self.beginBackgroundTask = beginBackgroundTask
+        self.endBackgroundTask = endBackgroundTask
         addNotificationCenterSubscriptions()
         setupPlayerSound()
         preferenceSubscription = preferences?.liveActivityPublisher
@@ -194,6 +205,7 @@ class TimerViewModel {
         publishState()
         timerActionSubject.send(.pause)
         updateLiveActivity()
+        releaseBackgroundRuntimeAfterUpdate()
     }
 
     func resumeTimer() {
@@ -219,6 +231,17 @@ class TimerViewModel {
         publishState()
         timerActionSubject.send(.finish)
         notifyPhaseChange(isComplete: true)
+        releaseBackgroundRuntimeAfterUpdate()
+    }
+
+    private func releaseBackgroundRuntimeAfterUpdate() {
+        let finishingGeneration = generation
+        let update = liveActivityTask
+        Task { @MainActor [weak self] in
+            await update?.value
+            guard let self, self.generation == finishingGeneration else { return }
+            releaseBackgroundRuntime()
+        }
     }
 
     /// A skipped break starts the next full focus session, including when the break was paused.
@@ -256,6 +279,7 @@ class TimerViewModel {
         generation += 1
         stopSound()
         cancelBackgroundTimer()
+        releaseBackgroundRuntime()
         deadline = nil
         timerType = .main
         duration = totalDuration
@@ -326,6 +350,26 @@ class TimerViewModel {
         }
         backgroundTimer = timer
         timer.resume()
+        if !applicationIsActive() {
+            retainBackgroundRuntime()
+        }
+    }
+
+    // A dispatch timer alone doesn't keep running after the phone locks. Request
+    // finite runtime to finish nearby phase transitions and their ActivityKit updates.
+    // iOS may expire this grant; deadline reconciliation remains the source of truth.
+    @objc private func retainBackgroundRuntime() {
+        guard timerStatus == .playing, backgroundTask == .invalid else { return }
+        backgroundTask = beginBackgroundTask { [weak self] in
+            self?.releaseBackgroundRuntime()
+        }
+    }
+
+    private func releaseBackgroundRuntime() {
+        guard backgroundTask != .invalid else { return }
+        let task = backgroundTask
+        backgroundTask = .invalid
+        endBackgroundTask(task)
     }
 
     private func cancelBackgroundTimer() {
@@ -336,6 +380,7 @@ class TimerViewModel {
     private func addNotificationCenterSubscriptions() {
         let notifications: [(Notification.Name, Selector)] = [
             (UIApplication.didBecomeActiveNotification, #selector(handleAppDidBecomeActive)),
+            (UIApplication.didEnterBackgroundNotification, #selector(retainBackgroundRuntime)),
             (.skipBreakActionTriggered, #selector(handleSkipBreakAction)),
             (.playTimerActionTriggered, #selector(handlePlayTimerAction)),
             (.stopTimerActionTriggered, #selector(handleStopTimerAction)),
@@ -350,6 +395,7 @@ class TimerViewModel {
     @objc private func handleAppDidBecomeActive() {
         refresh()
         updateLiveActivity()
+        releaseBackgroundRuntime()
     }
 
     @objc private func handleSkipBreakAction() {
@@ -435,6 +481,7 @@ class TimerViewModel {
     deinit {
         liveActivityTask?.cancel()
         cancelBackgroundTimer()
+        releaseBackgroundRuntime()
         NotificationCenter.default.removeObserver(self)
         let manager = audioManager
         AudioManager.playbackQueue.async {

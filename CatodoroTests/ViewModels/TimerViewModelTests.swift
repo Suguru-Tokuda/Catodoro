@@ -301,4 +301,82 @@ final class TimerPresentationTests: XCTestCase {
         model.refresh()
         XCTAssertEqual(model.presentationSubject.value.countdown, "59:59")
     }
+
+    func test_lockedShortRoutineRetainsRuntimeThroughFiveSecondBreak() async {
+        var requests = 0
+        var ended: [UIBackgroundTaskIdentifier] = []
+        let task = UIBackgroundTaskIdentifier(rawValue: 42)
+        let model = TimerViewModel(audioManager: MockAudioManager(), preferences: nil,
+            liveActivityManager: nil, now: { [unowned self] in self.instant }, schedulesTicks: false,
+            applicationIsActive: { false }, beginBackgroundTask: { _ in
+                requests += 1
+                return task
+            }, endBackgroundTask: { ended.append($0) })
+        model.configure(totalDuration: 5, intervalDuration: 5, intervals: 2)
+        model.startTimer()
+        NotificationCenter.default.post(name: UIApplication.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.post(name: UIApplication.didEnterBackgroundNotification, object: nil)
+        XCTAssertEqual(requests, 1)
+
+        instant.addTimeInterval(5)
+        model.refresh()
+        XCTAssertTrue(model.isBreak)
+        XCTAssertEqual(model.currentTimerValue, 5)
+        XCTAssertTrue(ended.isEmpty)
+        instant.addTimeInterval(5)
+        model.refresh()
+        XCTAssertFalse(model.isBreak)
+        XCTAssertEqual(model.presentationSubject.value.sessionIndex, 2)
+        XCTAssertTrue(ended.isEmpty)
+        model.stopTimer()
+        XCTAssertEqual(ended, [task])
+        await Task.yield()
+    }
+
+    func test_backgroundRuntimeExpirationAndForegroundReturnReleaseGrantOnce() {
+        var expiration: (() -> Void)?
+        var ends = 0
+        let model = TimerViewModel(audioManager: MockAudioManager(), preferences: nil,
+            liveActivityManager: nil, now: { [unowned self] in self.instant }, schedulesTicks: false,
+            beginBackgroundTask: {
+                expiration = $0
+                return UIBackgroundTaskIdentifier(rawValue: 42)
+            }, endBackgroundTask: { _ in ends += 1 })
+        model.configure(totalDuration: 5, intervalDuration: 5, intervals: 2)
+        model.startTimer()
+        NotificationCenter.default.post(name: UIApplication.didEnterBackgroundNotification, object: nil)
+        expiration?()
+        XCTAssertEqual(ends, 1)
+        instant.addTimeInterval(7)
+        NotificationCenter.default.post(name: UIApplication.didBecomeActiveNotification, object: nil)
+        XCTAssertTrue(model.isBreak)
+        XCTAssertEqual(model.currentTimerValue, 3)
+        XCTAssertEqual(ends, 1)
+
+        NotificationCenter.default.post(name: UIApplication.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.post(name: UIApplication.didBecomeActiveNotification, object: nil)
+        XCTAssertEqual(ends, 2)
+        model.stopTimer()
+        XCTAssertEqual(ends, 2)
+    }
+
+    func test_completionReleasesBackgroundRuntimeAfterFinalActivityUpdate() async {
+        let released = expectation(description: "Background runtime released")
+        let activity = MockLiveActivityManager()
+        let model = TimerViewModel(audioManager: MockAudioManager(), preferences: nil,
+            liveActivityManager: activity, now: { [unowned self] in self.instant }, schedulesTicks: false,
+            applicationIsActive: { false },
+            beginBackgroundTask: { _ in UIBackgroundTaskIdentifier(rawValue: 42) },
+            endBackgroundTask: { _ in
+                XCTAssertTrue(activity.didUpdateLiveActivity)
+                released.fulfill()
+            })
+        model.configure(totalDuration: 5, intervalDuration: 5, intervals: 1)
+        model.startTimer()
+        NotificationCenter.default.post(name: UIApplication.didEnterBackgroundNotification, object: nil)
+        instant.addTimeInterval(5)
+        model.refresh()
+        await fulfillment(of: [released], timeout: 2)
+        XCTAssertEqual(model.timerStatus, .finished)
+    }
 }
