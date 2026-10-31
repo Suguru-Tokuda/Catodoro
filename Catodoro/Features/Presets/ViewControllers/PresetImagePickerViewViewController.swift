@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 10/30/26.
 //
 
+import CatodoroShared
 import UIKit
 
 final class PresetImagePickerViewController: BaseViewController {
@@ -24,7 +25,7 @@ final class PresetImagePickerViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Choose your cat"
+        title = AppStrings.Common.chooseYourCat
 
         pickerView.onSelect = { [weak self] pose in
             self?.onSelect?(pose)

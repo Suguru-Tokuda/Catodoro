@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 10/11/26.
 //
 
+import CatodoroShared
 import UIKit
 
 final class SettingsView: BaseView {
@@ -36,8 +37,8 @@ final class SettingsView: BaseView {
     }()
     private let syncSwitch: UISwitch = {
         let toggle = UISwitch()
-        toggle.accessibilityLabel = "iCloud Sync"
-        toggle.accessibilityIdentifier = "cloudSyncToggle"
+        toggle.accessibilityLabel = AppStrings.Settings.icloudSync
+        toggle.accessibilityIdentifier = AccessibilityID.cloudSyncToggle
         return toggle
     }()
     private let syncDescription: UILabel = {
@@ -65,7 +66,7 @@ final class SettingsView: BaseView {
 
     private let appearanceTitle: UILabel = {
         let label = UILabel()
-        label.text = "Your cozy corner"
+        label.text = AppStrings.Settings.yourCozyCorner
         label.font = CatTheme.font(.headline, weight: .bold)
         label.textColor = CatTheme.text
         label.adjustsFontForContentSizeCategory = true
@@ -74,7 +75,7 @@ final class SettingsView: BaseView {
 
     private let themeLabel: UILabel = {
         let label = UILabel()
-        label.text = "Theme"
+        label.text = AppStrings.Settings.theme
         label.font = CatTheme.font(.body)
         label.textColor = CatTheme.secondaryText
         label.adjustsFontForContentSizeCategory = true
@@ -83,15 +84,15 @@ final class SettingsView: BaseView {
 
     private let themeControl: UISegmentedControl = {
         let control = UISegmentedControl(items: ThemeOption.allCases.map(\.title))
-        control.accessibilityLabel = "Theme"
-        control.accessibilityIdentifier = "themeSelector"
+        control.accessibilityLabel = AppStrings.Settings.theme
+        control.accessibilityIdentifier = AccessibilityID.themeSelector
         control.heightAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
         return control
     }()
 
     private let colorLabel: UILabel = {
         let label = UILabel()
-        label.text = "Accent color"
+        label.text = AppStrings.Settings.accentColor
         label.font = CatTheme.font(.body)
         label.textColor = CatTheme.secondaryText
         label.adjustsFontForContentSizeCategory = true
@@ -114,18 +115,18 @@ final class SettingsView: BaseView {
         configuration.cornerStyle = .capsule
         configuration.contentInsets = .zero
         button.configuration = configuration
-        button.accessibilityLabel = option.rawValue + " accent"
+        button.accessibilityLabel = AppStrings.Settings.accentLabel(option.title)
         button.accessibilityIdentifier = option.code
         button.heightAnchor.constraint(equalToConstant: 44).isActive = true
         button.widthAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
         return button
     }
 
-    private let soundRow = CatSummaryRow(title: "Timer sound", value: "", symbol: "speaker.wave.2.fill")
+    private let soundRow = CatSummaryRow(title: AppStrings.Settings.timerSound, value: "", symbol: "speaker.wave.2.fill")
 
     private let activityTitle: UILabel = {
         let label = UILabel()
-        label.text = "Live Activity"
+        label.text = AppStrings.Settings.liveActivity
         label.font = CatTheme.font(.headline, weight: .bold)
         label.textColor = CatTheme.text
         label.adjustsFontForContentSizeCategory = true
@@ -135,8 +136,8 @@ final class SettingsView: BaseView {
 
     private let activitySwitch: UISwitch = {
         let toggle = UISwitch()
-        toggle.accessibilityLabel = "Live Activity"
-        toggle.accessibilityIdentifier = "liveActivityToggle"
+        toggle.accessibilityLabel = AppStrings.Settings.liveActivity
+        toggle.accessibilityIdentifier = AccessibilityID.liveActivityToggle
         return toggle
     }()
 
@@ -159,38 +160,45 @@ final class SettingsView: BaseView {
 
     private let systemSettingsButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Open iOS Settings", for: .normal)
+        button.setTitle(AppStrings.Settings.openIOSSettings, for: .normal)
         button.titleLabel?.font = CatTheme.font(.body, weight: .semibold)
         button.heightAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
         return button
     }()
 
     override func constructSubviews() {
+        super.constructSubviews()
         backgroundColor = CatTheme.background
         addAutolayoutSubview(scrollView)
         scrollView.addAutolayoutSubview(stack)
         stack.addArrangedSubviews([mascot, appearanceCard, syncCard, activityCard])
         syncCard.addAutolayoutSubview(syncStack)
+
         let syncTitle = UILabel()
-        syncTitle.text = "iCloud Sync"
+        syncTitle.text = AppStrings.Settings.icloudSync
         syncTitle.font = CatTheme.font(.headline, weight: .bold)
         syncTitle.textColor = CatTheme.text
         syncTitle.adjustsFontForContentSizeCategory = true
+
         let syncHeader = UIStackView(arrangedSubviews: [syncTitle, syncSwitch])
         syncHeader.spacing = 12
         syncHeader.alignment = .center
+
         syncStack.addArrangedSubviews([syncHeader, syncDescription])
         syncSwitch.addAction(UIAction { [weak self] _ in
             guard let self else { return }
             self.onSyncChanged?(self.syncSwitch.isOn)
         }, for: .valueChanged)
+
         appearanceCard.addAutolayoutSubview(appearanceStack)
         appearanceStack.addArrangedSubviews([appearanceTitle, themeLabel, themeControl, colorLabel, swatches, soundRow])
+
         themeControl.addAction(UIAction { [weak self] _ in
             guard let self,
                   ThemeOption.allCases.indices.contains(self.themeControl.selectedSegmentIndex) else { return }
             onThemeSelected?(ThemeOption.allCases[self.themeControl.selectedSegmentIndex])
         }, for: .valueChanged)
+
         swatches.addArrangedSubviews(colorButtons)
         activityCard.addAutolayoutSubview(activityStack)
         activityHeader.addArrangedSubviews([activityTitle, activitySwitch])
@@ -201,20 +209,24 @@ final class SettingsView: BaseView {
                 self?.onColorSelected?(option)
             }, for: .touchUpInside)
         }
+
         soundRow.addAction(UIAction { [weak self] _ in
             self?.onSoundRequested?()
         }, for: .touchUpInside)
+
         activitySwitch.addAction(UIAction { [weak self] _ in
             guard let self else { return }
 
             self.onLiveActivityChanged?(self.activitySwitch.isOn)
         }, for: .valueChanged)
+
         systemSettingsButton.addAction(UIAction { [weak self] _ in
             self?.onSystemSettingsRequested?()
         }, for: .touchUpInside)
     }
 
     override func constructSubviewLayoutConstraints() {
+        super.constructSubviewLayoutConstraints()
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
             scrollView.bottomAnchor.constraint(equalTo: bottomAnchor),
@@ -249,20 +261,20 @@ final class SettingsView: BaseView {
         syncSwitch.onTintColor = state.color.color
         syncDescription.text = state.syncMessage
         soundRow.configureAccent(state.color.color)
-        soundRow.setValue(state.sound.rawValue)
+        soundRow.setValue(state.sound.title)
         activitySwitch.setOn(state.liveActivityEnabled, animated: false)
         activitySwitch.onTintColor = state.color.color
         systemSettingsButton.tintColor = state.color.color
         systemSettingsButton.isHidden = state.activitiesAuthorized
         activityDescription.text = state.activitiesAuthorized
-            ? "Keep your timer and cat nearby on the Lock Screen and Dynamic Island."
-            : "Live Activities are unavailable or disabled in iOS Settings. Your app preference is saved."
+            ? AppStrings.Settings.liveActivityDescription
+            : AppStrings.Settings.liveActivityUnavailableMessage
 
         for (option, button) in zip(ColorOptions.allCases, colorButtons) {
             let selected = option == state.color
             button.configuration?.image = selected ? UIImage(systemName: "checkmark") : nil
             button.accessibilityTraits = selected ? [.button, .selected] : [.button]
-            button.accessibilityValue = selected ? "Selected" : nil
+            button.accessibilityValue = selected ? AppStrings.Common.selected : nil
         }
     }
 }

@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 11/10/24.
 //
 
+import CatodoroShared
 import UIKit
 
 class TimerStartButton: UIButton {
@@ -12,7 +13,7 @@ class TimerStartButton: UIButton {
         let buttonLabelText: String
         let color: UIColor
 
-        init(buttonLabelText: String = "Start",
+        init(buttonLabelText: String = AppStrings.Common.start,
              color: UIColor = ColorOptions.neonBlue.color) {
             self.buttonLabelText = buttonLabelText
             self.color = color

@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 1/21/25.
 //
 
+import CatodoroShared
 import WidgetKit
 import SwiftUI
 
@@ -44,10 +45,10 @@ struct CatodoroWidgetEntryView : View {
 
     var body: some View {
         VStack {
-            Text("Time:")
+            Text(AppStrings.Widget.time)
             Text(entry.date, style: .time)
 
-            Text("Emoji:")
+            Text(AppStrings.Widget.emoji)
             Text(entry.emoji)
         }
     }
@@ -67,8 +68,8 @@ struct CatodoroWidget: Widget {
                     .background()
             }
         }
-        .configurationDisplayName("My Widget")
-        .description("This is an example widget.")
+        .configurationDisplayName(AppStrings.Widget.myWidget)
+        .description(AppStrings.Widget.thisIsAnExampleWidget)
     }
 }
 

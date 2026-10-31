@@ -5,13 +5,20 @@
 //  Created by Suguru Tokuda on 12/10/24.
 //
 
+import CatodoroShared
 import Combine
 import UIKit
 
 enum ThemeOption: String, CaseIterable {
     case system, light, dark
 
-    var title: String { rawValue.capitalized }
+    var title: String {
+        switch self {
+        case .system: return AppStrings.Settings.systemTheme
+        case .light: return AppStrings.Settings.lightTheme
+        case .dark: return AppStrings.Settings.darkTheme
+        }
+    }
 
     var interfaceStyle: UIUserInterfaceStyle {
         switch self {

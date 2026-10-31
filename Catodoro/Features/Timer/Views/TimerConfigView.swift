@@ -5,15 +5,20 @@
 //  Created by Suguru Tokuda on 11/10/24.
 //
 
+import CatodoroShared
 import UIKit
 
 class TimerConfigView: BaseView {
     struct Model {
+        enum Mode { case focus, createRoutine }
+        let mode: Mode
         let startLabelText: String
         let color: UIColor
 
-        init(startLabelText: String = "Start focusing",
-             color: UIColor = ColorOptions.neonBlue.color) {
+        init(startLabelText: String = AppStrings.Timer.startFocusing,
+             color: UIColor = ColorOptions.neonBlue.color,
+             mode: Mode = .focus) {
+            self.mode = mode
             self.startLabelText = startLabelText
             self.color = color
         }
@@ -28,9 +33,9 @@ class TimerConfigView: BaseView {
     var onStartButtonTap: (() -> Void)?
     var onSelectionRequest: ((RoutineSelection) -> Void)?
 
-    private let focusRow = CatSummaryRow(title: "Focus time", value: "", symbol: "clock")
-    private let breakRow = CatSummaryRow(title: "Catnap break", value: "", symbol: "cup.and.saucer.fill")
-    private let sessionsRow = CatSummaryRow(title: "Sessions", value: "", symbol: "CatPaw")
+    private let focusRow = CatSummaryRow(title: AppStrings.Common.focusTime, value: "", symbol: "clock")
+    private let breakRow = CatSummaryRow(title: AppStrings.Common.catnapBreak, value: "", symbol: "cup.and.saucer.fill")
+    private let sessionsRow = CatSummaryRow(title: AppStrings.Common.sessions, value: "", symbol: "CatPaw")
 
     private let summaryLabel: UILabel = {
         let label = UILabel()
@@ -58,7 +63,7 @@ class TimerConfigView: BaseView {
 
     private let heading: UILabel = {
         let label = UILabel()
-        label.text = "Catodoro"
+        label.text = AppStrings.Common.catodoro
         label.font = CatTheme.font(.largeTitle, weight: .heavy)
         label.textColor = CatTheme.text
         label.adjustsFontForContentSizeCategory = true
@@ -69,7 +74,7 @@ class TimerConfigView: BaseView {
 
     private let tagline: UILabel = {
         let label = UILabel()
-        label.text = "One paw at a time."
+        label.text = AppStrings.Timer.onePawAtATime
         label.font = CatTheme.font(.body)
         label.textColor = CatTheme.secondaryText
         label.adjustsFontForContentSizeCategory = true
@@ -80,7 +85,7 @@ class TimerConfigView: BaseView {
 
     private let routineTitle: UILabel = {
         let label = UILabel()
-        label.text = "Your focus routine"
+        label.text = AppStrings.Timer.yourFocusRoutine
         label.font = CatTheme.font(.headline, weight: .bold)
         label.textColor = CatTheme.text
         label.adjustsFontForContentSizeCategory = true
@@ -105,6 +110,7 @@ class TimerConfigView: BaseView {
     }
 
     override func constructSubviews() {
+        super.constructSubviews()
         startButton.addTarget(self, action: #selector(startButtonTapped), for: .touchUpInside)
         backgroundColor = CatTheme.background
         addAutolayoutSubview(scrollView)
@@ -133,6 +139,7 @@ class TimerConfigView: BaseView {
     }
 
     override func constructSubviewLayoutConstraints() {
+        super.constructSubviewLayoutConstraints()
         NSLayoutConstraint.activate([
             heroView.heightAnchor.constraint(equalToConstant: 200),
             companion.heightAnchor.constraint(equalTo: heroView.heightAnchor),
@@ -159,18 +166,18 @@ class TimerConfigView: BaseView {
     func render(_ configuration: TimerConfigModel) {
         focusRow.setValue(TimerConfigModel.durationSummary(configuration.mainTimer.duration))
         breakRow.setValue(configuration.interval.duration == 0
-            ? "No break" : TimerConfigModel.durationSummary(configuration.interval.duration))
+            ? AppStrings.Common.noBreak : TimerConfigModel.durationSummary(configuration.interval.duration))
         sessionsRow.setValue("\(configuration.intervals)")
         let total = TimerConfigModel.durationSummary(configuration.totalDuration)
         summaryLabel.text = configuration.interval.duration > 0 && configuration.intervals > 1
-            ? "About \(total), including breaks." : "About \(total) of focus time."
+            ? AppStrings.Timer.aboutIncludingBreaks(total) : AppStrings.Timer.aboutFocusTime(total)
         setStartButtonStatus(isEnabled: configuration.isValid)
     }
 
     private func applyModel() {
         guard let model else { return }
 
-        heading.text = model.startLabelText == "Save" ? "Create a routine" : "Catodoro"
+        heading.text = model.mode == .createRoutine ? AppStrings.Timer.createARoutine : AppStrings.Common.catodoro
         startButton.model = .init(buttonLabelText: model.startLabelText, color: model.color)
         [focusRow, breakRow, sessionsRow].forEach { $0.configureAccent(model.color) }
     }
@@ -193,6 +200,7 @@ extension TimerConfigView {
     struct TestHooks {
         let target: TimerConfigView
 
+        var heading: UILabel { target.heading }
         var scrollView: UIScrollView { target.scrollView }
         var stackView: UIStackView { target.stackView }
         var focusRow: CatSummaryRow { target.focusRow }
@@ -203,48 +211,3 @@ extension TimerConfigView {
     }
 }
 #endif
-
-/// Decorative garden shapes frame the original cat artwork without announcing it to VoiceOver.
-private final class CatGardenView: UIView {
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        backgroundColor = .clear
-        isUserInteractionEnabled = false
-        contentMode = .redraw
-    }
-
-    required init?(coder: NSCoder) {
-        nil
-    }
-
-    override func draw(_ rect: CGRect) {
-        CatTheme.color(0xF1E4CF, 0x39313A).setFill()
-        UIBezierPath(ovalIn: CGRect(x: 8, y: rect.height - 22, width: rect.width - 16, height: 20)).fill()
-
-        let plantX = rect.width * 0.84
-        CatTheme.color(0x8A9F7C, 0x71856D).setStroke()
-        let stem = UIBezierPath()
-        stem.move(to: CGPoint(x: plantX, y: rect.height - 32))
-        stem.addQuadCurve(to: CGPoint(x: plantX - 8, y: 38), controlPoint: CGPoint(x: plantX - 16, y: 100))
-        stem.lineWidth = 3
-        stem.stroke()
-
-        for index in 0..<5 {
-            let left = index % 2 == 0
-            let leaf = UIBezierPath()
-            let y = CGFloat(45 + index * 22)
-            let x = plantX - 8
-            leaf.move(to: CGPoint(x: x, y: y + 25))
-            leaf.addQuadCurve(to: CGPoint(x: x + (left ? -35 : 35), y: y - 8),
-                              controlPoint: CGPoint(x: x + (left ? -48 : 48), y: y + 20))
-            leaf.addQuadCurve(to: CGPoint(x: x, y: y + 25),
-                              controlPoint: CGPoint(x: x + (left ? -5 : 5), y: y - 20))
-            CatTheme.color(index % 2 == 0 ? 0x9BAF8C : 0x7E9973, 0x63795E).setFill()
-            leaf.fill()
-        }
-
-        CatTheme.color(0xE3D4BC, 0x776858).setFill()
-        let pot = UIBezierPath(roundedRect: CGRect(x: plantX - 25, y: rect.height - 48, width: 50, height: 38), cornerRadius: 12)
-        pot.fill()
-    }
-}

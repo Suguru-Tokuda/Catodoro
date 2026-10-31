@@ -23,9 +23,9 @@ class ColorSelectionViewController: BaseOptionSelectionViewController {
     required init?(coder: NSCoder) {
         nil
     }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
+
+    override func constructSubviews() {
+        super.constructSubviews()
         optionTableView.delegate = self
         optionTableView.dataSource = self
     }

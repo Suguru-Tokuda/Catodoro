@@ -47,12 +47,12 @@ struct TimerPresentationState: Equatable {
     }
 
     var phaseTitle: String {
-        status == .finished ? "Routine complete" : (isBreak ? "Catnap break" : "Focus session")
+        status == .finished ? AppStrings.Common.routineComplete : (isBreak ? AppStrings.Common.catnapBreak : AppStrings.Timer.focusSession)
     }
 
     var sessionSummary: String {
-        status == .finished ? "\(sessionCount) sessions completed"
-            : "\(sessionIndex) of \(isBreak ? max(0, sessionCount - 1) : sessionCount)"
+        status == .finished ? AppStrings.Timer.sessionsCompleted(sessionCount)
+            : AppStrings.Timer.sessionProgress(sessionIndex, isBreak ? max(0, sessionCount - 1) : sessionCount)
     }
 }
 
@@ -141,7 +141,7 @@ class TimerViewModel {
     }
 
     var timerNameString: String {
-        isBreak ? "Catnap break \(interval)" : "Focus session \(interval)"
+        isBreak ? AppStrings.Timer.numberedBreak(interval) : AppStrings.Timer.numberedFocus(interval)
     }
 
     func configure(totalDuration: TimeInterval, intervalDuration: TimeInterval, intervals: Int) {
@@ -499,7 +499,7 @@ extension TimerViewModel {
               let liveActivityManager, !liveActivityManager.hasLiveActivity() else { return }
         do {
             liveActivityError = nil
-            try liveActivityManager.startLiveActivity(name: "Catodoro Timer",
+            try liveActivityManager.startLiveActivity(name: AppStrings.Timer.catodoroTimer,
                                                       currentTimerValue: currentTimerValue,
                                                       endTime: endTime,
                                                       intervals: intervals,

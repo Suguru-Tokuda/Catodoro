@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 12/10/24.
 //
 
+import CatodoroShared
 import UIKit
 
 class OptionSelectionViewCell: BaseTableViewCell {
@@ -37,12 +38,14 @@ class OptionSelectionViewCell: BaseTableViewCell {
     }()
 
     override func constructSubviews() {
+        super.constructSubviews()
         backgroundColor = CatTheme.card
         contentView.addAutolayoutSubview(stackView)
         stackView.addArrangedSubviews([optionLabel, selectedIcon])
     }
 
     override func constructSubviewLayoutConstraints() {
+        super.constructSubviewLayoutConstraints()
         NSLayoutConstraint.activate([
             selectedIcon.widthAnchor.constraint(equalToConstant: 24),
             selectedIcon.heightAnchor.constraint(equalToConstant: 24),
@@ -64,7 +67,7 @@ class OptionSelectionViewCell: BaseTableViewCell {
 
         selectedIcon.alpha = isSelected ? 1 : 0
         selectedIcon.isAccessibilityElement = true
-        selectedIcon.accessibilityLabel = isSelected ? "Selected" : "Not Selected"
+        selectedIcon.accessibilityLabel = isSelected ? AppStrings.Common.selected : AppStrings.Common.notSelected
         
         optionLabel.textColor = textColor
         selectedIcon.tintColor = textColor

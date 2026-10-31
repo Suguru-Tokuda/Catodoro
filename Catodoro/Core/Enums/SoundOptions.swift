@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 12/10/24.
 //
 
+import CatodoroShared
 import Foundation
 
 enum SoundOptions: String, CaseIterable {
@@ -13,6 +14,16 @@ enum SoundOptions: String, CaseIterable {
     case meowRegular = "Meow (Regular)"
     case hungry = "Hungry"
     case kitty = "Kitty"
+
+    var title: String {
+        switch self {
+        case .angry: return AppStrings.Sounds.angry
+        case .meowLoud: return AppStrings.Sounds.meowLoud
+        case .meowRegular: return AppStrings.Sounds.meowRegular
+        case .hungry: return AppStrings.Sounds.hungry
+        case .kitty: return AppStrings.Sounds.kitty
+        }
+    }
 
     init(_ id: String) {
         switch id {

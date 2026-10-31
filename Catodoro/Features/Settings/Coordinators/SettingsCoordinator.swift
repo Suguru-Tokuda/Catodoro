@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 8/21/24.
 //
 
+import CatodoroShared
 import UIKit
 
 class SettingsCoordinator: Coordinator {
@@ -40,7 +41,7 @@ class SettingsCoordinator: Coordinator {
         let selectedColorCode = preferences?.color ?? ColorOptions.neonBlue.code
         ColorOptions.allCases.forEach {
             options.append(.init(id: $0.code,
-                                 title: $0.rawValue,
+                                 title: $0.title,
                                  selected: $0.code == selectedColorCode,
                                  color: $0.color))
         }
@@ -48,7 +49,7 @@ class SettingsCoordinator: Coordinator {
         viewModel.preferences = preferences
         viewModel.selectedId = selectedColorCode
 
-        let colorSelectionViewController = ColorSelectionViewController(viewModel: viewModel, titleLabelText: "Color")
+        let colorSelectionViewController = ColorSelectionViewController(viewModel: viewModel, titleLabelText: AppStrings.Settings.color)
         colorSelectionViewController.delegate = self
         navigationController.pushViewController(colorSelectionViewController, animated: true)
     }
@@ -57,13 +58,13 @@ class SettingsCoordinator: Coordinator {
         var options: [OptionModel] = []
         let selectedSoundId = preferences?.sound ?? SoundOptions.meowRegular.id
         SoundOptions.allCases.forEach {
-            options.append(.init(id: $0.id, title: $0.rawValue, selected: $0.id == selectedSoundId))
+            options.append(.init(id: $0.id, title: $0.title, selected: $0.id == selectedSoundId))
         }
         let viewModel = OptionSelectionViewModel(options: options)
         viewModel.preferences = preferences
         viewModel.selectedId = selectedSoundId
         
-        let soundSelectionViewController = SoundSelectionViewController(viewModel: viewModel, titleLabelText: "Sound")
+        let soundSelectionViewController = SoundSelectionViewController(viewModel: viewModel, titleLabelText: AppStrings.Settings.sound)
         soundSelectionViewController.delegate = self
         navigationController.pushViewController(soundSelectionViewController, animated: true)
     }

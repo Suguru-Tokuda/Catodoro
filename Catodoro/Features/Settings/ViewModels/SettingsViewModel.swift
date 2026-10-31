@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 11/10/24.
 //
 
+import CatodoroShared
 import ActivityKit
 import Combine
 import Foundation
@@ -17,6 +18,13 @@ struct SettingModel {
 enum SettingOptions: String, CaseIterable {
     case color = "Color"
     case sound = "Sound"
+
+    var title: String {
+        switch self {
+        case .color: return AppStrings.Settings.color
+        case .sound: return AppStrings.Settings.sound
+        }
+    }
 
     var iconName: String {
         switch self {
@@ -120,17 +128,17 @@ final class SettingsViewModel {
         next.syncToggleEnabled = status?.isAvailable == true
             && status?.isCheckingAvailability == false && !syncBusy
         if status?.isCheckingAvailability == true {
-            next.syncMessage = "Checking iCloud availability…"
+            next.syncMessage = AppStrings.Settings.checkingICloudAvailability
         } else if let error = status?.errorMessage {
             next.syncMessage = error
         } else if status?.isAvailable != true {
-            next.syncMessage = "Enable iCloud for Catodoro in iOS iCloud Settings to sync your presets."
+            next.syncMessage = AppStrings.Settings.enableSyncMessage
         } else if status?.isSyncing == true {
-            next.syncMessage = "Syncing presets with iCloud…"
+            next.syncMessage = AppStrings.Settings.syncingPresetsWithICloud
         } else {
             next.syncMessage = next.syncEnabled
-                ? "Presets sync automatically when iCloud is available."
-                : "Presets stay on this device. Turn on iCloud to merge them with your other devices."
+                ? AppStrings.Settings.syncEnabledMessage
+                : AppStrings.Settings.localPresetsMessage
         }
         next.theme = preferences?.theme ?? .system
         state = next

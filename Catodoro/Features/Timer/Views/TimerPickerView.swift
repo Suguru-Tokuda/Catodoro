@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 10/7/24.
 //
 
+import CatodoroShared
 import UIKit
 
 class TimerPickerView: BaseView {
@@ -20,7 +21,7 @@ class TimerPickerView: BaseView {
         label.textColor = CatTheme.secondaryText
         label.adjustsFontForContentSizeCategory = true
         label.numberOfLines = 0
-        label.text = "Hours"
+        label.text = AppStrings.Timer.hours
         return label
     }()
     private var minuteLabel: UILabel = {
@@ -30,7 +31,7 @@ class TimerPickerView: BaseView {
         label.textColor = CatTheme.secondaryText
         label.adjustsFontForContentSizeCategory = true
         label.numberOfLines = 0
-        label.text = "Minutes"
+        label.text = AppStrings.Timer.minutes
         return label
     }()
     private var secondLabel: UILabel = {
@@ -40,7 +41,7 @@ class TimerPickerView: BaseView {
         label.textColor = CatTheme.secondaryText
         label.adjustsFontForContentSizeCategory = true
         label.numberOfLines = 0
-        label.text = "Seconds"
+        label.text = AppStrings.Timer.seconds
         return label
     }()
     private var hourPicker: TimePickerView = {
@@ -83,6 +84,7 @@ class TimerPickerView: BaseView {
     }
 
     override func constructSubviews() {
+        super.constructSubviews()
         addAutolayoutSubview(outerStackView)
 
         outerStackView.addArrangedSubviews([
@@ -104,6 +106,7 @@ class TimerPickerView: BaseView {
     }
 
     override func constructSubviewLayoutConstraints() {
+        super.constructSubviewLayoutConstraints()
         NSLayoutConstraint.activate([
             outerStackView.topAnchor.constraint(equalTo: topAnchor),
             outerStackView.leadingAnchor.constraint(equalTo: leadingAnchor),

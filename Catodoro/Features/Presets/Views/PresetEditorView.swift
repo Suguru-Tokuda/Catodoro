@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 10/11/26.
 //
 
+import CatodoroShared
 import UIKit
 
 final class PresetEditorView: BaseView {
@@ -30,18 +31,18 @@ final class PresetEditorView: BaseView {
 
     private let imageButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Choose your cat", for: .normal)
+        button.setTitle(AppStrings.Common.chooseYourCat, for: .normal)
         button.titleLabel?.font = CatTheme.font(.body, weight: .semibold)
         button.tintColor = ColorOptions.neonBlue.color
-        button.accessibilityIdentifier = "presetImage"
+        button.accessibilityIdentifier = AccessibilityID.presetImage
         return button
     }()
 
     private let nameField: UITextField = {
         let field = UITextField()
-        field.placeholder = "Preset name"
-        field.accessibilityLabel = "Preset name"
-        field.accessibilityIdentifier = "presetName"
+        field.placeholder = AppStrings.Common.presetName
+        field.accessibilityLabel = AppStrings.Common.presetName
+        field.accessibilityIdentifier = AccessibilityID.presetName
         field.font = CatTheme.font(.body)
         field.adjustsFontForContentSizeCategory = true
         field.textColor = CatTheme.text
@@ -64,9 +65,9 @@ final class PresetEditorView: BaseView {
         return stack
     }()
 
-    private let focusRow = CatSummaryRow(title: "Focus time", value: "", symbol: "clock")
-    private let breakRow = CatSummaryRow(title: "Catnap break", value: "", symbol: "cup.and.saucer.fill")
-    private let sessionsRow = CatSummaryRow(title: "Sessions", value: "", symbol: "CatPaw")
+    private let focusRow = CatSummaryRow(title: AppStrings.Common.focusTime, value: "", symbol: "clock")
+    private let breakRow = CatSummaryRow(title: AppStrings.Common.catnapBreak, value: "", symbol: "cup.and.saucer.fill")
+    private let sessionsRow = CatSummaryRow(title: AppStrings.Common.sessions, value: "", symbol: "CatPaw")
 
     private let summary: UILabel = {
         let label = UILabel()
@@ -81,17 +82,18 @@ final class PresetEditorView: BaseView {
     private let saveButton: UIButton = {
         let button = UIButton(type: .system)
         var configuration = UIButton.Configuration.filled()
-        configuration.title = "Save preset"
+        configuration.title = AppStrings.Presets.savePreset
         configuration.baseBackgroundColor = ColorOptions.neonBlue.color
         configuration.baseForegroundColor = CatTheme.onAccent
         configuration.cornerStyle = .capsule
         button.configuration = configuration
         button.titleLabel?.font = CatTheme.font(.headline, weight: .bold)
-        button.accessibilityIdentifier = "savePreset"
+        button.accessibilityIdentifier = AccessibilityID.savePreset
         return button
     }()
 
     override func constructSubviews() {
+        super.constructSubviews()
         backgroundColor = CatTheme.background
         addAutolayoutSubview(scrollView)
         scrollView.addAutolayoutSubview(stack)
@@ -124,6 +126,7 @@ final class PresetEditorView: BaseView {
     }
 
     override func constructSubviewLayoutConstraints() {
+        super.constructSubviewLayoutConstraints()
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
             scrollView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
@@ -159,11 +162,11 @@ final class PresetEditorView: BaseView {
         artwork.pose = pose
         imageButton.accessibilityValue = pose.displayName
         focusRow.setValue(TimerConfigModel.durationSummary(configuration.mainTimer.duration))
-        breakRow.setValue(configuration.interval.duration == 0 ? "No break" : TimerConfigModel.durationSummary(configuration.interval.duration))
+        breakRow.setValue(configuration.interval.duration == 0 ? AppStrings.Common.noBreak : TimerConfigModel.durationSummary(configuration.interval.duration))
         sessionsRow.setValue("\(configuration.intervals)")
         let total = TimerConfigModel.durationSummary(configuration.totalDuration)
         summary.text = configuration.breakSubtotal > 0
-            ? "About \(total), including breaks." : "About \(total) of focus time."
+            ? AppStrings.Timer.aboutIncludingBreaks(total) : AppStrings.Timer.aboutFocusTime(total)
         saveButton.isEnabled = canSave
         saveButton.configuration?.showsActivityIndicator = isSaving
         isUserInteractionEnabled = !isSaving
@@ -177,12 +180,12 @@ final class PresetEditorView: BaseView {
 extension CatPose {
     var displayName: String {
         switch self {
-        case .sitting: return "Sitting cat"
-        case .sleeping: return "Sleeping cat"
-        case .stretching: return "Stretching cat"
-        case .playful: return "Playful cat"
-        case .focus: return "Focus cat"
-        case .timerBreak: return "Catnap cat"
+        case .sitting: return AppStrings.Presets.sittingCat
+        case .sleeping: return AppStrings.Presets.sleepingCat
+        case .stretching: return AppStrings.Presets.stretchingCat
+        case .playful: return AppStrings.Presets.playfulCat
+        case .focus: return AppStrings.Presets.focusCat
+        case .timerBreak: return AppStrings.Presets.catnapCat
         }
     }
 }

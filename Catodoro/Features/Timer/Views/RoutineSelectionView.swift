@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 10/10/26.
 //
 
+import CatodoroShared
 import UIKit
 
 class RoutineSelectionView: BaseView {
@@ -104,7 +105,7 @@ class RoutineSelectionView: BaseView {
         configuration.baseBackgroundColor = CatTheme.color(0xEFE5D8, 0x48414B)
         configuration.cornerStyle = .capsule
         button.configuration = configuration
-        button.accessibilityLabel = "Close"
+        button.accessibilityLabel = AppStrings.Common.close
         return button
     }()
 

@@ -10,7 +10,8 @@ import CatodoroShared
 import Foundation
 
 struct PlayTimerIntent: AppIntent & LiveActivityIntent {
-    static var title: LocalizedStringResource = "Play Timer"
+    // App Intents metadata extraction requires a literal initializer here.
+    static var title: LocalizedStringResource = LocalizedStringResource("intents.playTimer", defaultValue: "Play Timer")
     
     @MainActor
     func perform() async throws -> some IntentResult {

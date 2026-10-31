@@ -103,8 +103,8 @@ final class LiveActivityManager: LiveActivityManaging {
                 await previous?.value
                 var alert: AlertConfiguration?
                 if let soundName {
-                    alert = AlertConfiguration(title: timerStatus == .finished ? "Routine complete" : "Catodoro",
-                                               body: timerType == .interval ? "Rest your paws." : "Time to focus.",
+                    alert = AlertConfiguration(title: timerStatus == .finished ? AppStrings.Resources.routineComplete : AppStrings.Resources.appName,
+                                               body: timerType == .interval ? AppStrings.Resources.restYourPaws : AppStrings.Resources.timeToFocus,
                                                sound: .named("\(soundName).mp3"))
                 }
                 await activity.update(ActivityContent(state: state, staleDate: nil), alertConfiguration: alert)

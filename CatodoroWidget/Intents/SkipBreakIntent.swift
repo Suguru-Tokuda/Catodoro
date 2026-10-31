@@ -10,7 +10,8 @@ import CatodoroShared
 import Foundation
 
 struct SkipBreakIntent: LiveActivityIntent {
-    static var title: LocalizedStringResource = "Skip break"
+    // App Intents metadata extraction requires a literal initializer here.
+    static var title: LocalizedStringResource = LocalizedStringResource("intents.skipBreak", defaultValue: "Skip break")
 
     @MainActor
     func perform() async throws -> some IntentResult {

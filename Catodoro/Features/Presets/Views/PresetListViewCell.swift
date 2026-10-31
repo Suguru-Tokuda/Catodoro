@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 12/12/24.
 //
 
+import CatodoroShared
 import UIKit
 
 final class PresetListViewCell: BaseTableViewCell {
@@ -32,7 +33,7 @@ final class PresetListViewCell: BaseTableViewCell {
         label.textColor = CatTheme.text
         label.numberOfLines = 0
         label.adjustsFontForContentSizeCategory = true
-        label.accessibilityLabel = "Preset name"
+        label.accessibilityLabel = AppStrings.Common.presetName
         return label
     }()
 
@@ -42,7 +43,7 @@ final class PresetListViewCell: BaseTableViewCell {
         label.textColor = CatTheme.secondaryText
         label.numberOfLines = 0
         label.adjustsFontForContentSizeCategory = true
-        label.accessibilityLabel = "Routine"
+        label.accessibilityLabel = AppStrings.Common.routine
         return label
     }()
 
@@ -52,7 +53,7 @@ final class PresetListViewCell: BaseTableViewCell {
         label.textColor = CatTheme.secondaryText
         label.numberOfLines = 0
         label.adjustsFontForContentSizeCategory = true
-        label.accessibilityLabel = "Total time"
+        label.accessibilityLabel = AppStrings.Common.totalTime
         return label
     }()
 
@@ -65,7 +66,7 @@ final class PresetListViewCell: BaseTableViewCell {
         configuration.cornerStyle = .capsule
         button.configuration = configuration
         button.isAccessibilityElement = true
-        button.accessibilityLabel = "Start preset"
+        button.accessibilityLabel = AppStrings.Presets.startPreset
         return button
     }()
 
@@ -85,6 +86,7 @@ final class PresetListViewCell: BaseTableViewCell {
     }()
 
     override func constructSubviews() {
+        super.constructSubviews()
         backgroundColor = .clear
         selectionStyle = .none
         contentView.addAutolayoutSubview(card)
@@ -97,6 +99,7 @@ final class PresetListViewCell: BaseTableViewCell {
     }
 
     override func constructSubviewLayoutConstraints() {
+        super.constructSubviewLayoutConstraints()
         NSLayoutConstraint.activate([
             card.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             card.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
@@ -122,16 +125,16 @@ final class PresetListViewCell: BaseTableViewCell {
     private func applyModel() {
         timerLabel.text = model?.displayName
         intervalDurationLabel.text = model.map {
-            "\(TimerConfigModel.durationSummary($0.totalDuration)) focus · \(TimerConfigModel.durationSummary($0.intervalDuration)) break · \($0.intervals) sessions"
+            AppStrings.Presets.routineSummary(TimerConfigModel.durationSummary($0.totalDuration), TimerConfigModel.durationSummary($0.intervalDuration), $0.intervals)
         }
         intervalLabel.text = model.map {
-            "Total: \(TimerConfigModel.durationSummary($0.configuration.totalDuration))"
+            AppStrings.Presets.totalDuration(TimerConfigModel.durationSummary($0.configuration.totalDuration))
         }
         timerLabel.accessibilityLabel = timerLabel.text
         intervalDurationLabel.accessibilityLabel = intervalDurationLabel.text
         intervalLabel.accessibilityLabel = intervalLabel.text
         artwork.pose = model?.catPose ?? .sitting
-        playButton.accessibilityLabel = model.map { "Start \($0.displayName)" } ?? "Start preset"
+        playButton.accessibilityLabel = model.map { AppStrings.Presets.startNamedPreset($0.displayName) } ?? AppStrings.Presets.startPreset
         playButton.isEnabled = model?.configuration.isValid == true
     }
 }

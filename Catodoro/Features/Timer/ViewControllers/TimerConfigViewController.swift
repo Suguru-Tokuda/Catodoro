@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 9/30/24.
 //
 
+import CatodoroShared
 import Combine
 import UIKit
 
@@ -83,7 +84,7 @@ class TimerConfigViewController: BaseViewController {
     }
 
     private func setupBackButtonTitle() {
-        let backButton = UIBarButtonItem(title: "Timer Config",
+        let backButton = UIBarButtonItem(title: AppStrings.Timer.timerConfig,
                                          style: .plain,
                                          target: nil,
                                          action: nil)

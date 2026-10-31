@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 10/10/26.
 //
 
+import CatodoroShared
 import UIKit
 
 final class SessionSelectionViewController: RoutineSelectionViewController {
@@ -31,14 +32,20 @@ final class SessionSelectionViewController: RoutineSelectionViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Focus sessions"
+        title = AppStrings.Timer.focusSessions
+        render()
+    }
+
+    override func constructSubviews() {
+        super.constructSubviews()
+
         sessionView.onCountChange = { [weak self] delta in
             self?.adjustCount(by: delta)
         }
+
         sessionView.onConfirm = { [weak self] in
             self?.confirm()
         }
-        render()
     }
 
     func adjustCount(by delta: Int) {
@@ -59,14 +66,23 @@ final class SessionSelectionViewController: RoutineSelectionViewController {
 
     private func render() {
         configuration.intervals = draftCount
-        let focus = "\(TimerConfigModel.durationSummary(configuration.mainTimer.duration)) × \(draftCount)"
+        let focus = AppStrings.Timer.durationTimesCount(TimerConfigModel.durationSummary(configuration.mainTimer.duration), draftCount)
         let breaks = configuration.interval.duration > 0 ? draftCount - 1 : 0
-        let breakSummary = breaks == 0 ? "No breaks" : "\(TimerConfigModel.durationSummary(configuration.interval.duration)) × \(breaks)"
-        sessionView.render(count: draftCount, focusSummary: focus, breakSummary: breakSummary,
-                           totalSummary: TimerConfigModel.durationSummary(configuration.totalDuration))
-    }
+        let breakSummary = breaks == 0
+                ? AppStrings.Timer.noBreaks
+                : AppStrings.Timer.durationTimesCount(TimerConfigModel.durationSummary(configuration.interval.duration), breaks)
 
-    #if DEBUG
+        sessionView.render(
+            count: draftCount,
+            focusSummary: focus,
+            breakSummary: breakSummary,
+            totalSummary: TimerConfigModel.durationSummary(configuration.totalDuration)
+        )
+    }
+}
+
+#if DEBUG
+extension SessionSelectionViewController {
     var focusSummary: String? {
         sessionView.focusSummary
     }
@@ -86,5 +102,5 @@ final class SessionSelectionViewController: RoutineSelectionViewController {
     var canIncrease: Bool {
         sessionView.canIncrease
     }
-    #endif
 }
+#endif

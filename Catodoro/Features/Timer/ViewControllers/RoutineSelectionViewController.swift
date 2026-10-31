@@ -13,7 +13,7 @@ enum RoutineSelection {
     case sessions
 }
 
-class RoutineSelectionViewController: UIViewController {
+class RoutineSelectionViewController: BaseViewController {
     var accent: UIColor = ColorOptions.neonBlue.color
 
     var selectionView: RoutineSelectionView {

@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 10/12/26.
 //
 
+import CatodoroShared
 import UIKit
 
 final class OnboardingView: BaseView {
@@ -30,14 +31,14 @@ final class OnboardingView: BaseView {
         stack.spacing = 20
         scroll.addAutolayoutSubview(stack)
 
-        stack.addArrangedSubview(label("CATODORO", style: .caption1, color: CatTheme.secondaryText))
+        stack.addArrangedSubview(label(AppStrings.Onboarding.catodoro, style: .caption1, color: CatTheme.secondaryText))
         let image = UIImageView(image: UIImage(named: "CatCloud"))
         image.contentMode = .scaleAspectFit
         image.isAccessibilityElement = false
         image.heightAnchor.constraint(equalToConstant: 190).isActive = true
         stack.addArrangedSubview(image)
-        stack.addArrangedSubview(label("Your routines,\nwherever you focus.", style: .title1, weight: .bold))
-        stack.addArrangedSubview(label("Keep your presets together with iCloud, or start with everything on this device.", style: .body, color: CatTheme.secondaryText))
+        stack.addArrangedSubview(label(AppStrings.Onboarding.headline, style: .title1, weight: .bold))
+        stack.addArrangedSubview(label(AppStrings.Onboarding.syncDescription, style: .body, color: CatTheme.secondaryText))
 
         let benefits = UIStackView()
         benefits.axis = .vertical
@@ -47,9 +48,9 @@ final class OnboardingView: BaseView {
         benefits.isLayoutMarginsRelativeArrangement = true
         benefits.layoutMargins = UIEdgeInsets(top: 20, left: 18, bottom: 20, right: 18)
         for (symbol, text) in [
-            ("arrow.triangle.2.circlepath", "Keep presets in sync across your devices"),
-            ("icloud.and.arrow.down", "Bring back presets already saved in iCloud"),
-            ("wifi.slash", "Keep focusing and saving presets offline")
+            ("arrow.triangle.2.circlepath", AppStrings.Onboarding.keepPresetsInSyncAcrossYourDevices),
+            ("icloud.and.arrow.down", AppStrings.Onboarding.bringBackPresetsAlreadySavedInICloud),
+            ("wifi.slash", AppStrings.Onboarding.keepFocusingAndSavingPresetsOffline)
         ] {
             let icon = UIImageView(image: UIImage(systemName: symbol))
             icon.tintColor = CatTheme.accent(.neonBlue)
@@ -64,13 +65,13 @@ final class OnboardingView: BaseView {
             benefits.addArrangedSubview(row)
         }
         stack.addArrangedSubview(benefits)
-        configure(enableButton, title: "Enable iCloud Sync", primary: true)
-        configure(localButton, title: "Continue on This Device", primary: false)
+        configure(enableButton, title: AppStrings.Onboarding.enableICloudSync, primary: true)
+        configure(localButton, title: AppStrings.Onboarding.continueOnThisDevice, primary: false)
         enableButton.addAction(UIAction { [weak self] _ in self?.onEnableSync?() }, for: .touchUpInside)
         localButton.addAction(UIAction { [weak self] _ in self?.onContinueLocally?() }, for: .touchUpInside)
         stack.addArrangedSubview(enableButton)
         stack.addArrangedSubview(localButton)
-        stack.addArrangedSubview(label("You can change this later in Settings.", style: .footnote, color: CatTheme.secondaryText))
+        stack.addArrangedSubview(label(AppStrings.Onboarding.youCanChangeThisLaterInSettings, style: .footnote, color: CatTheme.secondaryText))
         spinner.hidesWhenStopped = true
         stack.addArrangedSubview(spinner)
         errorLabel.numberOfLines = 0
@@ -99,7 +100,7 @@ final class OnboardingView: BaseView {
     func render(isBusy: Bool, error: String?) {
         enableButton.isEnabled = !isBusy
         localButton.isEnabled = !isBusy
-        enableButton.setTitle(error == nil ? "Enable iCloud Sync" : "Retry iCloud Sync", for: .normal)
+        enableButton.setTitle(error == nil ? AppStrings.Onboarding.enableICloudSync : AppStrings.Onboarding.retryICloudSync, for: .normal)
         errorLabel.text = error
         errorLabel.isHidden = error == nil
         if isBusy { spinner.startAnimating() } else { spinner.stopAnimating() }

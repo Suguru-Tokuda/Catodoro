@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 8/21/24.
 //
 
+import CatodoroShared
 import UIKit
 
 enum TabBarPage {
@@ -28,11 +29,11 @@ enum TabBarPage {
     var tabTitle: String {
         switch self {
         case .timer:
-            return "Focus"
+            return AppStrings.Common.focus
         case .presets:
-            return "Presets"
+            return AppStrings.Common.presets
         case .settings:
-            return "Settings"
+            return AppStrings.Common.settings
         }
     }
 

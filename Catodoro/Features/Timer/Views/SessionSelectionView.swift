@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 10/10/26.
 //
 
+import CatodoroShared
 import UIKit
 
 final class SessionSelectionView: RoutineSelectionView {
@@ -20,8 +21,8 @@ final class SessionSelectionView: RoutineSelectionView {
         return label
     }()
 
-    private let minusButton = SessionSelectionView.stepButton(symbol: "minus", label: "Fewer sessions")
-    private let plusButton = SessionSelectionView.stepButton(symbol: "plus", label: "More sessions")
+    private let minusButton = SessionSelectionView.stepButton(symbol: "minus", label: AppStrings.Timer.fewerSessions)
+    private let plusButton = SessionSelectionView.stepButton(symbol: "plus", label: AppStrings.Timer.moreSessions)
 
     private let stepperStack: UIStackView = {
         let stack = UIStackView()
@@ -92,7 +93,7 @@ final class SessionSelectionView: RoutineSelectionView {
 
     private let limitsLabel: UILabel = {
         let label = UILabel()
-        label.text = "Choose 1–20 sessions"
+        label.text = AppStrings.Timer.sessionRange
         label.font = CatTheme.font(.caption1)
         label.textColor = CatTheme.secondaryText
         label.textAlignment = .center
@@ -130,7 +131,7 @@ final class SessionSelectionView: RoutineSelectionView {
 
     private let footerLabel: UILabel = {
         let label = UILabel()
-        label.text = "Breaks happen between sessions."
+        label.text = AppStrings.Timer.breaksHappenBetweenSessions
         label.font = CatTheme.font(.caption1)
         label.textColor = CatTheme.secondaryText
         label.textAlignment = .center
@@ -155,8 +156,8 @@ final class SessionSelectionView: RoutineSelectionView {
 
     override func constructView() {
         super.constructView()
-        configureHeader(title: "Focus sessions", subtitle: "How many focus sessions would you like?", pose: .playful)
-        confirmButton.setTitle("Set sessions", for: .normal)
+        configureHeader(title: AppStrings.Timer.focusSessions, subtitle: AppStrings.Timer.sessionPrompt, pose: .playful)
+        confirmButton.setTitle(AppStrings.Timer.setSessions, for: .normal)
     }
 
     override func constructSubviews() {
@@ -168,10 +169,10 @@ final class SessionSelectionView: RoutineSelectionView {
         stepperCard.addAutolayoutSubview(stepperContent)
         breakdownCard.addAutolayoutSubview(breakdownStack)
         breakdownStack.addArrangedSubviews([
-            summaryRow(title: "Focus", symbol: "clock", value: focusValue),
-            summaryRow(title: "Breaks", symbol: "cup.and.saucer.fill", value: breakValue),
+            summaryRow(title: AppStrings.Common.focus, symbol: "clock", value: focusValue),
+            summaryRow(title: AppStrings.Timer.breaks, symbol: "cup.and.saucer.fill", value: breakValue),
             separator,
-            summaryRow(title: "Total time", symbol: nil, value: totalValue)
+            summaryRow(title: AppStrings.Common.totalTime, symbol: nil, value: totalValue)
         ])
         contentStack.addArrangedSubviews([stepperCard, limitsLabel, breakdownCard, footerLabel])
         setupCountActions()
@@ -263,7 +264,7 @@ final class SessionSelectionView: RoutineSelectionView {
 
     func render(count: Int, focusSummary: String, breakSummary: String, totalSummary: String) {
         countLabel.text = "\(count)"
-        countLabel.accessibilityLabel = "\(count) focus sessions"
+        countLabel.accessibilityLabel = AppStrings.Timer.focusSessionCount(count)
         minusButton.isEnabled = count > 1
         plusButton.isEnabled = count < 20
         focusValue.text = focusSummary
@@ -273,21 +274,24 @@ final class SessionSelectionView: RoutineSelectionView {
     }
 
     func announceCount(_ count: Int) {
-        UIAccessibility.post(notification: .announcement, argument: "\(count) focus sessions")
+        UIAccessibility.post(notification: .announcement, argument: AppStrings.Timer.focusSessionCount(count))
     }
 
     private func renderIndicators(count draftCount: Int) {
         let showsPaws = draftCount <= 6
         pawsStack.isHidden = !showsPaws
         indicatorsLabel.isHidden = showsPaws
-        indicatorsLabel.text = showsPaws ? nil : "\(draftCount) focus sessions"
+        indicatorsLabel.text = showsPaws ? nil : AppStrings.Timer.focusSessionCount(draftCount)
 
         for (index, indicator) in pawIndicators.enumerated() {
             indicator.isHidden = index >= draftCount
         }
     }
 
-    #if DEBUG
+}
+
+#if DEBUG
+extension SessionSelectionView {
     var focusSummary: String? {
         focusValue.text
     }
@@ -307,5 +311,5 @@ final class SessionSelectionView: RoutineSelectionView {
     var canIncrease: Bool {
         plusButton.isEnabled
     }
-    #endif
 }
+#endif

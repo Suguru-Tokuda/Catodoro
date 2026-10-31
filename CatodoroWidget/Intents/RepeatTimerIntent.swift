@@ -10,7 +10,8 @@ import CatodoroShared
 import Foundation
 
 struct RepeatTimerIntent: AppIntent & LiveActivityIntent {
-    static var title: LocalizedStringResource = "Repeat Timer"
+    // App Intents metadata extraction requires a literal initializer here.
+    static var title: LocalizedStringResource = LocalizedStringResource("intents.repeatTimer", defaultValue: "Repeat Timer")
 
     @MainActor
     func perform() async throws -> some IntentResult {

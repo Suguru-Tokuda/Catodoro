@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 12/10/24.
 //
 
+import CatodoroShared
 import UIKit
 
 enum ColorOptions: String, CaseIterable {
@@ -14,6 +15,17 @@ enum ColorOptions: String, CaseIterable {
     case neonPink = "Pink"
     case neonPurple = "Purple"
     case neonYellow = "Yellow"
+
+    var title: String {
+        switch self {
+        case .neonBlue: return AppStrings.Colors.blue
+        case .neonGreen: return AppStrings.Colors.green
+        case .neonOrange: return AppStrings.Colors.orange
+        case .neonPink: return AppStrings.Colors.pink
+        case .neonPurple: return AppStrings.Colors.purple
+        case .neonYellow: return AppStrings.Colors.yellow
+        }
+    }
 
     init(_ code: String) {
         switch code {

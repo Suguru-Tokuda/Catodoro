@@ -67,7 +67,7 @@ final class TimerView: BaseView {
         label.adjustsFontForContentSizeCategory = true
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.4
-        label.accessibilityIdentifier = "TimerCountdown"
+        label.accessibilityIdentifier = AccessibilityID.timerCountdown
 
         return label
     }()
@@ -136,10 +136,10 @@ final class TimerView: BaseView {
 
     private let skipBreakButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Skip break", for: .normal)
+        button.setTitle(AppStrings.Common.skipBreak, for: .normal)
         button.titleLabel?.font = CatTheme.font(.body, weight: .semibold)
         button.isHidden = true
-        button.accessibilityIdentifier = "skipBreak"
+        button.accessibilityIdentifier = AccessibilityID.skipBreak
         return button
     }()
 
@@ -169,6 +169,7 @@ final class TimerView: BaseView {
     }
 
     override func constructSubviews() {
+        super.constructSubviews()
         backgroundColor = CatTheme.background
         addAutolayoutSubview(scrollView)
         scrollView.addAutolayoutSubview(stackView)
@@ -183,18 +184,24 @@ final class TimerView: BaseView {
         artworkContainer.addAutolayoutSubview(companion)
         pawsStack.addArrangedSubviews(pawIndicators)
         primaryButton.configuration?.baseBackgroundColor = accent
+
+        skipBreakButton.tintColor = accent
+        skipBreakButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
+
+        addActions()
+    }
+
+    private func addActions() {
         primaryButton.addAction(UIAction { [weak self] _ in
             self?.onPlayPauseButtonTap?()
         }, for: .touchUpInside)
-        skipBreakButton.tintColor = accent
-        skipBreakButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
+
         skipBreakButton.addAction(UIAction { [weak self] _ in
             self?.onSkipBreakTap?()
         }, for: .touchUpInside)
+
         secondaryButton.addAction(UIAction { [weak self] _ in
-            guard let self else {
-                return
-            }
+            guard let self else { return }
 
             if isComplete {
                 onDismissButtonTap?()
@@ -205,6 +212,7 @@ final class TimerView: BaseView {
     }
 
     override func constructSubviewLayoutConstraints() {
+        super.constructSubviewLayoutConstraints()
         let ringWidth = ringContainer.widthAnchor.constraint(equalTo: stackView.widthAnchor)
         ringWidth.priority = .defaultHigh
         let contentWidth = stackView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor, constant: -40)
@@ -258,16 +266,16 @@ final class TimerView: BaseView {
         timerNameLabel.text = state.phaseTitle.uppercased()
         sessionLabel.text = state.sessionSummary
         timerLabel.text = state.countdown
-        timerLabel.accessibilityLabel = "Time remaining"
+        timerLabel.accessibilityLabel = AppStrings.Common.timeRemaining
         timerLabel.accessibilityValue = TimerConfigModel.durationSummary(ceil(state.remainingDuration))
         timerCircleView.render(progress: isComplete ? 1 : 1 - state.progress)
         companion.pose = isComplete ? .playful : (state.isBreak ? .timerBreak : .focus)
-        statusLabel.text = isComplete ? "Well done!" : (state.status == .paused ? "Paused" : (state.isBreak ? "Rest your paws." : "Time to focus."))
-        messageLabel.text = isComplete ? "One paw at a time. You did it!"
-            : (state.status == .paused ? "Your routine will be here when you’re ready." : "Your cat is keeping you company.")
-        primaryButton.configuration?.title = isComplete ? "Focus again" : (state.status == .playing ? "Pause" : "Resume")
+        statusLabel.text = isComplete ? AppStrings.Timer.wellDone : (state.status == .paused ? AppStrings.Common.paused : (state.isBreak ? AppStrings.Common.restYourPaws : AppStrings.Common.timeToFocus))
+        messageLabel.text = isComplete ? AppStrings.Timer.onePawAtATimeYouDidIt
+            : (state.status == .paused ? AppStrings.Timer.yourRoutineWillBeHereWhenYoureReady : AppStrings.Timer.yourCatIsKeepingYouCompany)
+        primaryButton.configuration?.title = isComplete ? AppStrings.Common.focusAgain : (state.status == .playing ? AppStrings.Common.pause : AppStrings.Common.resume)
         primaryButton.configuration?.image = UIImage(systemName: isComplete ? "arrow.clockwise" : (state.status == .playing ? "pause.fill" : "play.fill"))
-        secondaryButton.configuration?.title = isComplete ? "Back to routine" : "End session"
+        secondaryButton.configuration?.title = isComplete ? AppStrings.Timer.backToRoutine : AppStrings.Timer.endSession
         secondaryButton.configuration?.image = UIImage(systemName: isComplete ? "arrow.left" : "stop.fill")
         pawsStack.accessibilityLabel = state.sessionSummary
 
@@ -330,26 +338,3 @@ extension TimerView {
     }
 }
 #endif
-
-/// Rebuild the illustration mask after this container has received its final bounds.
-private final class TimerArtworkView: UIView {
-    let artworkMask = CAShapeLayer()
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        layer.mask = artworkMask
-    }
-
-    required init?(coder: NSCoder) {
-        nil
-    }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        artworkMask.frame = bounds
-        let inset: CGFloat = 26
-        let innerBounds = bounds.insetBy(dx: inset, dy: inset)
-        artworkMask.path = innerBounds.width > 0 && innerBounds.height > 0
-            ? UIBezierPath(ovalIn: innerBounds).cgPath : nil
-    }
-}

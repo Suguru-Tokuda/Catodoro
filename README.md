@@ -64,3 +64,11 @@ Catodoro is open-source software released under the MIT license.
 ---
 
 This README highlights the use of **UIKit** and **SwiftUI** for the UI, and emphasizes the **MVVM-C** architecture. Let me know if you'd like to further refine it!
+
+### Strings and localization
+
+User-facing copy lives in `CatodoroShared/Sources/Constants/AppStrings.swift`, grouped by feature. Use `AppStrings.Timer.startFocusing` for plain text and a template function such as `AppStrings.Timer.focusSessionCount(count)` for dynamic copy. Localize full phrases instead of concatenating translated fragments.
+
+Add matching English entries to `CatodoroShared/Localizable.xcstrings` when introducing a key. The catalog belongs to the shared framework, and the string APIs explicitly use that bundle so the app and widget resolve the same translations. Add translations and count variations in Xcode's String Catalog editor. `AppStrings.Resources` supplies deferred `LocalizedStringResource` values for Live Activity alerts. App Intent titles must keep literal `LocalizedStringResource` initializers because Xcode extracts their metadata at build time; their entries live in `CatodoroWidget/Localizable.xcstrings`.
+
+Keep storage keys, enum raw values, notification names, asset names, and diagnostic messages separate from localized copy. Use display `title` properties for color, sound, and theme options. Stable UI automation identifiers belong in `AccessibilityID`. Presentation decisions should use explicit state, such as `TimerConfigView.Model.Mode`, rather than comparing labels.

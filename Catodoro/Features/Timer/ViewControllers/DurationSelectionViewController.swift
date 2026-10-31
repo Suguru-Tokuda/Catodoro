@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 10/10/26.
 //
 
+import CatodoroShared
 import UIKit
 
 final class DurationSelectionViewController: RoutineSelectionViewController {
@@ -27,19 +28,26 @@ final class DurationSelectionViewController: RoutineSelectionViewController {
         durationView
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        title = viewModel.mode == .focus ? "Focus time" : "Catnap break"
+    override func constructView() {
+        super.constructView()
+        title = viewModel.mode == .focus ? AppStrings.Common.focusTime : AppStrings.Common.catnapBreak
+    }
+
+    override func constructSubviews() {
+        super.constructSubviews()
         durationView.renderDraft(viewModel.draft)
         durationView.onDurationChange = { [weak self] duration in
             self?.updateDraft(duration)
         }
+
         durationView.onShortcutSelection = { [weak self] minutes in
             self?.selectShortcut(minutes: minutes)
         }
+
         durationView.onConfirm = { [weak self] in
             self?.confirm()
         }
+
         updateConfirmation()
     }
 
@@ -71,7 +79,10 @@ final class DurationSelectionViewController: RoutineSelectionViewController {
                                      selectedShortcut: viewModel.selectedShortcut)
     }
 
-    #if DEBUG
+}
+
+#if DEBUG
+extension DurationSelectionViewController {
     var draft: TimerModel {
         viewModel.draft
     }
@@ -83,5 +94,5 @@ final class DurationSelectionViewController: RoutineSelectionViewController {
     var selectedMinutes: Int {
         durationView.selectedMinutes
     }
-    #endif
 }
+#endif

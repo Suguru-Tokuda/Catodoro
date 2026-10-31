@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 10/12/26.
 //
 
+import CatodoroShared
 import Foundation
 
 @MainActor
@@ -41,7 +42,7 @@ final class OnboardingViewModel {
         } catch is CancellationError {
             // Superseded activation
         } catch {
-            errorMessage = "Couldn’t enable iCloud Sync. Please try again, or continue on this device."
+            errorMessage = AppStrings.Onboarding.enableSyncError
         }
     }
 
@@ -64,7 +65,7 @@ final class OnboardingViewModel {
         } catch is CancellationError {
             // Superseded request.
         } catch {
-            errorMessage = "Couldn't update sync settings. Please try again."
+            errorMessage = AppStrings.Onboarding.updateSyncError
         }
     }
 }

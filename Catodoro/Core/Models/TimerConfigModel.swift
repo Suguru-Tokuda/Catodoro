@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 9/30/24.
 //
 
+import CatodoroShared
 import Foundation
 
 struct TimerConfigModel {
@@ -46,17 +47,17 @@ struct TimerConfigModel {
 
     static func durationSummary(_ duration: TimeInterval) -> String {
         guard duration.isFinite, duration >= 0, duration < Double(Int.max) else {
-            return "Unavailable"
+            return AppStrings.Timer.unavailable
         }
 
         let seconds = Int(duration)
-        let components = [(seconds / 3600, "hr"),
-                          (seconds % 3600 / 60, "min"),
-                          (seconds % 60, "sec")]
+        let components = [(seconds / 3600, AppStrings.Timer.hourUnit),
+                          (seconds % 3600 / 60, AppStrings.Timer.minuteUnit),
+                          (seconds % 60, AppStrings.Timer.secondUnit)]
         let text = components.filter { $0.0 > 0 }
             .map { "\($0.0) \($0.1)" }
             .joined(separator: " ")
-        return text.isEmpty ? "0 min" : text
+        return text.isEmpty ? AppStrings.Timer.zeroMinutes : text
     }
 
     init(id: UUID = .init(),

@@ -1,7 +1,17 @@
+import CatodoroShared
 import XCTest
 @testable import Catodoro
 
 final class TimerConfigViewTests: XCTestCase {
+    func test_headingUsesPresentationModeInsteadOfButtonTitle() {
+        let view = TimerConfigView()
+        view.model = .init(startLabelText: "Save")
+        XCTAssertEqual(view.testHooks.heading.text, AppStrings.Common.catodoro)
+
+        view.model = .init(startLabelText: "Custom action", mode: .createRoutine)
+        XCTAssertEqual(view.testHooks.heading.text, AppStrings.Timer.createARoutine)
+    }
+
     
     func test_initialSubviewsAreAddedAndConstrained() {
         // Arrange

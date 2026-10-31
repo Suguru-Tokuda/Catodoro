@@ -50,7 +50,7 @@ struct CatodoroWidgetLiveActivity: Widget {
 
 extension TimerAttributes {
     static var preview: TimerAttributes {
-        TimerAttributes(name: "Catodoro")
+        TimerAttributes(name: AppStrings.Common.catodoro)
     }
 
     static var defaultValue: TimerAttributes.ContentState {

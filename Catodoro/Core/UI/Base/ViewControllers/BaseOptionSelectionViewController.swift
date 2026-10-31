@@ -38,6 +38,7 @@ class BaseOptionSelectionViewController: BaseViewController {
     }
 
     override func constructSubviews() {
+        super.constructSubviews()
         view.addAutolayoutSubviews([
             titleLabel,
             optionTableView
@@ -45,6 +46,7 @@ class BaseOptionSelectionViewController: BaseViewController {
     }
 
     override func constructSubviewLayoutConstraints() {
+        super.constructSubviewLayoutConstraints()
         NSLayoutConstraint.activate([
             optionTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             optionTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),

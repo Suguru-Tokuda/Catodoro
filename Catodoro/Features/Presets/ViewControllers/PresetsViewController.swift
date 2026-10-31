@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 8/21/24.
 //
 
+import CatodoroShared
 import Combine
 import UIKit
 
@@ -78,10 +79,10 @@ class PresetsViewController: BaseViewController {
     private func showPersistenceErrorIfNeeded() {
         guard let error = viewModel.coreDataError, presentedViewController == nil else { return }
 
-        let alert = UIAlertController(title: "Couldn't update presets", message: "Please try again. Your saved presets have not been removed.", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .cancel))
+        let alert = UIAlertController(title: AppStrings.Presets.couldntUpdatePresets, message: AppStrings.Presets.updateErrorMessage, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: AppStrings.Common.ok, style: .cancel))
         if error == .get {
-            alert.addAction(UIAlertAction(title: "Retry", style: .default) { [weak self] _ in
+            alert.addAction(UIAlertAction(title: AppStrings.Common.retry, style: .default) { [weak self] _ in
                 self?.reloadPresets()
             })
         }
@@ -174,7 +175,7 @@ extension PresetsViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         displayedPresets.count
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let cell = tableView.dequeueReusableCell(withIdentifier: PresetListViewCell.reuseIdentifier,
                                                     for: indexPath) as? PresetListViewCell {
@@ -195,9 +196,9 @@ extension PresetsViewController: UITableViewDataSource {
     }
 }
 
-
 #if DEBUG
 extension PresetsViewController {
+
     var testHooks: TestHooks {
         .init(target: self)
     }

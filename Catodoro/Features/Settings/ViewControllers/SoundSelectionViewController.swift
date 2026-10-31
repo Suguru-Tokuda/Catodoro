@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 12/10/24.
 //
 
+import CatodoroShared
 import UIKit
 
 protocol SoundSelectionViewControllerDelegate: AnyObject {
@@ -63,10 +64,12 @@ extension SoundSelectionViewController: UITableViewDelegate {
                 try manager.setPlayer(fileName: file, fileExtension: "mp3")
                 try manager.play(numberOfLoops: 0)
             } catch {
-                DispatchQueue.main.async { [weak self] in
-                    let alert = UIAlertController(title: "Couldn't preview sound", message: "Please try again.", preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "OK", style: .default))
-                    self?.present(alert, animated: true)
+                DispatchQueue.main.async { [weak self = self] in
+                    guard let self else { return }
+
+                    let alert = UIAlertController(title: AppStrings.Settings.couldntPreviewSound, message: AppStrings.Settings.pleaseTryAgain, preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: AppStrings.Common.ok, style: .default))
+                    present(alert, animated: true)
                 }
             }
         }

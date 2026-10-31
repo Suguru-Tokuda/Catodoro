@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 10/11/26.
 //
 
+import CatodoroShared
 import UIKit
 
 final class PresetsView: BaseView {
@@ -12,7 +13,7 @@ final class PresetsView: BaseView {
 
     private let label: UILabel = {
         let label = UILabel()
-        label.text = "Presets"
+        label.text = AppStrings.Common.presets
         label.font = CatTheme.font(.title2, weight: .bold)
         label.textColor = CatTheme.text
         label.adjustsFontForContentSizeCategory = true
@@ -36,16 +37,19 @@ final class PresetsView: BaseView {
     private let loadingBackgroundView = UIView()
 
     override func constructView() {
+        super.constructView()
         backgroundColor = CatTheme.background
     }
 
     override func constructSubviews() {
+        super.constructSubviews()
         addAutolayoutSubviews([label, tableView])
         loadingBackgroundView.addAutolayoutSubview(spinner)
         spinner.color = CatTheme.secondaryText
     }
 
     override func constructSubviewLayoutConstraints() {
+        super.constructSubviewLayoutConstraints()
         NSLayoutConstraint.activate([
             spinner.centerXAnchor.constraint(equalTo: loadingBackgroundView.centerXAnchor),
             spinner.centerYAnchor.constraint(equalTo: loadingBackgroundView.centerYAnchor),
@@ -84,9 +88,9 @@ final class PresetsView: BaseView {
 
         var configuration = UIContentUnavailableConfiguration.empty()
         configuration.image = UIImage(named: "CatPaw")?.preparingThumbnail(of: CGSize(width: 48, height: 48))
-        configuration.text = "Your routines belong here"
-        configuration.secondaryText = "Save a favorite rhythm and choose a cat to keep you company."
-        configuration.button.title = "Create preset"
+        configuration.text = AppStrings.Presets.emptyTitle
+        configuration.secondaryText = AppStrings.Presets.emptyMessage
+        configuration.button.title = AppStrings.Presets.createPreset
         configuration.buttonProperties.primaryAction = UIAction { [weak self] _ in
             self?.onCreatePreset?()
         }

@@ -19,6 +19,7 @@ final class PresetImagePickerView: BaseView {
     }()
 
     override func constructSubviews() {
+        super.constructSubviews()
         backgroundColor = CatTheme.background
         addAutolayoutSubview(scrollView)
         scrollView.addAutolayoutSubview(stack)
@@ -57,6 +58,7 @@ final class PresetImagePickerView: BaseView {
     }
 
     override func constructSubviewLayoutConstraints() {
+        super.constructSubviewLayoutConstraints()
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
             scrollView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),

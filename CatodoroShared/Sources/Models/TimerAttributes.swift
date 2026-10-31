@@ -69,16 +69,16 @@ public extension TimerAttributes.ContentState {
     }
 
     var phaseTitle: String {
-        timerStatus == .finished ? "Routine complete" : (timerStatus == .paused ? "Paused" : (timerType == .interval ? "Catnap break" : "Focus time"))
+        timerStatus == .finished ? AppStrings.Common.routineComplete : (timerStatus == .paused ? AppStrings.Common.paused : (timerType == .interval ? AppStrings.Common.catnapBreak : AppStrings.Common.focusTime))
     }
 
     var sessionSummary: String {
         if timerStatus == .finished {
-            return "\(intervals) sessions completed"
+            return AppStrings.Timer.sessionsCompleted(intervals)
         }
 
-        return timerType == .interval ? "Next: session \(min(interval + 1, intervals)) of \(intervals)"
-            : "Session \(interval) of \(intervals)"
+        return timerType == .interval ? AppStrings.Timer.nextSession(min(interval + 1, intervals), intervals)
+            : AppStrings.Timer.sessionOf(interval, intervals)
     }
 
     var artworkName: String {

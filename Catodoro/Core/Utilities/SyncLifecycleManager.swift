@@ -1,3 +1,4 @@
+import CatodoroShared
 import CloudKit
 import UIKit
 import Combine
@@ -189,13 +190,13 @@ final class SyncLifecycleManager: SyncLifecycleManaging {
         switch status {
         case .available: return nil
         case .noAccount:
-            return "iCloud is unavailable. Sign in to iCloud and enable Catodoro in iOS iCloud Settings."
+            return AppStrings.Sync.signInMessage
         case .restricted:
-            return "iCloud access is restricted. Check your device’s iCloud restrictions."
+            return AppStrings.Sync.restrictedMessage
         case .temporarilyUnavailable, .couldNotDetermine:
-            return "iCloud is temporarily unavailable. Catodoro will check again when you return to the app."
+            return AppStrings.Sync.temporarilyUnavailableMessage
         @unknown default:
-            return "iCloud is unavailable right now. Your presets remain available locally."
+            return AppStrings.Sync.unavailableMessage
         }
     }
 

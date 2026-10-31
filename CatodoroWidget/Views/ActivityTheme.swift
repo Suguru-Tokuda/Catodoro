@@ -56,7 +56,7 @@ struct ActivityCountdown: View {
         }
         .monospacedDigit()
         .contentTransition(.identity)
-        .accessibilityLabel(state.timerStatus == .finished ? "Routine complete" : "Time remaining")
+        .accessibilityLabel(state.timerStatus == .finished ? AppStrings.Common.routineComplete : AppStrings.Common.timeRemaining)
     }
 }
 
@@ -103,19 +103,19 @@ struct ActivityControls: View {
         HStack(spacing: 8) {
             if state.timerStatus == .finished {
                 Button(intent: RepeatTimerIntent()) {
-                    Label("Focus again", systemImage: "arrow.clockwise")
+                    Label(AppStrings.Common.focusAgain, systemImage: "arrow.clockwise")
                         .transition(.identity)
                 }
                 
             } else if state.canSkipBreak {
                 Button(intent: SkipBreakIntent()) {
-                    Label("Skip break", systemImage: "forward.end.fill")
+                    Label(AppStrings.Common.skipBreak, systemImage: "forward.end.fill")
                         .transition(.identity)
                 }
             } else {
                 Button(intent: PlayTimerIntent()) {
                     Label(
-                        state.timerStatus == .paused ? "Resume" : "Pause",
+                        state.timerStatus == .paused ? AppStrings.Common.resume : AppStrings.Common.pause,
                         systemImage: state.timerStatus == .paused ? "play.fill" : "pause.fill"
                     )
                     .frame(width: 80)

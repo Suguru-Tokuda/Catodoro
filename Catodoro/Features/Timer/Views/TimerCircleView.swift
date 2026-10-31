@@ -24,6 +24,7 @@ final class TimerCircleView: BaseView {
     }
 
     override func constructSubviews() {
+        super.constructSubviews()
         isUserInteractionEnabled = false
         isAccessibilityElement = false
 

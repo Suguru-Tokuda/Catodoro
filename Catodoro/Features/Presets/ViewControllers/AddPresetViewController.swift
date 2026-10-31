@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 12/24/24.
 //
 
+import CatodoroShared
 import UIKit
 
 protocol AddPresetViewControllerDelegate: AnyObject {
@@ -17,6 +18,7 @@ final class AddPresetViewController: BaseViewController {
     private let viewModel: PresetEditorViewModel
     private let accent: UIColor
     private let editorView = PresetEditorView()
+    private var saveTask: Task<Void, Never>?
 
     init(preferences: CatodoroPreferencesProtocol? = nil,
          preset: PresetModel? = nil,
@@ -59,7 +61,7 @@ final class AddPresetViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         editorView.configureAccent(accent)
-        navigationItem.title = viewModel.isEditing ? "Edit preset" : "New preset"
+        navigationItem.title = viewModel.isEditing ? AppStrings.Presets.editPreset : AppStrings.Presets.newPreset
         setupClosures()
         render()
     }
@@ -81,19 +83,23 @@ final class AddPresetViewController: BaseViewController {
     private func save() {
         guard viewModel.canSave else { return }
 
-        Task { [weak self] in
+        saveTask?.cancel()
+
+        saveTask = Task { [weak self] in
             guard let self else { return }
 
             do {
+                try Task.checkCancellation()
                 try await viewModel.save()
+                try Task.checkCancellation()
                 delegate?.onFinish()
             } catch {
                 let alert = UIAlertController(
-                    title: "Couldn't save preset",
-                    message: "Your changes are still here. Please try again.",
+                    title: AppStrings.Presets.couldntSavePreset,
+                    message: AppStrings.Presets.saveErrorMessage,
                     preferredStyle: .alert
                 )
-                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                alert.addAction(UIAlertAction(title: AppStrings.Common.ok, style: .default))
                 present(alert, animated: true)
             }
 

@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 10/10/26.
 //
 
+import CatodoroShared
 import UIKit
 
 final class DurationSelectionView: RoutineSelectionView {
@@ -28,12 +29,13 @@ final class DurationSelectionView: RoutineSelectionView {
     init(mode: RoutineSelection, shortcuts: [Int]) {
         self.mode = mode
         super.init(frame: .zero)
-        let title = mode == .focus ? "Focus time" : "Catnap break"
-        confirmButton.setTitle(mode == .focus ? "Set focus time" : "Set break time", for: .normal)
+        let title = mode == .focus ? AppStrings.Common.focusTime : AppStrings.Common.catnapBreak
+        confirmButton.setTitle(mode == .focus ? AppStrings.Timer.setFocusTime : AppStrings.Timer.setBreakTime, for: .normal)
         configureHeader(title: title,
-                        subtitle: mode == .focus ? "A little time for deep focus." : "Rest your paws between sessions.",
+                        subtitle: mode == .focus ? AppStrings.Timer.aLittleTimeForDeepFocus : AppStrings.Timer.restYourPawsBetweenSessions,
                         pose: mode == .focus ? .stretching : .sleeping)
         contentStack.addArrangedSubviews([picker, shortcutsStack])
+
         picker.onSelect = { [weak self] hours, minutes, seconds in
             self?.onDurationChange?(.init(hours: hours, minutes: minutes, seconds: seconds))
         }
@@ -45,7 +47,7 @@ final class DurationSelectionView: RoutineSelectionView {
         for minutes in shortcuts {
             let button = UIButton(type: .system)
             var configuration = UIButton.Configuration.filled()
-            configuration.title = minutes == 0 ? "No break" : "\(minutes) min"
+            configuration.title = minutes == 0 ? AppStrings.Common.noBreak : AppStrings.Timer.minuteCount(minutes)
             configuration.baseForegroundColor = CatTheme.text
             configuration.baseBackgroundColor = CatTheme.color(0xF1E8DC, 0x39333D)
             configuration.cornerStyle = .capsule
@@ -70,8 +72,8 @@ final class DurationSelectionView: RoutineSelectionView {
     func renderSelection(isValid valid: Bool, selectedShortcut: Int?) {
         confirmButton.isEnabled = valid
         explanationLabel.text = valid
-            ? (mode == .focus ? "A little time for deep focus." : "Rest your paws between sessions.")
-            : "Choose a focus time greater than zero."
+            ? (mode == .focus ? AppStrings.Timer.aLittleTimeForDeepFocus : AppStrings.Timer.restYourPawsBetweenSessions)
+            : AppStrings.Timer.invalidFocusDuration
 
         for shortcut in shortcutButtons {
             let selected = selectedShortcut == shortcut.minutes
@@ -83,7 +85,10 @@ final class DurationSelectionView: RoutineSelectionView {
         }
     }
 
-    #if DEBUG
+}
+
+#if DEBUG
+extension DurationSelectionView {
     var selectedShortcut: Int? {
         shortcutButtons.first(where: { $0.button.isSelected })?.minutes
     }
@@ -91,6 +96,5 @@ final class DurationSelectionView: RoutineSelectionView {
     var selectedMinutes: Int {
         picker.testHooks.minutePicker.selectedRow(inComponent: 0)
     }
-
-    #endif
 }
+#endif

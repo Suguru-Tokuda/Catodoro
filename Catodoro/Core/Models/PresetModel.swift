@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 12/12/24.
 //
 
+import CatodoroShared
 import Foundation
 
 struct PresetModel: Equatable {
@@ -26,7 +27,7 @@ struct PresetModel: Equatable {
 
     var displayName: String {
         let trimmed = name?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        return trimmed.isEmpty ? "\(TimerConfigModel.durationSummary(totalDuration)) focus" : trimmed
+        return trimmed.isEmpty ? AppStrings.Presets.defaultName(TimerConfigModel.durationSummary(totalDuration)) : trimmed
     }
 
     var catPose: CatPose {
