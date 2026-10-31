@@ -40,6 +40,7 @@ final class PresetEditorViewModel {
 
         isSaving = true
         onStateChanged?()
+
         defer {
             isSaving = false
             onStateChanged?()

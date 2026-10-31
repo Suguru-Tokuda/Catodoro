@@ -98,14 +98,18 @@ final class PresetEditorView: BaseView {
         stack.addArrangedSubviews([artwork, imageButton, nameField, card, summary, saveButton])
         card.addAutolayoutSubview(routineStack)
         routineStack.addArrangedSubviews([focusRow, breakRow, sessionsRow])
+
         nameField.addTarget(self, action: #selector(nameChanged), for: .editingChanged)
+
         nameField.addAction(UIAction { [weak self] _ in
             self?.nameField.resignFirstResponder()
         }, for: .editingDidEndOnExit)
+
         imageButton.addAction(UIAction { [weak self] _ in
             self?.endEditing(true)
             self?.onImageRequested?()
         }, for: .touchUpInside)
+
         saveButton.addAction(UIAction { [weak self] _ in
             self?.endEditing(true)
             self?.onSave?()
@@ -180,69 +184,5 @@ extension CatPose {
         case .focus: return "Focus cat"
         case .timerBreak: return "Catnap cat"
         }
-    }
-}
-
-final class PresetImagePickerView: BaseView {
-    var onSelect: ((CatPose) -> Void)?
-    private let scrollView = UIScrollView()
-
-    private let stack: UIStackView = {
-        let stack = UIStackView()
-        stack.axis = .vertical
-        stack.spacing = 12
-        return stack
-    }()
-
-    override func constructSubviews() {
-        backgroundColor = CatTheme.background
-        addAutolayoutSubview(scrollView)
-        scrollView.addAutolayoutSubview(stack)
-
-        for pair in stride(from: 0, to: CatPose.allCases.count, by: 2) {
-            let row = UIStackView()
-            row.spacing = 12
-            row.distribution = .fillEqually
-
-            for pose in CatPose.allCases[pair..<min(pair + 2, CatPose.allCases.count)] {
-                let button = UIButton(type: .system)
-                var configuration = UIButton.Configuration.tinted()
-                configuration.image = UIImage(named: pose.rawValue)?.withRenderingMode(.alwaysOriginal)
-                    .preparingThumbnail(of: CGSize(width: 264, height: 264))
-                    .flatMap { thumbnail in
-                        guard let cgImage = thumbnail.cgImage else { return nil }
-
-                        return UIImage(cgImage: cgImage, scale: 3, orientation: .up)
-                    }
-                configuration.title = pose.displayName
-                configuration.imagePlacement = .top
-                configuration.imagePadding = 8
-                configuration.baseBackgroundColor = CatTheme.card
-                configuration.baseForegroundColor = CatTheme.text
-                configuration.cornerStyle = .large
-                button.configuration = configuration
-                button.accessibilityIdentifier = pose.rawValue
-                button.addAction(UIAction { [weak self] _ in
-                    self?.onSelect?(pose)
-                }, for: .touchUpInside)
-                row.addArrangedSubview(button)
-            }
-
-            stack.addArrangedSubview(row)
-        }
-    }
-
-    override func constructSubviewLayoutConstraints() {
-        NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            stack.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor, constant: 16),
-            stack.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
-            stack.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor, constant: -16),
-            stack.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -16),
-            stack.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor, constant: -32)
-        ])
     }
 }

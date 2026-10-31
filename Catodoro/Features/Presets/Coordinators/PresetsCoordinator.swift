@@ -34,7 +34,12 @@ class PresetsCoordinator: Coordinator {
         self.coreDataManager = coreDataManager
         self.navigationController = navigationController
         self.configuration = configuration
-        timerCoordinator = TimerCoordiantor(navigationController: navigationController, configuration: TimerCoordinatorConfiguration(shouldHideBottomBarWhenTimerStart: configuration.shouldHideBottomBar), coreDataManager: coreDataManager)
+        timerCoordinator = TimerCoordiantor(
+            navigationController: navigationController,
+            configuration: TimerCoordinatorConfiguration(
+                shouldHideBottomBarWhenTimerStart: configuration.shouldHideBottomBar),
+            coreDataManager: coreDataManager
+        )
         childCoordinators = [timerCoordinator]
     }
 
