@@ -30,31 +30,37 @@ final class PresetImagePickerView: BaseView {
             row.distribution = .fillEqually
 
             for pose in CatPose.allCases[pair..<min(pair + 2, CatPose.allCases.count)] {
-                let button = UIButton(type: .system)
-                var configuration = UIButton.Configuration.tinted()
-                configuration.image = UIImage(named: pose.rawValue)?.withRenderingMode(.alwaysOriginal)
-                    .preparingThumbnail(of: CGSize(width: 264, height: 264))
-                    .flatMap { thumbnail in
-                        guard let cgImage = thumbnail.cgImage else { return nil }
-
-                        return UIImage(cgImage: cgImage, scale: 3, orientation: .up)
-                    }
-                configuration.title = pose.displayName
-                configuration.imagePlacement = .top
-                configuration.imagePadding = 8
-                configuration.baseBackgroundColor = CatTheme.card
-                configuration.baseForegroundColor = CatTheme.text
-                configuration.cornerStyle = .large
-                button.configuration = configuration
-                button.accessibilityIdentifier = pose.rawValue
-                button.addAction(UIAction { [weak self] _ in
-                    self?.onSelect?(pose)
-                }, for: .touchUpInside)
+                let button = makePoseButton(pose)
                 row.addArrangedSubview(button)
             }
 
             stack.addArrangedSubview(row)
         }
+    }
+
+    private func makePoseButton(_ pose: CatPose) -> UIButton {
+        let button = UIButton(type: .system)
+        var configuration = UIButton.Configuration.tinted()
+        configuration.image = UIImage(named: pose.rawValue)?.withRenderingMode(.alwaysOriginal)
+            .preparingThumbnail(of: CGSize(width: 264, height: 264))
+            .flatMap { thumbnail in
+                guard let cgImage = thumbnail.cgImage else { return nil }
+
+                return UIImage(cgImage: cgImage, scale: 3, orientation: .up)
+            }
+        configuration.title = pose.displayName
+        configuration.imagePlacement = .top
+        configuration.imagePadding = 8
+        configuration.baseBackgroundColor = CatTheme.card
+        configuration.baseForegroundColor = CatTheme.text
+        configuration.cornerStyle = .large
+        button.configuration = configuration
+        button.accessibilityIdentifier = pose.rawValue
+        button.addAction(UIAction { [weak self] _ in
+            self?.onSelect?(pose)
+        }, for: .touchUpInside)
+
+        return button
     }
 
     override func constructSubviewLayoutConstraints() {

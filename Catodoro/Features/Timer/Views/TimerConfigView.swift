@@ -126,6 +126,11 @@ class TimerConfigView: BaseView {
         ])
         routineStack.setCustomSpacing(8, after: routineTitle)
         routineStack.setCustomSpacing(12, after: routineStack.arrangedSubviews[6])
+        configureSelectionActions()
+        applyModel()
+    }
+
+    private func configureSelectionActions() {
         focusRow.addAction(UIAction { [weak self] _ in
             self?.onSelectionRequest?(.focus)
         }, for: .touchUpInside)
@@ -135,7 +140,6 @@ class TimerConfigView: BaseView {
         sessionsRow.addAction(UIAction { [weak self] _ in
             self?.onSelectionRequest?(.sessions)
         }, for: .touchUpInside)
-        applyModel()
     }
 
     override func constructSubviewLayoutConstraints() {

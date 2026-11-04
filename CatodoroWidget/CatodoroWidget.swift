@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 1/21/25.
 //
 
+import AlarmKit
 import CatodoroShared
 import WidgetKit
 import SwiftUI
@@ -54,25 +55,56 @@ struct CatodoroWidgetEntryView : View {
     }
 }
 
+@available(iOS 26.0, *)
 struct CatodoroWidget: Widget {
     let kind: String = "CatodoroWidget"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: Provider()) { entry in
-            if #available(iOS 17.0, *) {
-                CatodoroWidgetEntryView(entry: entry)
-                    .containerBackground(.fill.tertiary, for: .widget)
-            } else {
-                CatodoroWidgetEntryView(entry: entry)
-                    .padding()
-                    .background()
+        ActivityConfiguration(
+            for: AlarmAttributes<CatodoroAlarmMetadata>.self
+        ) { context in
+            countdown(context.state)
+                .padding()
+        } dynamicIsland: { context in
+            DynamicIsland {
+                DynamicIslandExpandedRegion(.center) {
+                    countdown(context.state)
+                }
+            } compactLeading: {
+                Image(systemName: "pawprint.fill")
+            } compactTrailing: {
+                countdown(context.state)
+                    .frame(width: 56)
+            } minimal: {
+                Image(systemName: "pawprint.fill")
             }
         }
-        .configurationDisplayName(AppStrings.Widget.myWidget)
-        .description(AppStrings.Widget.thisIsAnExampleWidget)
+    }
+
+    @ViewBuilder
+    private func countdown(
+        _ state: AlarmPresentationState
+    ) -> some View {
+        switch state.mode {
+        case .countdown(let timer):
+            Text(
+                timerInterval: timer.startDate...timer.fireDate,
+                countsDown: true
+            )
+            .monospacedDigit()
+        case .paused:
+            Text("Paused")
+
+        case .alert:
+            Text("Time's up")
+        
+        @unknown default:
+            Label("Catodoro", systemImage: "pawprint.fill")
+        }
     }
 }
 
+@available(iOS 26.0, *)
 #Preview(as: .systemSmall) {
     CatodoroWidget()
 } timeline: {

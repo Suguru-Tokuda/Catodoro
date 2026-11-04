@@ -11,7 +11,9 @@ import SwiftUI
 @main
 struct CatodoroWidgetBundle: WidgetBundle {
     var body: some Widget {
-        CatodoroWidget()
+        if #available(iOS 26.0, *) {
+            CatodoroWidget()
+        }
         CatodoroWidgetLiveActivity()
     }
 }

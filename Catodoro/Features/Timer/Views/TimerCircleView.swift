@@ -9,6 +9,12 @@ import UIKit
 
 /// The model supplies progress; the ring never runs its own countdown animation.
 final class TimerCircleView: BaseView {
+    private enum Constants {
+        static let animationDuration: CGFloat = 0.2
+        static let progress = "progress"
+        static let strokeEnd = "strokeEnd"
+    }
+
     private let shapeLayer = CAShapeLayer()
     private let trackLayer = CAShapeLayer()
     let lineWidth: CGFloat = 16
@@ -31,7 +37,7 @@ final class TimerCircleView: BaseView {
         for circle in [trackLayer, shapeLayer] {
             circle.fillColor = UIColor.clear.cgColor
             circle.lineWidth = lineWidth
-            circle.lineCap = .round
+            circle.lineCap = .butt
             layer.addSublayer(circle)
         }
 
@@ -55,11 +61,27 @@ final class TimerCircleView: BaseView {
         CATransaction.commit()
     }
 
-    func render(progress: CGFloat) {
+    func configure(progress: CGFloat, animated: Bool = false) {
+        let target = min(1, max(0, progress))
+        let current = shapeLayer.presentation()?.strokeEnd ?? shapeLayer.strokeEnd
+
+        shapeLayer.removeAnimation(forKey: Constants.progress)
+
         CATransaction.begin()
         CATransaction.setDisableActions(true)
-        shapeLayer.strokeEnd = min(1, max(0, progress))
+        shapeLayer.strokeEnd = target
         CATransaction.commit()
+
+        guard animated, !UIAccessibility.isReduceMotionEnabled else {
+            return
+        }
+
+        let animation = CABasicAnimation(keyPath: Constants.strokeEnd)
+        animation.fromValue = current
+        animation.toValue = target
+        animation.duration = Constants.animationDuration
+        animation.timingFunction = CAMediaTimingFunction(name: .linear)
+        shapeLayer.add(animation, forKey: Constants.progress)
     }
 }
 

@@ -246,7 +246,7 @@ final class TimerPresentationTests: XCTestCase {
         XCTAssertEqual(model.currentTimerValue, 10)
     }
 
-    func test_foregroundPhaseChangesAndCompletionPlayCueWithoutLiveActivity() async {
+    func test_foregroundBreakAndCompletionPlayCueButFocusStartsSilently() async {
         let audio = MockAudioManager()
         let model = TimerViewModel(audioManager: audio, preferences: nil, liveActivityManager: nil,
                                    now: { [unowned self] in self.instant }, schedulesTicks: false,
@@ -262,21 +262,71 @@ final class TimerPresentationTests: XCTestCase {
         instant.addTimeInterval(5)
         model.refresh()
         await model.testHooks.flushAudioOperations()
-        XCTAssertEqual(audio.playCount, 2)
+        XCTAssertEqual(audio.playCount, 1)
         instant.addTimeInterval(10)
         model.refresh()
         await model.testHooks.flushAudioOperations()
-        XCTAssertEqual(audio.playCount, 3)
+        XCTAssertEqual(audio.playCount, 2)
         XCTAssertFalse(audio.wasCalledOnMainThread)
         XCTAssertEqual(Array(audio.commands.prefix(2)), ["setup", "stop"])
         XCTAssertEqual(audio.lastNumberOfLoops, 0)
         model.refresh()
         await model.testHooks.flushAudioOperations()
-        XCTAssertEqual(audio.playCount, 3)
+        XCTAssertEqual(audio.playCount, 2)
         model.handlePlayPauseButtonTap()
         await model.testHooks.flushAudioOperations()
         XCTAssertTrue(audio.isStopped)
         XCTAssertEqual(audio.commands.last, "stop")
+    }
+
+    func test_backgroundFocusStartsSilentlyWhileBreakAndCompletionAlert() async {
+        let activity = MockLiveActivityManager()
+        let audio = MockAudioManager()
+        let model = TimerViewModel(audioManager: audio, preferences: nil,
+            liveActivityManager: activity, now: { [unowned self] in self.instant },
+            schedulesTicks: false, applicationIsActive: { false })
+        model.configure(totalDuration: 10, intervalDuration: 5, intervals: 2)
+        model.startTimer()
+
+        instant.addTimeInterval(10)
+        model.refresh()
+        await model.testHooks.flushLiveActivityOperations()
+        XCTAssertEqual(activity.lastState?.timerType, .interval)
+        XCTAssertNotNil(activity.lastSoundName)
+
+        instant.addTimeInterval(5)
+        model.refresh()
+        await model.testHooks.flushLiveActivityOperations()
+        XCTAssertEqual(activity.lastState?.timerType, .main)
+        XCTAssertEqual(activity.lastState?.interval, 2)
+        XCTAssertNil(activity.lastSoundName)
+
+        instant.addTimeInterval(10)
+        model.refresh()
+        await model.testHooks.flushLiveActivityOperations()
+        XCTAssertEqual(activity.lastState?.timerStatus, .finished)
+        XCTAssertNotNil(activity.lastSoundName)
+        await model.testHooks.flushAudioOperations()
+        XCTAssertEqual(audio.playCount, 0)
+    }
+
+    func test_skippingBreakStartsFocusWithoutAnotherSound() async {
+        let audio = MockAudioManager()
+        let model = TimerViewModel(audioManager: audio, preferences: nil,
+            liveActivityManager: nil, now: { [unowned self] in self.instant },
+            schedulesTicks: false, applicationIsActive: { true })
+        model.configure(totalDuration: 10, intervalDuration: 5, intervals: 2)
+        model.startTimer()
+        instant.addTimeInterval(10)
+        model.refresh()
+        await model.testHooks.flushAudioOperations()
+        XCTAssertEqual(audio.playCount, 1)
+
+        model.skipBreak()
+        await model.testHooks.flushAudioOperations()
+        XCTAssertFalse(model.isBreak)
+        XCTAssertEqual(model.presentationSubject.value.sessionIndex, 2)
+        XCTAssertEqual(audio.playCount, 1)
     }
 
     func test_playbackFailureIsRecordedWithoutBreakingCompletion() async {

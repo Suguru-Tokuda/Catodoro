@@ -19,6 +19,7 @@ final class TimerView: BaseView {
     private let companion = CatIllustrationView(pose: .focus)
     private let artworkContainer = TimerArtworkView()
     private let ringContainer = UIView()
+    private var previousTimerState: TimerPresentationState?
 
     private let scrollView: UIScrollView = {
         let view = UIScrollView()
@@ -171,6 +172,13 @@ final class TimerView: BaseView {
     override func constructSubviews() {
         super.constructSubviews()
         backgroundColor = CatTheme.background
+        constructScrollContent()
+        constructRingContent()
+        constructControls()
+        addActions()
+    }
+
+    private func constructScrollContent() {
         addAutolayoutSubview(scrollView)
         scrollView.addAutolayoutSubview(stackView)
         stackView.addArrangedSubviews([
@@ -179,16 +187,20 @@ final class TimerView: BaseView {
         ])
         stackView.setCustomSpacing(4, after: timerNameLabel)
         stackView.setCustomSpacing(28, after: messageLabel)
+    }
+
+    private func constructRingContent() {
         ringContainer.addAutolayoutSubviews([artworkContainer, timerCircleView, timerLabel, statusLabel])
         artworkContainer.isUserInteractionEnabled = false
         artworkContainer.addAutolayoutSubview(companion)
+    }
+
+    private func constructControls() {
         pawsStack.addArrangedSubviews(pawIndicators)
         primaryButton.configuration?.baseBackgroundColor = accent
 
         skipBreakButton.tintColor = accent
         skipBreakButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
-
-        addActions()
     }
 
     private func addActions() {
@@ -213,29 +225,55 @@ final class TimerView: BaseView {
 
     override func constructSubviewLayoutConstraints() {
         super.constructSubviewLayoutConstraints()
-        let ringWidth = ringContainer.widthAnchor.constraint(equalTo: stackView.widthAnchor)
-        ringWidth.priority = .defaultHigh
-        let contentWidth = stackView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor, constant: -40)
-        contentWidth.priority = .defaultHigh
 
+        constructScrollViewConstraints()
+        constructStackViewConstraints()
+        constructRingContainerConstraints()
+        constructArtworkConstraints()
+        constructLabelsConstraints()
+        constructButtonsConstraints()
+    }
+
+    private func constructScrollViewConstraints() {
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
             scrollView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
             scrollView.leadingAnchor.constraint(equalTo: leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            scrollView.contentLayoutGuide.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
+            scrollView.contentLayoutGuide.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor)
+        ])
+    }
+
+    private func constructStackViewConstraints() {
+        let contentWidth = stackView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor, constant: -40)
+        contentWidth.priority = .defaultHigh
+
+        NSLayoutConstraint.activate([
             stackView.centerXAnchor.constraint(equalTo: scrollView.frameLayoutGuide.centerXAnchor),
             stackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor, constant: 28),
             stackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -28),
             contentWidth,
-            stackView.widthAnchor.constraint(lessThanOrEqualToConstant: 420),
+            stackView.widthAnchor.constraint(lessThanOrEqualToConstant: 420)
+        ])
+    }
+
+    private func constructRingContainerConstraints() {
+        let ringWidth = ringContainer.widthAnchor.constraint(equalTo: stackView.widthAnchor)
+        ringWidth.priority = .defaultHigh
+
+        NSLayoutConstraint.activate([
             ringWidth,
             ringContainer.widthAnchor.constraint(lessThanOrEqualToConstant: 340),
             ringContainer.heightAnchor.constraint(equalTo: ringContainer.widthAnchor),
             timerCircleView.leadingAnchor.constraint(equalTo: ringContainer.leadingAnchor),
             timerCircleView.trailingAnchor.constraint(equalTo: ringContainer.trailingAnchor),
             timerCircleView.topAnchor.constraint(equalTo: ringContainer.topAnchor),
-            timerCircleView.bottomAnchor.constraint(equalTo: ringContainer.bottomAnchor),
+            timerCircleView.bottomAnchor.constraint(equalTo: ringContainer.bottomAnchor)
+        ])
+    }
+
+    private func constructArtworkConstraints() {
+        NSLayoutConstraint.activate([
             artworkContainer.leadingAnchor.constraint(equalTo: ringContainer.leadingAnchor),
             artworkContainer.trailingAnchor.constraint(equalTo: ringContainer.trailingAnchor),
             artworkContainer.topAnchor.constraint(equalTo: ringContainer.topAnchor),
@@ -243,7 +281,12 @@ final class TimerView: BaseView {
             companion.centerXAnchor.constraint(equalTo: artworkContainer.centerXAnchor),
             companion.bottomAnchor.constraint(equalTo: artworkContainer.bottomAnchor, constant: 32),
             companion.widthAnchor.constraint(equalTo: artworkContainer.widthAnchor, multiplier: 0.95),
-            companion.heightAnchor.constraint(equalTo: artworkContainer.heightAnchor, multiplier: 0.63),
+            companion.heightAnchor.constraint(equalTo: artworkContainer.heightAnchor, multiplier: 0.63)
+        ])
+    }
+
+    private func constructLabelsConstraints() {
+        NSLayoutConstraint.activate([
             timerLabel.topAnchor.constraint(equalTo: ringContainer.topAnchor, constant: 65),
             timerLabel.centerXAnchor.constraint(equalTo: ringContainer.centerXAnchor),
             timerLabel.widthAnchor.constraint(equalTo: ringContainer.widthAnchor, multiplier: 0.8),
@@ -252,7 +295,12 @@ final class TimerView: BaseView {
             statusLabel.widthAnchor.constraint(equalTo: ringContainer.widthAnchor, multiplier: 0.75),
             timerNameLabel.widthAnchor.constraint(equalTo: stackView.widthAnchor),
             sessionLabel.widthAnchor.constraint(equalTo: stackView.widthAnchor),
-            messageLabel.widthAnchor.constraint(equalTo: stackView.widthAnchor),
+            messageLabel.widthAnchor.constraint(equalTo: stackView.widthAnchor)
+        ])
+    }
+
+    private func constructButtonsConstraints() {
+        NSLayoutConstraint.activate([
             primaryButton.widthAnchor.constraint(equalTo: stackView.widthAnchor),
             secondaryButton.widthAnchor.constraint(equalTo: stackView.widthAnchor),
             primaryButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 56),
@@ -260,23 +308,77 @@ final class TimerView: BaseView {
         ])
     }
 
-    func render(_ state: TimerPresentationState) {
+    func configure(_ state: TimerPresentationState) {
         isComplete = state.status == .finished
-        skipBreakButton.isHidden = !state.isBreak || isComplete
+        configureCompanionPose(state)
+        configureLabels(state)
+        configureButtons(state: state)
+        configureCircleView(state: state)
+        configurePawIndicators(state: state)
+
+        previousTimerState = state
+    }
+
+    private func configureCompanionPose(_ state: TimerPresentationState) {
+        companion.pose = isComplete ? .playful : (state.isBreak ? .timerBreak : .focus)
+    }
+
+    private func configureLabels(_ state: TimerPresentationState) {
+        configureSessionLabels(state)
+        configureCountdownLabel(state)
+        configureStatusLabels(state)
+    }
+
+    private func configureSessionLabels(_ state: TimerPresentationState) {
         timerNameLabel.text = state.phaseTitle.uppercased()
         sessionLabel.text = state.sessionSummary
+    }
+
+    private func configureCountdownLabel(_ state: TimerPresentationState) {
         timerLabel.text = state.countdown
         timerLabel.accessibilityLabel = AppStrings.Common.timeRemaining
         timerLabel.accessibilityValue = TimerConfigModel.durationSummary(ceil(state.remainingDuration))
-        timerCircleView.render(progress: isComplete ? 1 : 1 - state.progress)
-        companion.pose = isComplete ? .playful : (state.isBreak ? .timerBreak : .focus)
+    }
+
+    private func configureStatusLabels(_ state: TimerPresentationState) {
         statusLabel.text = isComplete ? AppStrings.Timer.wellDone : (state.status == .paused ? AppStrings.Common.paused : (state.isBreak ? AppStrings.Common.restYourPaws : AppStrings.Common.timeToFocus))
         messageLabel.text = isComplete ? AppStrings.Timer.onePawAtATimeYouDidIt
             : (state.status == .paused ? AppStrings.Timer.yourRoutineWillBeHereWhenYoureReady : AppStrings.Timer.yourCatIsKeepingYouCompany)
-        primaryButton.configuration?.title = isComplete ? AppStrings.Common.focusAgain : (state.status == .playing ? AppStrings.Common.pause : AppStrings.Common.resume)
+    }
+
+    private func configureCircleView(
+        state: TimerPresentationState
+    ) {
+        let previous = previousTimerState
+        let shouldAnimate =
+            state.status == .playing &&
+            previous?.status == .playing &&
+            previous?.isBreak == state.isBreak &&
+            previous?.sessionIndex == state.sessionIndex &&
+            previous?.phaseDuration == state.phaseDuration &&
+            abs((previous?.remainingDuration ?? state.remainingDuration) - state.remainingDuration) < 0.5
+
+        timerCircleView.configure(progress: isComplete ? 1 : 1 - state.progress, animated: shouldAnimate)
+    }
+
+    private func configureButtons(state: TimerPresentationState) {
+        configurePrimaryButton(state: state)
+        configureSecondaryButton()
+        skipBreakButton.isHidden = !state.isBreak || isComplete
+    }
+
+    private func configurePrimaryButton(state: TimerPresentationState) {
+        primaryButton.configuration?.title = isComplete ?
+            AppStrings.Common.focusAgain : (state.status == .playing ? AppStrings.Common.pause : AppStrings.Common.resume)
         primaryButton.configuration?.image = UIImage(systemName: isComplete ? "arrow.clockwise" : (state.status == .playing ? "pause.fill" : "play.fill"))
+    }
+
+    private func configureSecondaryButton() {
         secondaryButton.configuration?.title = isComplete ? AppStrings.Timer.backToRoutine : AppStrings.Timer.endSession
         secondaryButton.configuration?.image = UIImage(systemName: isComplete ? "arrow.left" : "stop.fill")
+    }
+
+    private func configurePawIndicators(state: TimerPresentationState) {
         pawsStack.accessibilityLabel = state.sessionSummary
 
         for (index, paw) in pawIndicators.enumerated() {
@@ -334,7 +436,6 @@ extension TimerView {
         var statusLabel: UILabel {
             target.statusLabel
         }
-
     }
 }
 #endif
