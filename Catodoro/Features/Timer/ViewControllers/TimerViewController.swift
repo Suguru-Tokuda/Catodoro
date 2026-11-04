@@ -50,14 +50,14 @@ final class TimerViewController: BaseViewController {
         timerView.onDismissButtonTap = { [weak self] in
             self?.viewModel.stopTimer()
         }
-        timerView.render(viewModel.presentationSubject.value)
+        timerView.configure(viewModel.presentationSubject.value)
     }
 
     private func addSubscriptions() {
         viewModel.presentationSubject
             .receive(on: DispatchQueue.main)
             .sink { [weak self] state in
-                self?.timerView.render(state)
+                self?.timerView.configure(state)
             }
             .store(in: &cancellables)
 

@@ -26,11 +26,21 @@ final class OnboardingView: BaseView {
 
     override func constructSubviews() {
         super.constructSubviews()
+        constructScrollContent()
+        constructIntroduction()
+        constructBenefits()
+        constructButtons()
+        constructFeedback()
+    }
+
+    private func constructScrollContent() {
         addAutolayoutSubview(scroll)
         stack.axis = .vertical
         stack.spacing = 20
         scroll.addAutolayoutSubview(stack)
+    }
 
+    private func constructIntroduction() {
         stack.addArrangedSubview(label(AppStrings.Onboarding.catodoro, style: .caption1, color: CatTheme.secondaryText))
         let image = UIImageView(image: UIImage(named: "CatCloud"))
         image.contentMode = .scaleAspectFit
@@ -39,7 +49,9 @@ final class OnboardingView: BaseView {
         stack.addArrangedSubview(image)
         stack.addArrangedSubview(label(AppStrings.Onboarding.headline, style: .title1, weight: .bold))
         stack.addArrangedSubview(label(AppStrings.Onboarding.syncDescription, style: .body, color: CatTheme.secondaryText))
+    }
 
+    private func constructBenefits() {
         let benefits = UIStackView()
         benefits.axis = .vertical
         benefits.spacing = 18
@@ -65,6 +77,9 @@ final class OnboardingView: BaseView {
             benefits.addArrangedSubview(row)
         }
         stack.addArrangedSubview(benefits)
+    }
+
+    private func constructButtons() {
         configure(enableButton, title: AppStrings.Onboarding.enableICloudSync, primary: true)
         configure(localButton, title: AppStrings.Onboarding.continueOnThisDevice, primary: false)
         enableButton.addAction(UIAction { [weak self] _ in self?.onEnableSync?() }, for: .touchUpInside)
@@ -72,6 +87,9 @@ final class OnboardingView: BaseView {
         stack.addArrangedSubview(enableButton)
         stack.addArrangedSubview(localButton)
         stack.addArrangedSubview(label(AppStrings.Onboarding.youCanChangeThisLaterInSettings, style: .footnote, color: CatTheme.secondaryText))
+    }
+
+    private func constructFeedback() {
         spinner.hidesWhenStopped = true
         stack.addArrangedSubview(spinner)
         errorLabel.numberOfLines = 0

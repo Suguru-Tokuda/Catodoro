@@ -168,10 +168,22 @@ final class SettingsView: BaseView {
 
     override func constructSubviews() {
         super.constructSubviews()
+        constructScrollContent()
+        constructSyncCard()
+        constructAppearanceCard()
+        constructActivityCard()
+        configureColorActions()
+        configureSoundAndActivityActions()
+    }
+
+    private func constructScrollContent() {
         backgroundColor = CatTheme.background
         addAutolayoutSubview(scrollView)
         scrollView.addAutolayoutSubview(stack)
         stack.addArrangedSubviews([mascot, appearanceCard, syncCard, activityCard])
+    }
+
+    private func constructSyncCard() {
         syncCard.addAutolayoutSubview(syncStack)
 
         let syncTitle = UILabel()
@@ -189,27 +201,35 @@ final class SettingsView: BaseView {
             guard let self else { return }
             self.onSyncChanged?(self.syncSwitch.isOn)
         }, for: .valueChanged)
+    }
 
+    private func constructAppearanceCard() {
         appearanceCard.addAutolayoutSubview(appearanceStack)
         appearanceStack.addArrangedSubviews([appearanceTitle, themeLabel, themeControl, colorLabel, swatches, soundRow])
+        swatches.addArrangedSubviews(colorButtons)
 
         themeControl.addAction(UIAction { [weak self] _ in
             guard let self,
                   ThemeOption.allCases.indices.contains(self.themeControl.selectedSegmentIndex) else { return }
             onThemeSelected?(ThemeOption.allCases[self.themeControl.selectedSegmentIndex])
         }, for: .valueChanged)
+    }
 
-        swatches.addArrangedSubviews(colorButtons)
+    private func constructActivityCard() {
         activityCard.addAutolayoutSubview(activityStack)
         activityHeader.addArrangedSubviews([activityTitle, activitySwitch])
         activityStack.addArrangedSubviews([activityHeader, activityDescription, systemSettingsButton])
+    }
 
+    private func configureColorActions() {
         for (option, button) in zip(ColorOptions.allCases, colorButtons) {
             button.addAction(UIAction { [weak self] _ in
                 self?.onColorSelected?(option)
             }, for: .touchUpInside)
         }
+    }
 
+    private func configureSoundAndActivityActions() {
         soundRow.addAction(UIAction { [weak self] _ in
             self?.onSoundRequested?()
         }, for: .touchUpInside)
@@ -251,17 +271,34 @@ final class SettingsView: BaseView {
     }
 
     func render(_ state: SettingsViewModel.State) {
+        configureTheme(state)
+        configureSync(state)
+        configureSound(state)
+        configureActivity(state)
+        configureColors(state)
+    }
+
+    private func configureTheme(_ state: SettingsViewModel.State) {
         themeControl.selectedSegmentIndex = ThemeOption.allCases.firstIndex(of: state.theme) ?? 0
         themeControl.selectedSegmentTintColor = state.color.color
         themeControl.setTitleTextAttributes([.foregroundColor: CatTheme.text], for: .normal)
         themeControl.setTitleTextAttributes([.foregroundColor: CatTheme.onAccent], for: .selected)
+    }
+
+    private func configureSync(_ state: SettingsViewModel.State) {
         syncCard.isHidden = !state.syncAvailable
         syncSwitch.setOn(state.syncEnabled, animated: false)
         syncSwitch.isEnabled = state.syncToggleEnabled
         syncSwitch.onTintColor = state.color.color
         syncDescription.text = state.syncMessage
+    }
+
+    private func configureSound(_ state: SettingsViewModel.State) {
         soundRow.configureAccent(state.color.color)
         soundRow.setValue(state.sound.title)
+    }
+
+    private func configureActivity(_ state: SettingsViewModel.State) {
         activitySwitch.setOn(state.liveActivityEnabled, animated: false)
         activitySwitch.onTintColor = state.color.color
         systemSettingsButton.tintColor = state.color.color
@@ -269,7 +306,9 @@ final class SettingsView: BaseView {
         activityDescription.text = state.activitiesAuthorized
             ? AppStrings.Settings.liveActivityDescription
             : AppStrings.Settings.liveActivityUnavailableMessage
+    }
 
+    private func configureColors(_ state: SettingsViewModel.State) {
         for (option, button) in zip(ColorOptions.allCases, colorButtons) {
             let selected = option == state.color
             button.configuration?.image = selected ? UIImage(systemName: "checkmark") : nil

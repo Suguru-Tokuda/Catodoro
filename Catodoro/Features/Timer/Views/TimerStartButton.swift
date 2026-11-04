@@ -83,6 +83,10 @@ class TimerStartButton: UIButton {
         clipsToBounds = true
         layer.cornerRadius = CatTheme.controlRadius
         isEnabled = false
+
+        registerForTraitChanges([UITraitUserInterfaceStyle.self]) { (view: Self, _: UITraitCollection) in
+            view.applyModel()
+        }
     }
 
     private func setupConstraints() {
@@ -103,13 +107,6 @@ class TimerStartButton: UIButton {
     override func layoutSubviews() {
         super.layoutSubviews()
         layer.cornerRadius = bounds.height / 2
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-            applyModel()
-        }
     }
 
     private func applyModel() {

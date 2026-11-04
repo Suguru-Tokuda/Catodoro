@@ -69,7 +69,7 @@ final class CatodoroUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts[name].exists)
         app.staticTexts[name].swipeLeft()
         app.buttons["Delete"].tap()
-        XCTAssertFalse(app.staticTexts[name].exists)
+        XCTAssertTrue(app.staticTexts[name].waitForNonExistence(timeout: 5))
 
         app.tabBars.buttons["Focus"].tap()
         app.buttons["Start focusing"].tap()

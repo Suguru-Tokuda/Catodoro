@@ -95,6 +95,12 @@ class PresetsViewController: BaseViewController {
     }
 
     private func addSubscriptions() {
+        subscribeToColor()
+        subscribeToPresets()
+        subscribeToLoadingState()
+    }
+
+    private func subscribeToColor() {
         preferences?.colorPublisher.receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 guard let self else { return }
@@ -104,8 +110,9 @@ class PresetsViewController: BaseViewController {
                 presetsView.tableView.reloadData()
             }
             .store(in: &cancellables)
+    }
 
-
+    private func subscribeToPresets() {
         // @Published emits before storing the new value. Keep the table data source
         // on the emitted snapshot before synchronously reloading its rows.
         viewModel.presetsPublisher
@@ -117,7 +124,9 @@ class PresetsViewController: BaseViewController {
                 updateEmptyState()
             }
             .store(in: &cancellables)
+    }
 
+    private func subscribeToLoadingState() {
         viewModel.loadingStatePublisher.receive(on: DispatchQueue.main)
             .sink { [weak self] loadingState in
                 guard let self else { return }

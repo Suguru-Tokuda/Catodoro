@@ -423,16 +423,20 @@ class TimerViewModel {
     }
 
     private func notifyPhaseChange(isComplete: Bool) {
+        let shouldPlaySound = isComplete || isBreak
+
         if applicationIsActive() {
             if isComplete {
                 playFinishSound()
-            } else {
+            } else if shouldPlaySound {
                 playIntermediateSound()
             }
 
             updateLiveActivity()
         } else {
-            updateLiveActivity(with: SoundOptions(preferences?.sound ?? "").fileName)
+            let sound = shouldPlaySound ? SoundOptions(preferences?.sound ?? "").fileName : nil
+            
+            updateLiveActivity(with: sound)
         }
     }
 

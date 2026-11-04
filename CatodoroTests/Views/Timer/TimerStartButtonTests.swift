@@ -15,6 +15,34 @@ class TimerStartButtonTests: XCTestCase {
         super.tearDown()
     }
 
+    @MainActor
+    func test_appearanceChangeRegeneratesBackgroundImagesWithoutChangingModel() throws {
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 320, height: 568))
+        let controller = UIViewController()
+        window.rootViewController = controller
+        let subject = TimerStartButton(frame: CGRect(x: 20, y: 20, width: 240, height: 60))
+        controller.view.addSubview(subject)
+        window.isHidden = false
+        defer { window.isHidden = true }
+
+        subject.traitOverrides.userInterfaceStyle = .light
+        subject.model = .init(buttonLabelText: "Focus", color: UIColor { traits in
+            traits.userInterfaceStyle == .dark ? .white : .black
+        })
+        subject.layoutIfNeeded()
+        let lightImage = try XCTUnwrap(subject.backgroundImage(for: .normal)?.pngData())
+
+        subject.traitOverrides.userInterfaceStyle = .dark
+        subject.layoutIfNeeded()
+        let darkImage = try XCTUnwrap(subject.backgroundImage(for: .normal)?.pngData())
+        XCTAssertNotEqual(lightImage, darkImage)
+        XCTAssertEqual(subject.testHooks.buttonLabel.text, "Focus")
+
+        subject.traitOverrides.userInterfaceStyle = .light
+        subject.layoutIfNeeded()
+        XCTAssertEqual(subject.backgroundImage(for: .normal)?.pngData(), lightImage)
+    }
+
     // MARK: - Test for Initial State
     
     func test_initialState_shouldBeDisabledAndHaveDefaultLabel() {

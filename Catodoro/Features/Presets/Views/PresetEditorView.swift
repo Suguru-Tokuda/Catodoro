@@ -94,19 +94,30 @@ final class PresetEditorView: BaseView {
 
     override func constructSubviews() {
         super.constructSubviews()
+        constructContent()
+        configureNameActions()
+        configureButtonActions()
+        configureSelectionActions()
+    }
+
+    private func constructContent() {
         backgroundColor = CatTheme.background
         addAutolayoutSubview(scrollView)
         scrollView.addAutolayoutSubview(stack)
         stack.addArrangedSubviews([artwork, imageButton, nameField, card, summary, saveButton])
         card.addAutolayoutSubview(routineStack)
         routineStack.addArrangedSubviews([focusRow, breakRow, sessionsRow])
+    }
 
+    private func configureNameActions() {
         nameField.addTarget(self, action: #selector(nameChanged), for: .editingChanged)
 
         nameField.addAction(UIAction { [weak self] _ in
             self?.nameField.resignFirstResponder()
         }, for: .editingDidEndOnExit)
+    }
 
+    private func configureButtonActions() {
         imageButton.addAction(UIAction { [weak self] _ in
             self?.endEditing(true)
             self?.onImageRequested?()
@@ -116,7 +127,9 @@ final class PresetEditorView: BaseView {
             self?.endEditing(true)
             self?.onSave?()
         }, for: .touchUpInside)
+    }
 
+    private func configureSelectionActions() {
         for (row, selection) in [(focusRow, RoutineSelection.focus), (breakRow, .catnap), (sessionsRow, .sessions)] {
             row.addAction(UIAction { [weak self] _ in
                 self?.endEditing(true)

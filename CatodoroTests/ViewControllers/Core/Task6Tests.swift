@@ -240,13 +240,13 @@ final class Task6Tests: XCTestCase {
             .init(isBreak: isBreak, status: status, sessionIndex: 1, sessionCount: 3,
                   remainingDuration: 5, phaseDuration: 5)
         }
-        view.render(state(false, .playing))
+        view.configure(state(false, .playing))
         XCTAssertTrue(view.testHooks.skipBreakButton.isHidden)
-        view.render(state(true, .paused))
+        view.configure(state(true, .paused))
         XCTAssertFalse(view.testHooks.skipBreakButton.isHidden)
         view.testHooks.skipBreakButton.sendActions(for: .touchUpInside)
         XCTAssertEqual(skips, 1)
-        view.render(state(true, .finished))
+        view.configure(state(true, .finished))
         XCTAssertTrue(view.testHooks.skipBreakButton.isHidden)
     }
 

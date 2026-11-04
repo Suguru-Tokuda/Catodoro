@@ -46,6 +46,13 @@ final class SettingsViewController: BaseViewController {
     }
 
     private func setupSubscriptions() {
+        configureAppearanceActions()
+        configureActivityActions()
+        subscribeToState()
+        subscribeToAppLifecycle()
+    }
+
+    private func configureAppearanceActions() {
         settingsView.onThemeSelected = { [weak self] theme in
             self?.viewModel.selectTheme(theme)
         }
@@ -57,7 +64,9 @@ final class SettingsViewController: BaseViewController {
         settingsView.onSoundRequested = { [weak self] in
             self?.delegate?.onSettingMenuSelected(settingOption: .sound)
         }
+    }
 
+    private func configureActivityActions() {
         settingsView.onLiveActivityChanged = { [weak self] enabled in
             self?.viewModel.setLiveActivityEnabled(enabled)
         }
@@ -71,13 +80,17 @@ final class SettingsViewController: BaseViewController {
 
             UIApplication.shared.open(url)
         }
+    }
 
+    private func subscribeToState() {
         viewModel.statePublisher.receive(on: DispatchQueue.main)
             .sink { [weak self] state in
                 self?.settingsView.render(state)
             }
             .store(in: &subscriptions)
+    }
 
+    private func subscribeToAppLifecycle() {
         NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in

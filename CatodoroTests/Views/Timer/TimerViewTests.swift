@@ -15,9 +15,9 @@ final class TimerViewTests: XCTestCase {
               remainingDuration: status == .finished ? 0 : 150, phaseDuration: 300)
     }
 
-    func test_renderSynchronizesCountdownArtworkRingAndActions() {
+    func test_configureSynchronizesCountdownArtworkRingAndActions() {
         let view = TimerView(frame: .zero)
-        view.render(state())
+        view.configure(state())
         let hooks = view.testHooks
         XCTAssertEqual(hooks.timerLabel.text, "02:30")
         XCTAssertEqual(hooks.timerCircleView.testHooks.shapeLayer.strokeEnd, 0.5)
@@ -25,10 +25,10 @@ final class TimerViewTests: XCTestCase {
         XCTAssertEqual(hooks.secondaryButton.configuration?.title, "End session")
         XCTAssertEqual(hooks.companion.pose, .focus)
 
-        view.render(state(isBreak: true))
+        view.configure(state(isBreak: true))
         XCTAssertEqual(hooks.companion.pose, .timerBreak)
         XCTAssertEqual(hooks.timerNameLabel.text, "CATNAP BREAK")
-        view.render(state(status: .paused))
+        view.configure(state(status: .paused))
         XCTAssertEqual(hooks.statusLabel.text, "Paused")
         XCTAssertEqual(hooks.primaryButton.configuration?.title, "Resume")
     }
@@ -41,9 +41,9 @@ final class TimerViewTests: XCTestCase {
         view.onPlayPauseButtonTap = { primaryTaps += 1 }
         view.onStopButtonTap = { endTaps += 1 }
         view.onDismissButtonTap = { backTaps += 1 }
-        view.render(state())
+        view.configure(state())
         view.testHooks.secondaryButton.sendActions(for: .touchUpInside)
-        view.render(state(status: .finished))
+        view.configure(state(status: .finished))
         XCTAssertEqual(view.testHooks.primaryButton.configuration?.title, "Focus again")
         XCTAssertEqual(view.testHooks.secondaryButton.configuration?.title, "Back to routine")
         XCTAssertEqual(view.testHooks.companion.pose, .playful)
@@ -52,6 +52,15 @@ final class TimerViewTests: XCTestCase {
         XCTAssertEqual(primaryTaps, 1)
         XCTAssertEqual(endTaps, 1)
         XCTAssertEqual(backTaps, 1)
+    }
+
+    func test_restartingAfterCompletionImmediatelyRestoresFocusArtwork() {
+        let view = TimerView(frame: .zero)
+        view.configure(state(status: .finished))
+        XCTAssertEqual(view.testHooks.companion.pose, .playful)
+        view.configure(state())
+        XCTAssertEqual(view.testHooks.companion.pose, .focus)
+        XCTAssertEqual(view.testHooks.primaryButton.configuration?.title, "Pause")
     }
 
     func test_artworkClipsInsideResponsiveRing() {
