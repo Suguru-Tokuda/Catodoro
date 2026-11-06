@@ -103,8 +103,8 @@ class TimerStartButtonTests: XCTestCase {
     
     func test_imageViews_shouldHaveCorrectTintColor() {
         // Assert
-        XCTAssertEqual(button.leadingImageView.tintColor, CatTheme.onAccent, "Leading image view should have white tint color")
-        XCTAssertEqual(button.trailingImageView.tintColor, CatTheme.onAccent, "Trailing image view should have white tint color")
+        XCTAssertEqual(button.testHooks.leadingImageView.tintColor, CatTheme.onAccent, "Leading image view should have white tint color")
+        XCTAssertEqual(button.testHooks.trailingImageView.tintColor, CatTheme.onAccent, "Trailing image view should have white tint color")
     }
 
     // MARK: - Test Hooks (Private Component Access)

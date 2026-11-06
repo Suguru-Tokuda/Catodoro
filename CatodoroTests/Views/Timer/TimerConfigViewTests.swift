@@ -71,13 +71,13 @@ final class TimerConfigViewTests: XCTestCase {
         let view = TimerConfigView()
         
         // Act
-        view.setStartButtonStatus(isEnabled: false)
+        view.testHooks.setStartButtonStatus(isEnabled: false)
         
         // Assert
         XCTAssertFalse(view.testHooks.startButton.isEnabled, "Start button should be disabled.")
         
         // Act
-        view.setStartButtonStatus(isEnabled: true)
+        view.testHooks.setStartButtonStatus(isEnabled: true)
         
         // Assert
         XCTAssertTrue(view.testHooks.startButton.isEnabled, "Start button should be enabled.")

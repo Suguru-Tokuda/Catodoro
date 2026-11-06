@@ -28,20 +28,22 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
     var tabBarController: UITabBarController
 
     /// Coordinators
-    var timerCoordinator: TimerCoordiantor?
-    var presetsCoordiantor: PresetsCoordinator?
-    var settingsCoordinator: SettingsCoordinator?
+    private var timerCoordinator: TimerCoordiantor?
+    private var presetsCoordiantor: PresetsCoordinator?
+    private var settingsCoordinator: SettingsCoordinator?
 
     weak var preferences: CatodoroPreferences?
     private let syncLifecycleManager: SyncLifecycleManaging?
     private let coreDataManager: CatodoroCoreDataManaging
     weak var liveActivityManager: LiveActivityManaging?
+    private let hapticsManager: HapticsManaging?
 
     private var subscriptions: Set<AnyCancellable> = .init()
 
     required init(_ navigationController: UINavigationController = BaseNavigationController(),
                   preferences: CatodoroPreferences?,
                   liveActivityManager: LiveActivityManaging?,
+                  hapticsManager: HapticsManaging? = nil,
                   coreDataManager: CatodoroCoreDataManaging,
                   syncLifecycleManager: SyncLifecycleManaging? = nil) {
         self.syncLifecycleManager = syncLifecycleManager
@@ -49,6 +51,7 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
         self.navigationController = navigationController
         self.preferences = preferences
         self.liveActivityManager = liveActivityManager
+        self.hapticsManager = hapticsManager
         self.tabBarController = .init()
         super.init()
         self.addSubscriptions()
@@ -89,6 +92,7 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
             timerCoordinator = TimerCoordiantor(configuration: TimerCoordinatorConfiguration(shouldHideBottomBarWhenTimerStart: true), coreDataManager: coreDataManager)
             timerCoordinator?.preferences = preferences
             timerCoordinator?.liveActivityManager = liveActivityManager
+            timerCoordinator?.hapticsManager = hapticsManager
             if let timerCoordinator {
                 timerCoordinator.start()
                 navController = timerCoordinator.navigationController
@@ -97,6 +101,7 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
             presetsCoordiantor = PresetsCoordinator(configuration: PresetsCoordinatorConfiguration(shouldHideBottomBar: true), coreDataManager: coreDataManager)
             presetsCoordiantor?.preferences = preferences
             presetsCoordiantor?.liveActivityManager = liveActivityManager
+            presetsCoordiantor?.hapticsManager = hapticsManager
             if let presetsCoordiantor {
                 presetsCoordiantor.start()
                 navController = presetsCoordiantor.navigationController
@@ -169,3 +174,17 @@ extension TabCoordinator: UITabBarControllerDelegate {
     }
 }
 
+#if DEBUG
+extension TabCoordinator {
+    var testHooks: TestHooks {
+        .init(target: self)
+    }
+
+    struct TestHooks {
+        let target: TabCoordinator
+
+        var timerCoordinator: TimerCoordiantor? { target.timerCoordinator }
+        var presetsCoordiantor: PresetsCoordinator? { target.presetsCoordiantor }
+    }
+}
+#endif

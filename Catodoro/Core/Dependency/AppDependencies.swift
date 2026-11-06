@@ -3,9 +3,10 @@ import Foundation
 @MainActor
 final class AppDependencies {
     let preferences: CatodoroPreferences
-    let persistentController: CatodoroPersistentController
+    private let persistentController: CatodoroPersistentController
     let coreDataManager: CatodoroCoreDataManaging
     let syncLifecycleManager: SyncLifecycleManaging
+    let hapticsManager: HapticsManaging
 
     init(preferences: CatodoroPreferences = CatodoroPreferences()) {
         self.preferences = preferences
@@ -13,5 +14,6 @@ final class AppDependencies {
         persistentController = persistence
         coreDataManager = CatodoroCoreDataManager(context: persistence.writeContext)
         syncLifecycleManager = SyncLifecycleManager(preferences: preferences, persistence: persistence)
+        hapticsManager = HapticsManager()
     }
 }

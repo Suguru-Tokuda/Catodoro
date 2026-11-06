@@ -11,7 +11,7 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private var themeSubscription: AnyCancellable?
     var window: UIWindow?
-    var mainCoordinator: Coordinator?
+    private var mainCoordinator: Coordinator?
     var liveActivityManager: LiveActivityManaging = LiveActivityManager()
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -23,6 +23,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         liveActivityManager.endStaleActivities()
         let dependencies = appDelegate.dependencies
         let coordinator = MainCoordinator(preferences: dependencies.preferences, liveActivityManager: liveActivityManager,
+                                          hapticsManager: dependencies.hapticsManager,
                                           coreDataManager: dependencies.coreDataManager,
                                           syncLifecycleManager: dependencies.syncLifecycleManager
         )

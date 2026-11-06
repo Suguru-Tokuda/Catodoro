@@ -186,7 +186,7 @@ class TimerConfigView: BaseView {
         [focusRow, breakRow, sessionsRow].forEach { $0.configureAccent(model.color) }
     }
 
-    func setStartButtonStatus(isEnabled: Bool) {
+    private func setStartButtonStatus(isEnabled: Bool) {
         startButton.isEnabled = isEnabled
     }
 
@@ -212,6 +212,8 @@ extension TimerConfigView {
         var sessionsRow: CatSummaryRow { target.sessionsRow }
         var summaryLabel: UILabel { target.summaryLabel }
         var startButton: TimerStartButton { target.startButton }
+
+        func setStartButtonStatus(isEnabled: Bool) { target.setStartButtonStatus(isEnabled: isEnabled) }
     }
 }
 #endif

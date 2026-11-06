@@ -6,8 +6,8 @@ import XCTest
 @MainActor
 final class CatodoroPersistentControllerTests: XCTestCase {
     func test_cloudConfigurationUsesPrivateDatabaseAndRequiresOptIn() throws {
-        XCTAssertNil(CatodoroPersistentController.cloudOptions(enabled: false, identifier: "iCloud.test"))
-        let options = try XCTUnwrap(CatodoroPersistentController.cloudOptions(enabled: true, identifier: "iCloud.test"))
+        XCTAssertNil(CatodoroPersistentController.TestHooks.cloudOptions(enabled: false, identifier: "iCloud.test"))
+        let options = try XCTUnwrap(CatodoroPersistentController.TestHooks.cloudOptions(enabled: true, identifier: "iCloud.test"))
         XCTAssertEqual(options.containerIdentifier, "iCloud.test")
         XCTAssertEqual(options.databaseScope, .private)
     }

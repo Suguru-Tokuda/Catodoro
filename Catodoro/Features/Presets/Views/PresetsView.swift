@@ -67,7 +67,7 @@ final class PresetsView: BaseView {
         tableView.backgroundView = loadingBackgroundView
     }
 
-    func hideLoading() {
+    private func hideLoading() {
         spinner.stopAnimating()
         if tableView.backgroundView === loadingBackgroundView {
             tableView.backgroundView = nil
@@ -97,3 +97,17 @@ final class PresetsView: BaseView {
         tableView.backgroundView = UIContentUnavailableView(configuration: configuration)
     }
 }
+
+#if DEBUG
+extension PresetsView {
+    var testHooks: TestHooks {
+        .init(target: self)
+    }
+
+    struct TestHooks {
+        let target: PresetsView
+
+        func hideLoading() { target.hideLoading() }
+    }
+}
+#endif

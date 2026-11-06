@@ -93,7 +93,7 @@ final class SyncLifecycleManager: SyncLifecycleManaging {
         }
     }
 
-    func refreshAvailability() async {
+    private func refreshAvailability() async {
         generation += 1
         let request = generation
         var accountWasChecked = false
@@ -200,7 +200,7 @@ final class SyncLifecycleManager: SyncLifecycleManaging {
         }
     }
 
-    func updateEvent(id: UUID, type: NSPersistentCloudKitContainer.EventType,
+    private func updateEvent(id: UUID, type: NSPersistentCloudKitContainer.EventType,
                      endDate: Date?, succeeded: Bool, error: Error?) {
         guard syncStatus.isEnabled, syncStatus.isAvailable else { return }
         if let endDate {
@@ -222,3 +222,25 @@ private struct ICloudUnavailableError: LocalizedError {
     let message: String
     var errorDescription: String? { message }
 }
+
+#if DEBUG
+extension SyncLifecycleManager {
+    var testHooks: TestHooks {
+        .init(target: self)
+    }
+
+    @MainActor
+    struct TestHooks {
+        let target: SyncLifecycleManager
+
+        func refreshAvailability() async {
+            await target.refreshAvailability()
+        }
+
+        func updateEvent(id: UUID, type: NSPersistentCloudKitContainer.EventType,
+                         endDate: Date?, succeeded: Bool, error: Error?) {
+            target.updateEvent(id: id, type: type, endDate: endDate, succeeded: succeeded, error: error)
+        }
+    }
+}
+#endif

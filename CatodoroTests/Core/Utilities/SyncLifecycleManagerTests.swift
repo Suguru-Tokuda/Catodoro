@@ -66,24 +66,24 @@ final class SyncLifecycleManagerTests: XCTestCase {
         let manager = SyncLifecycleManager(preferences: MockPreferences(), persistence: CloudPersistenceMock(), accountStatus: { .available })
         try await manager.setSyncEnabled(true)
         let first = UUID(), second = UUID(), date = Date()
-        manager.updateEvent(id: first, type: .import, endDate: nil, succeeded: false, error: nil)
-        manager.updateEvent(id: second, type: .export, endDate: nil, succeeded: false, error: nil)
-        manager.updateEvent(id: first, type: .import, endDate: date, succeeded: true, error: nil)
+        manager.testHooks.updateEvent(id: first, type: .import, endDate: nil, succeeded: false, error: nil)
+        manager.testHooks.updateEvent(id: second, type: .export, endDate: nil, succeeded: false, error: nil)
+        manager.testHooks.updateEvent(id: first, type: .import, endDate: date, succeeded: true, error: nil)
         XCTAssertTrue(manager.syncStatus.isSyncing)
         XCTAssertEqual(manager.syncStatus.lastSuccessfulTransfer, date)
-        manager.updateEvent(id: second, type: .export, endDate: date, succeeded: true, error: nil)
+        manager.testHooks.updateEvent(id: second, type: .export, endDate: date, succeeded: true, error: nil)
         XCTAssertFalse(manager.syncStatus.isSyncing)
     }
 
     func test_setupDoesNotClaimSuccessfulTransferAndErrorsAreReported() async throws {
         let manager = SyncLifecycleManager(preferences: MockPreferences(), persistence: CloudPersistenceMock(), accountStatus: { .available })
         try await manager.setSyncEnabled(true)
-        manager.updateEvent(id: UUID(), type: .setup, endDate: Date(), succeeded: true, error: nil)
+        manager.testHooks.updateEvent(id: UUID(), type: .setup, endDate: Date(), succeeded: true, error: nil)
         XCTAssertNil(manager.syncStatus.lastSuccessfulTransfer)
-        manager.updateEvent(id: UUID(), type: .export, endDate: Date(), succeeded: false,
+        manager.testHooks.updateEvent(id: UUID(), type: .export, endDate: Date(), succeeded: false,
                             error: NSError(domain: "Offline", code: 1))
         XCTAssertNotNil(manager.syncStatus.errorMessage)
-        manager.updateEvent(id: UUID(), type: .export, endDate: Date(), succeeded: true, error: nil)
+        manager.testHooks.updateEvent(id: UUID(), type: .export, endDate: Date(), succeeded: true, error: nil)
         XCTAssertNil(manager.syncStatus.errorMessage)
     }
 
@@ -91,7 +91,7 @@ final class SyncLifecycleManagerTests: XCTestCase {
         let manager = SyncLifecycleManager(preferences: MockPreferences(), persistence: CloudPersistenceMock(), accountStatus: { .available })
         try await manager.setSyncEnabled(true)
         try await manager.setSyncEnabled(false)
-        manager.updateEvent(id: UUID(), type: .export, endDate: nil, succeeded: false, error: nil)
+        manager.testHooks.updateEvent(id: UUID(), type: .export, endDate: nil, succeeded: false, error: nil)
         XCTAssertFalse(manager.syncStatus.isSyncing)
     }
 
@@ -125,7 +125,7 @@ final class SyncLifecycleManagerTests: XCTestCase {
                                                accountStatus: { status })
             let model = SettingsViewModel(preferences: preferences, activitiesAuthorized: { true },
                                           syncLifecycleManager: manager)
-            await manager.refreshAvailability()
+            await manager.testHooks.refreshAvailability()
             model.refresh()
             XCTAssertFalse(model.state.syncEnabled)
             XCTAssertFalse(model.state.syncToggleEnabled)
@@ -181,12 +181,12 @@ final class SyncLifecycleManagerTests: XCTestCase {
             if fail { throw NSError(domain: "Offline", code: 1) }
             return .available
         })
-        await manager.refreshAvailability()
+        await manager.testHooks.refreshAvailability()
         XCTAssertFalse(manager.syncStatus.isAvailable)
         XCTAssertFalse(manager.syncStatus.isEnabled)
         XCTAssertTrue(preferences.syncEnabled)
         fail = false
-        await manager.refreshAvailability()
+        await manager.testHooks.refreshAvailability()
         XCTAssertTrue(manager.syncStatus.isAvailable)
         XCTAssertTrue(manager.syncStatus.isEnabled)
     }
@@ -203,7 +203,7 @@ final class SyncLifecycleManagerTests: XCTestCase {
                 checking.fulfill()
             }
         })
-        let task = Task { await manager.refreshAvailability() }
+        let task = Task { await manager.testHooks.refreshAvailability() }
         await fulfillment(of: [checking], timeout: 1)
         try await manager.setSyncEnabled(false)
         continuation?.resume(returning: .available)

@@ -27,19 +27,19 @@ class PresetListViewCellTests: XCTestCase {
     
     func test_initialization_expectSubviewsInitialized() {
         XCTAssertNotNil(cell.timerLabel, "Timer label should be initialized")
-        XCTAssertNotNil(cell.intervalDurationLabel, "Interval duration label should be initialized")
-        XCTAssertNotNil(cell.intervalLabel, "Interval label should be initialized")
-        XCTAssertNotNil(cell.playButton, "Play button should be initialized")
-        XCTAssertNotNil(cell.horizontalStackView, "Horizontal stack view should be initialized")
-        XCTAssertNotNil(cell.verticalStackView, "Vertical stack view should be initialized")
+        XCTAssertNotNil(cell.testHooks.intervalDurationLabel, "Interval duration label should be initialized")
+        XCTAssertNotNil(cell.testHooks.intervalLabel, "Interval label should be initialized")
+        XCTAssertNotNil(cell.testHooks.playButton, "Play button should be initialized")
+        XCTAssertNotNil(cell.testHooks.horizontalStackView, "Horizontal stack view should be initialized")
+        XCTAssertNotNil(cell.testHooks.verticalStackView, "Vertical stack view should be initialized")
     }
     
     func test_applyModel_expectLabelsUpdatedCorrectly() {
         cell.model = mockModel
         
         XCTAssertEqual(cell.timerLabel.text, "25 min focus", "Timer label should display formatted total duration")
-        XCTAssertEqual(cell.intervalDurationLabel.text, "25 min focus · 5 min break · 5 sessions", "Interval duration label should display formatted interval duration")
-        XCTAssertEqual(cell.intervalLabel.text, "Total: 2 hr 25 min", "Interval label should display the correct number of intervals")
+        XCTAssertEqual(cell.testHooks.intervalDurationLabel.text, "25 min focus · 5 min break · 5 sessions", "Interval duration label should display formatted interval duration")
+        XCTAssertEqual(cell.testHooks.intervalLabel.text, "Total: 2 hr 25 min", "Interval label should display the correct number of intervals")
     }
     
     func test_playButtonTap_expectOnPlayButtonTappedCalled() {
@@ -48,15 +48,15 @@ class PresetListViewCellTests: XCTestCase {
             actionTriggered = true
         }
         
-        cell.playButton.sendActions(for: .touchUpInside)
+        cell.testHooks.playButton.sendActions(for: .touchUpInside)
         
         XCTAssertTrue(actionTriggered, "Play button action should be triggered")
     }
     
     func test_defaultStates_expectInitialLabelValuesNil() {
         XCTAssertNil(cell.timerLabel.text, "Timer label should be nil by default")
-        XCTAssertNil(cell.intervalDurationLabel.text, "Interval duration label should be nil by default")
-        XCTAssertNil(cell.intervalLabel.text, "Interval label should be nil by default")
+        XCTAssertNil(cell.testHooks.intervalDurationLabel.text, "Interval duration label should be nil by default")
+        XCTAssertNil(cell.testHooks.intervalLabel.text, "Interval label should be nil by default")
     }
     
     func test_reusability_expectLabelsResetWhenModelCleared() {
@@ -69,8 +69,8 @@ class PresetListViewCellTests: XCTestCase {
     
     func test_accessibility_expectLabelsAndPlayButtonAccessible() {
         XCTAssertNotNil(cell.timerLabel.accessibilityLabel, "Timer label should have an accessibility label")
-        XCTAssertNotNil(cell.intervalDurationLabel.accessibilityLabel, "Interval duration label should have an accessibility label")
-        XCTAssertNotNil(cell.intervalLabel.accessibilityLabel, "Interval label should have an accessibility label")
-        XCTAssertTrue(cell.playButton.isAccessibilityElement, "Play button should be accessible")
+        XCTAssertNotNil(cell.testHooks.intervalDurationLabel.accessibilityLabel, "Interval duration label should have an accessibility label")
+        XCTAssertNotNil(cell.testHooks.intervalLabel.accessibilityLabel, "Interval label should have an accessibility label")
+        XCTAssertTrue(cell.testHooks.playButton.isAccessibilityElement, "Play button should be accessible")
     }
 }

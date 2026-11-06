@@ -15,7 +15,7 @@ final class RoutineSelectionTests: XCTestCase {
         let accent = ColorOptions.neonPink.color
 
         for selection in [RoutineSelection.focus, .catnap, .sessions] {
-            let editor = presenter.makeRoutineSelectionEditor(selection, configuration: .standard,
+            let editor = presenter.routineSelectionTestHooks.makeRoutineSelectionEditor(selection, configuration: .standard,
                                                               accent: accent) { _ in }
             editor.loadViewIfNeeded()
             let sheet = editor as! RoutineSelectionViewController
@@ -23,9 +23,9 @@ final class RoutineSelectionTests: XCTestCase {
             XCTAssertEqual(sheet.confirmButton.configuration?.baseBackgroundColor, accent)
 
             if let duration = editor as? DurationSelectionViewController {
-                duration.selectShortcut(minutes: 5)
+                duration.testHooks.selectShortcut(minutes: 5)
                 if selection == .focus {
-                    duration.selectShortcut(minutes: 25)
+                    duration.testHooks.selectShortcut(minutes: 25)
                 }
             }
 
@@ -96,21 +96,21 @@ final class RoutineSelectionTests: XCTestCase {
     func test_durationDraftDoesNotCommitAndReopeningRestoresConfirmedTime() {
         let host = UIViewController()
         var routine = TimerConfigModel.standard
-        let editor = host.makeRoutineSelectionEditor(.focus, configuration: routine) { routine = $0 }
+        let editor = host.routineSelectionTestHooks.makeRoutineSelectionEditor(.focus, configuration: routine) { routine = $0 }
             as! DurationSelectionViewController
         editor.loadViewIfNeeded()
-        editor.selectShortcut(minutes: 50)
+        editor.testHooks.selectShortcut(minutes: 50)
         XCTAssertEqual(routine.mainTimer.duration, 1500)
 
         // Discarding the editor (close or swipe) has no model mutation.
-        let reopened = host.makeRoutineSelectionEditor(.focus, configuration: routine) { routine = $0 }
+        let reopened = host.routineSelectionTestHooks.makeRoutineSelectionEditor(.focus, configuration: routine) { routine = $0 }
             as! DurationSelectionViewController
         reopened.loadViewIfNeeded()
         XCTAssertEqual(reopened.draft.duration, 1500)
         XCTAssertEqual(reopened.selectedMinutes, 25)
 
-        reopened.updateDraft(.init(hours: 1, minutes: 2, seconds: 3))
-        reopened.confirm()
+        reopened.testHooks.updateDraft(.init(hours: 1, minutes: 2, seconds: 3))
+        reopened.testHooks.confirm()
         XCTAssertEqual(routine.mainTimer.duration, 3723)
         XCTAssertEqual(routine.interval.duration, 300)
         XCTAssertEqual(routine.intervals, 4)
@@ -125,12 +125,12 @@ final class RoutineSelectionTests: XCTestCase {
             commits += 1
             XCTAssertEqual(timer.duration, 900)
         }
-        editor.selectShortcut(minutes: 15)
+        editor.testHooks.selectShortcut(minutes: 15)
         XCTAssertEqual(editor.selectedMinutes, 15)
         XCTAssertEqual(editor.draft.hours, 0)
         XCTAssertEqual(editor.draft.seconds, 0)
-        editor.confirm()
-        editor.confirm()
+        editor.testHooks.confirm()
+        editor.testHooks.confirm()
         XCTAssertEqual(commits, 1)
     }
 
@@ -140,10 +140,10 @@ final class RoutineSelectionTests: XCTestCase {
         editor.loadViewIfNeeded()
         XCTAssertEqual(editor.selectedShortcut, 25)
 
-        editor.selectShortcut(minutes: 15)
+        editor.testHooks.selectShortcut(minutes: 15)
         XCTAssertEqual(editor.selectedShortcut, 15)
 
-        editor.updateDraft(.init(hours: 0, minutes: 15, seconds: 1))
+        editor.testHooks.updateDraft(.init(hours: 0, minutes: 15, seconds: 1))
         XCTAssertNil(editor.selectedShortcut)
     }
 
@@ -153,36 +153,36 @@ final class RoutineSelectionTests: XCTestCase {
         focus.loadViewIfNeeded()
         focus.onCommit = { _ in XCTFail("Zero focus should not commit") }
         XCTAssertFalse(focus.confirmButton.isEnabled)
-        focus.confirm()
+        focus.testHooks.confirm()
 
         let catnap = DurationSelectionViewController(mode: .catnap, duration: zero)
         catnap.loadViewIfNeeded()
         var committed = false
         catnap.onCommit = { _ in committed = true }
         XCTAssertTrue(catnap.confirmButton.isEnabled)
-        catnap.confirm()
+        catnap.testHooks.confirm()
         XCTAssertTrue(committed)
     }
 
     func test_sessionsClampDraftAndCommitWithoutChangingOtherFields() {
         let host = AddPresetViewController(preferences: nil, viewModel: PresetEditorViewModel(coreDataManager: InMemoryPresetStore()))
         var routine = TimerConfigModel.standard
-        let editor = host.makeRoutineSelectionEditor(.sessions, configuration: routine) { routine = $0 }
+        let editor = host.routineSelectionTestHooks.makeRoutineSelectionEditor(.sessions, configuration: routine) { routine = $0 }
             as! SessionSelectionViewController
         editor.loadViewIfNeeded()
         XCTAssertEqual(editor.focusSummary, "25 min × 4")
         XCTAssertEqual(editor.breakSummary, "5 min × 3")
         XCTAssertEqual(editor.totalSummary, "1 hr 55 min")
-        editor.adjustCount(by: -20)
+        editor.testHooks.adjustCount(by: -20)
         XCTAssertEqual(editor.draftCount, 1)
         XCTAssertFalse(editor.canDecrease)
         XCTAssertEqual(routine.intervals, 4)
         XCTAssertEqual(editor.breakSummary, "No breaks")
 
-        editor.adjustCount(by: 20)
+        editor.testHooks.adjustCount(by: 20)
         XCTAssertEqual(editor.draftCount, 20)
         XCTAssertFalse(editor.canIncrease)
-        editor.confirm()
+        editor.testHooks.confirm()
         XCTAssertEqual(routine.intervals, 20)
         XCTAssertEqual(routine.mainTimer.duration, 1500)
         XCTAssertEqual(routine.interval.duration, 300)

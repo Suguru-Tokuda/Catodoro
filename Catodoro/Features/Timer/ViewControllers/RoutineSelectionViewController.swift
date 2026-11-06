@@ -43,7 +43,7 @@ class RoutineSelectionViewController: BaseViewController {
 }
 
 extension UIViewController {
-    func makeRoutineSelectionEditor(_ selection: RoutineSelection,
+    private func makeRoutineSelectionEditor(_ selection: RoutineSelection,
                                  configuration: TimerConfigModel,
                                  accent: UIColor = ColorOptions.neonBlue.color,
                                  onCommit: @escaping (TimerConfigModel) -> Void) -> UIViewController {
@@ -107,3 +107,23 @@ extension UIViewController {
         present(navigation, animated: true)
     }
 }
+
+#if DEBUG
+extension UIViewController {
+    // Named separately so it never clashes with a subclass's own `testHooks`.
+    var routineSelectionTestHooks: RoutineSelectionTestHooks {
+        .init(target: self)
+    }
+
+    struct RoutineSelectionTestHooks {
+        let target: UIViewController
+
+        func makeRoutineSelectionEditor(_ selection: RoutineSelection,
+                                        configuration: TimerConfigModel,
+                                        accent: UIColor = ColorOptions.neonBlue.color,
+                                        onCommit: @escaping (TimerConfigModel) -> Void) -> UIViewController {
+            target.makeRoutineSelectionEditor(selection, configuration: configuration, accent: accent, onCommit: onCommit)
+        }
+    }
+}
+#endif

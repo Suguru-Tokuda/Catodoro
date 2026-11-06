@@ -10,7 +10,6 @@ import Combine
 import CatodoroShared
 import Foundation
 import UIKit
-import os
 
 enum TimerActions {
     case start
@@ -83,23 +82,24 @@ class TimerViewModel {
     let presentationSubject = CurrentValueSubject<TimerPresentationState, Never>(
         .init(isBreak: false, status: .paused, sessionIndex: 1, sessionCount: 0,
               remainingDuration: 0, phaseDuration: 0))
-    let timerSubject = PassthroughSubject<String, Never>()
-    let timerStatusSubject = PassthroughSubject<TimerStatus, Never>()
+    private let timerSubject = PassthroughSubject<String, Never>()
+    private let timerStatusSubject = PassthroughSubject<TimerStatus, Never>()
     let timerActionSubject = CurrentValueSubject<TimerActions, Never>(.stop)
-    let timerLabelSubject = PassthroughSubject<String, Never>()
-    let timerIntervalSubject = PassthroughSubject<TimeInterval, Never>()
+    private let timerLabelSubject = PassthroughSubject<String, Never>()
+    private let timerIntervalSubject = PassthroughSubject<TimeInterval, Never>()
+    private var hapticsError: Error?
 
     private var audioManager: AudioManaging
     private weak var preferences: CatodoroPreferencesProtocol?
     private weak var liveActivityManager: LiveActivityManaging?
+    private let hapticsManager: HapticsManaging
 
     private(set) var timerStatus: TimerStatus = .paused
-
-    private let timerLog = Logger(subsystem: Bundle.main.bundleIdentifier ?? "Catodoro", category: "timer")
 
     init(audioManager: AudioManaging = AudioManager(),
          preferences: CatodoroPreferencesProtocol?,
          liveActivityManager: LiveActivityManaging? = LiveActivityManager(),
+         hapticsManager: HapticsManaging = HapticsManager(),
          now: @escaping () -> Date = Date.init,
          schedulesTicks: Bool = true,
          applicationIsActive: @escaping () -> Bool = { UIApplication.shared.applicationState == .active },
@@ -112,6 +112,7 @@ class TimerViewModel {
         self.audioManager = audioManager
         self.preferences = preferences
         self.liveActivityManager = liveActivityManager
+        self.hapticsManager = hapticsManager
         self.now = now
         self.schedulesTicks = schedulesTicks
         self.applicationIsActive = applicationIsActive
@@ -143,7 +144,7 @@ class TimerViewModel {
         timerType == .interval
     }
 
-    var timerNameString: String {
+    private var timerNameString: String {
         isBreak ? AppStrings.Timer.numberedBreak(interval) : AppStrings.Timer.numberedFocus(interval)
     }
 
@@ -180,7 +181,7 @@ class TimerViewModel {
         }
     }
 
-    func startTimer() {
+    private func startTimer() {
         guard duration > 0 else {
             return
         }
@@ -195,7 +196,7 @@ class TimerViewModel {
         startLiveActivity()
     }
 
-    func pauseTimer() {
+    private func pauseTimer() {
         refresh()
         guard timerStatus == .playing else {
             return
@@ -209,9 +210,10 @@ class TimerViewModel {
         timerActionSubject.send(.pause)
         updateLiveActivity()
         releaseBackgroundRuntimeAfterUpdate()
+        stopHaptics()
     }
 
-    func resumeTimer() {
+    private func resumeTimer() {
         guard timerStatus == .paused, currentTimerValue > 0 else {
             return
         }
@@ -226,7 +228,7 @@ class TimerViewModel {
         updateLiveActivity()
     }
 
-    func finishTimer() {
+    private func finishTimer() {
         currentTimerValue = 0
         deadline = nil
         cancelBackgroundTimer()
@@ -278,9 +280,10 @@ class TimerViewModel {
         updateLiveActivity()
     }
 
-    func resetTimer() {
+    private func resetTimer() {
         generation += 1
         stopSound()
+        stopHaptics()
         cancelBackgroundTimer()
         releaseBackgroundRuntime()
         deadline = nil
@@ -325,7 +328,6 @@ class TimerViewModel {
         publishState()
 
         if changedPhase {
-            timerLog.notice("phase -> \(self.isBreak ? "break" : "focus", privacy: .public) #\(self.interval) remaining=\(self.currentTimerValue) appActive=\(self.applicationIsActive())")
             timerActionSubject.send(.start)
             notifyPhaseChange(isComplete: false)
         }
@@ -363,19 +365,15 @@ class TimerViewModel {
     // finite runtime to finish nearby phase transitions and their ActivityKit updates.
     // iOS may expire this grant; deadline reconciliation remains the source of truth.
     @objc private func retainBackgroundRuntime() {
-        timerLog.notice("retainBackgroundRuntime status=\(self.timerStatus.rawValue, privacy: .public) existingTask=\(self.backgroundTask != .invalid)")
         guard timerStatus == .playing, backgroundTask == .invalid else { return }
         backgroundTask = beginBackgroundTask { [weak self] in
             guard let self else { return }
-            timerLog.notice("bg task EXPIRED")
             releaseBackgroundRuntime()
         }
-        timerLog.notice("bg task begin remaining=\(UIApplication.shared.backgroundTimeRemaining)")
     }
 
     private func releaseBackgroundRuntime() {
         guard backgroundTask != .invalid else { return }
-        timerLog.notice("bg task end")
         let task = backgroundTask
         backgroundTask = .invalid
         endBackgroundTask(task)
@@ -405,7 +403,6 @@ class TimerViewModel {
         refresh()
         updateLiveActivity()
         releaseBackgroundRuntime()
-        timerLog.notice("app active")
     }
 
     @objc private func handleSkipBreakAction() {
@@ -442,6 +439,7 @@ class TimerViewModel {
                 playIntermediateSound()
             }
 
+            playHaptics()
             updateLiveActivity()
         } else {
             let sound = shouldPlaySound ? SoundOptions(preferences?.sound ?? "").fileName : nil
@@ -450,11 +448,11 @@ class TimerViewModel {
         }
     }
 
-    func playFinishSound() {
+    private func playFinishSound() {
         playCue()
     }
 
-    func playIntermediateSound() {
+    private func playIntermediateSound() {
         playCue()
     }
 
@@ -464,10 +462,22 @@ class TimerViewModel {
         }
     }
 
-    func stopSound() {
+    private func stopSound() {
         enqueueAudioOperation { manager in
             try manager.stop()
         }
+    }
+
+    private func playHaptics() {
+        do {
+            try hapticsManager.start()
+        } catch {
+            hapticsError = error
+        }
+    }
+
+    private func stopHaptics() {
+        hapticsManager.stop()
     }
 
     private func enqueueAudioOperation(_ operation: @escaping (AudioManaging) throws -> Void) {
@@ -488,7 +498,7 @@ class TimerViewModel {
         }
     }
 
-    var audioState: AudioState {
+    private var audioState: AudioState {
         audioManager.audioState
     }
 
@@ -602,6 +612,12 @@ extension TimerViewModel {
         var timerType: TimerType? { target.timerType }
         var timerStatus: TimerStatus { target.timerStatus }
         var backgroundTimer: DispatchSourceTimer? { target.backgroundTimer }
+        var hapticsError: Error? { target.hapticsError }
+        var timerSubject: PassthroughSubject<String, Never> { target.timerSubject }
+
+        func startTimer() { target.startTimer() }
+        func pauseTimer() { target.pauseTimer() }
+        func resumeTimer() { target.resumeTimer() }
     }
 }
 #endif

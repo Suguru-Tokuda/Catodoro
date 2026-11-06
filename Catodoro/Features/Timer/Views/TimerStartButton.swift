@@ -38,8 +38,8 @@ class TimerStartButton: UIButton {
 
     // Stack view to hold images and label
     let stackView = UIStackView()
-    let leadingImageView: UIImageView
-    let trailingImageView: UIImageView
+    private let leadingImageView: UIImageView
+    private let trailingImageView: UIImageView
 
     override init(frame: CGRect) {
         let image = UIImage(named: "CatPaw")?.withRenderingMode(.alwaysTemplate)
@@ -131,6 +131,8 @@ extension TimerStartButton {
         let target: TimerStartButton
 
         var buttonLabel: UILabel { target.buttonLabel }
+        var leadingImageView: UIImageView { target.leadingImageView }
+        var trailingImageView: UIImageView { target.trailingImageView }
     }
 }
 #endif

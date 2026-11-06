@@ -99,6 +99,6 @@ final class BaseNavigationControllerTests: XCTestCase {
         navigationController.delegate?.navigationController?(navigationController, didShow: viewController, animated: false)
         
         // Then
-        XCTAssertFalse(navigationController.isNewViewControllerBeingAdded, "The flag should be reset to false after a view controller is shown.")
+        XCTAssertFalse(navigationController.testHooks.isNewViewControllerBeingAdded, "The flag should be reset to false after a view controller is shown.")
     }
 }

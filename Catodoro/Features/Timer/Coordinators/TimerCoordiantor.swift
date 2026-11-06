@@ -24,6 +24,7 @@ class TimerCoordiantor: Coordinator {
     private var configuration: TimerCoordinatorConfiguration
     weak var preferences: CatodoroPreferencesProtocol?
     weak var liveActivityManager: LiveActivityManaging?
+    var hapticsManager: HapticsManaging?
 
     init(navigationController: UINavigationController = BaseNavigationController(),
          configuration: TimerCoordinatorConfiguration = TimerCoordinatorConfiguration(),
@@ -43,6 +44,7 @@ class TimerCoordiantor: Coordinator {
     func navigateToTimerView(viewModel: TimerConfigViewModel) {
         let viewController = TimerViewController(preferences: preferences,
                                                  liveActivityManager: liveActivityManager,
+                                                 hapticsManager: hapticsManager,
                                                  shouldHidesBottomBarWhen: configuration.shouldHideBottomBarWhenTimerStart
         )
         viewController.delegate = self

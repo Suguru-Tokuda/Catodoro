@@ -109,7 +109,7 @@ final class CatodoroPersistentController: CloudSyncPersistence, @unchecked Senda
     }
 
     /// A nil identifier supports local-only stores and disk-backed tests without cloud traffic.
-    static func cloudOptions(enabled: Bool, identifier: String?) -> NSPersistentCloudKitContainerOptions? {
+    private static func cloudOptions(enabled: Bool, identifier: String?) -> NSPersistentCloudKitContainerOptions? {
         guard enabled, let identifier else { return nil }
 
         let options = NSPersistentCloudKitContainerOptions(containerIdentifier: identifier)
@@ -127,3 +127,13 @@ final class CatodoroPersistentController: CloudSyncPersistence, @unchecked Senda
         }
     }
 }
+
+#if DEBUG
+extension CatodoroPersistentController {
+    enum TestHooks {
+        static func cloudOptions(enabled: Bool, identifier: String?) -> NSPersistentCloudKitContainerOptions? {
+            CatodoroPersistentController.cloudOptions(enabled: enabled, identifier: identifier)
+        }
+    }
+}
+#endif

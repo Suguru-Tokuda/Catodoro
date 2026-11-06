@@ -50,7 +50,7 @@ class PresetsViewControllerTests: XCTestCase {
         XCTAssertFalse(spinner.isAnimating)
         XCTAssertTrue(view.tableView.backgroundView is UIContentUnavailableView)
         // A repeated stop must not erase the rendered empty state.
-        view.hideLoading()
+        view.testHooks.hideLoading()
         XCTAssertTrue(view.tableView.backgroundView is UIContentUnavailableView)
         view.render(isEmpty: false, showLoading: false)
         XCTAssertNil(view.tableView.backgroundView)
@@ -69,14 +69,14 @@ class PresetsViewControllerTests: XCTestCase {
         let table = controller.testHooks.presetsTableView
         let path = IndexPath(row: 0, section: 0)
         let initial = try XCTUnwrap(controller.tableView(table, cellForRowAt: path) as? PresetListViewCell)
-        XCTAssertEqual(initial.playButton.configuration?.baseBackgroundColor, ColorOptions.neonPink.color)
+        XCTAssertEqual(initial.testHooks.playButton.configuration?.baseBackgroundColor, ColorOptions.neonPink.color)
 
         preferences.setColor(.neonPurple)
         let refreshed = expectation(description: "Accent publisher reaches the Presets screen")
         DispatchQueue.main.async { refreshed.fulfill() }
         await fulfillment(of: [refreshed], timeout: 1)
         let updated = try XCTUnwrap(controller.tableView(table, cellForRowAt: path) as? PresetListViewCell)
-        XCTAssertEqual(updated.playButton.configuration?.baseBackgroundColor, ColorOptions.neonPurple.color)
+        XCTAssertEqual(updated.testHooks.playButton.configuration?.baseBackgroundColor, ColorOptions.neonPurple.color)
         XCTAssertEqual(controller.view.tintColor, ColorOptions.neonPurple.color)
     }
 
@@ -113,19 +113,19 @@ class PresetsViewControllerTests: XCTestCase {
         let tabs = TabCoordinator(preferences: nil, liveActivityManager: nil, coreDataManager: InMemoryPresetStore())
         tabs.start()
         tabs.selectPage(.presets)
-        let presets = try XCTUnwrap(tabs.presetsCoordiantor)
+        let presets = try XCTUnwrap(tabs.testHooks.presetsCoordiantor)
         let list = try XCTUnwrap(presets.navigationController.topViewController as? PresetsViewController)
         // The off-screen navigation controller does not receive its initial didShow callback.
         let navigation = try XCTUnwrap(presets.navigationController as? BaseNavigationController)
-        navigation.isNewViewControllerBeingAdded = false
-        let focusStackCount = tabs.timerCoordinator?.navigationController.viewControllers.count
+        navigation.testHooks.isNewViewControllerBeingAdded = false
+        let focusStackCount = tabs.testHooks.timerCoordinator?.navigationController.viewControllers.count
         let preset = PresetModel(id: UUID(), totalDuration: 1500, intervalDuration: 300, intervals: 4)
 
         presets.presetsViewControllerDidSelectPreset(list, preset: preset)
 
         XCTAssertEqual(tabs.currentPage(), .presets)
         XCTAssertTrue(presets.navigationController.topViewController is TimerViewController)
-        XCTAssertEqual(tabs.timerCoordinator?.navigationController.viewControllers.count, focusStackCount)
+        XCTAssertEqual(tabs.testHooks.timerCoordinator?.navigationController.viewControllers.count, focusStackCount)
         XCTAssertTrue(presets.navigationController.topViewController?.hidesBottomBarWhenPushed == true)
         XCTAssertEqual(presets.childCoordinators.count, 1)
     }

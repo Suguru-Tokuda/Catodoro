@@ -9,7 +9,7 @@ import UIKit
 
 class TimePickerView: UIPickerView {
     var onSelect: ((Int) -> Void)?
-    var timeOptions: [Int]
+    private var timeOptions: [Int]
 
     init(frame: CGRect, min: Int = 0, max: Int) {
         timeOptions = []
@@ -43,3 +43,17 @@ extension TimePickerView: UIPickerViewDelegate {
         onSelect?(timeOptions[row])
     }
 }
+
+#if DEBUG
+extension TimePickerView {
+    var testHooks: TestHooks {
+        .init(target: self)
+    }
+
+    struct TestHooks {
+        let target: TimePickerView
+
+        var timeOptions: [Int] { target.timeOptions }
+    }
+}
+#endif

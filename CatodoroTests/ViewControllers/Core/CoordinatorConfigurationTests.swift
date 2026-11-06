@@ -95,10 +95,10 @@ final class CoordinatorConfigurationTests: XCTestCase {
         let tabs = TabCoordinator(preferences: nil, liveActivityManager: nil, coreDataManager: InMemoryPresetStore())
         tabs.start()
         tabs.selectPage(.timer)
-        let coordinator = try XCTUnwrap(tabs.timerCoordinator)
+        let coordinator = try XCTUnwrap(tabs.testHooks.timerCoordinator)
         let navigation = try XCTUnwrap(coordinator.navigationController as? BaseNavigationController)
         // Off-screen navigation does not deliver the initial didShow callback.
-        navigation.isNewViewControllerBeingAdded = false
+        navigation.testHooks.isNewViewControllerBeingAdded = false
 
         coordinator.didFinishConfiguring(viewModel: TimerConfigViewModel(coreDataManager: InMemoryPresetStore()))
 

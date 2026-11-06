@@ -55,7 +55,7 @@ struct CatodoroWidgetEntryView : View {
 }
 
 struct CatodoroWidget: Widget {
-    let kind: String = "CatodoroWidget"
+    private let kind: String = "CatodoroWidget"
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in

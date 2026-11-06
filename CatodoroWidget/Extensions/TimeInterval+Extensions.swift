@@ -27,7 +27,7 @@ extension TimeInterval {
         return "00:00:00"
     }
 
-    func toTimerModel() -> (Int, Int, Int)? {
+    private func toTimerModel() -> (Int, Int, Int)? {
         if self >= 0 {
             var timerValue: Int = Int(self)
             let hours = timerValue / 3600

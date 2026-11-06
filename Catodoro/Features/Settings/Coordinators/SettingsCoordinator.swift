@@ -28,15 +28,15 @@ class SettingsCoordinator: Coordinator {
         navigationController.pushViewController(settingsViewController, animated: false)
     }
 
-    func pop() {
+    private func pop() {
         navigationController.popViewController(animated: true)
     }
 
-    func popToRoot() {
+    private func popToRoot() {
         navigationController.popToRootViewController(animated: true)
     }
 
-    func navigateToColorSelectionsView() {
+    private func navigateToColorSelectionsView() {
         var options: [OptionModel] = []
         let selectedColorCode = preferences?.color ?? ColorOptions.neonBlue.code
         ColorOptions.allCases.forEach {
@@ -54,7 +54,7 @@ class SettingsCoordinator: Coordinator {
         navigationController.pushViewController(colorSelectionViewController, animated: true)
     }
 
-    func navigateToSoundSelectionsView() {
+    private func navigateToSoundSelectionsView() {
         var options: [OptionModel] = []
         let selectedSoundId = preferences?.sound ?? SoundOptions.meowRegular.id
         SoundOptions.allCases.forEach {

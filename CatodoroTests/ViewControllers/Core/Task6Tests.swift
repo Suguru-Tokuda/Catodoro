@@ -33,7 +33,7 @@ final class Task6Tests: XCTestCase {
                                    liveActivityManager: activities, now: { [unowned self] in self.instant },
                                    schedulesTicks: false, applicationIsActive: { true })
         timer.configure(totalDuration: 10, intervalDuration: 5, intervals: count)
-        timer.startTimer()
+        timer.testHooks.startTimer()
         return timer
     }
 
@@ -78,7 +78,7 @@ final class Task6Tests: XCTestCase {
         let model = timer()
         instant += 10
         model.refresh()
-        model.pauseTimer()
+        model.testHooks.pauseTimer()
         XCTAssertTrue(model.isBreak)
         model.skipBreak()
         let state = model.presentationSubject.value
@@ -198,7 +198,7 @@ final class Task6Tests: XCTestCase {
         let preferences = MockPreferences()
         let activities = MockLiveActivityManager()
         let model = timer(preferences: preferences, activities: activities)
-        model.pauseTimer()
+        model.testHooks.pauseTimer()
         let ended = expectation(description: "Activity ends when disabled")
         activities.onEnd = { ended.fulfill() }
         preferences.setLiveActivityEnabled(false)
@@ -221,7 +221,7 @@ final class Task6Tests: XCTestCase {
         let model = timer(activities: activities)
         XCTAssertNotNil(model.liveActivityError)
         XCTAssertEqual(model.presentationSubject.value.status, .playing)
-        model.pauseTimer()
+        model.testHooks.pauseTimer()
         XCTAssertEqual(model.presentationSubject.value.status, .paused)
         let manager = LiveActivityManager(activitiesEnabled: { false })
         XCTAssertThrowsError(try manager.startLiveActivity(name: "Catodoro", currentTimerValue: 10,

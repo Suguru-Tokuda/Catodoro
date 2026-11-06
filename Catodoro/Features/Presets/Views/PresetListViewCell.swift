@@ -37,7 +37,7 @@ final class PresetListViewCell: BaseTableViewCell {
         return label
     }()
 
-    let intervalDurationLabel: UILabel = {
+    private let intervalDurationLabel: UILabel = {
         let label = UILabel()
         label.font = CatTheme.font(.subheadline)
         label.textColor = CatTheme.secondaryText
@@ -47,7 +47,7 @@ final class PresetListViewCell: BaseTableViewCell {
         return label
     }()
 
-    let intervalLabel: UILabel = {
+    private let intervalLabel: UILabel = {
         let label = UILabel()
         label.font = CatTheme.font(.footnote)
         label.textColor = CatTheme.secondaryText
@@ -57,7 +57,7 @@ final class PresetListViewCell: BaseTableViewCell {
         return label
     }()
 
-    let playButton: UIButton = {
+    private let playButton: UIButton = {
         let button = UIButton(type: .system)
         var configuration = UIButton.Configuration.filled()
         configuration.image = UIImage(systemName: "play.fill")
@@ -70,7 +70,7 @@ final class PresetListViewCell: BaseTableViewCell {
         return button
     }()
 
-    let horizontalStackView: UIStackView = {
+    private let horizontalStackView: UIStackView = {
         let stack = UIStackView()
         stack.axis = .horizontal
         stack.alignment = .center
@@ -78,7 +78,7 @@ final class PresetListViewCell: BaseTableViewCell {
         return stack
     }()
 
-    let verticalStackView: UIStackView = {
+    private let verticalStackView: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
         stack.spacing = 8
@@ -138,3 +138,21 @@ final class PresetListViewCell: BaseTableViewCell {
         playButton.isEnabled = model?.configuration.isValid == true
     }
 }
+
+#if DEBUG
+extension PresetListViewCell {
+    var testHooks: TestHooks {
+        .init(target: self)
+    }
+
+    struct TestHooks {
+        let target: PresetListViewCell
+
+        var intervalDurationLabel: UILabel { target.intervalDurationLabel }
+        var intervalLabel: UILabel { target.intervalLabel }
+        var playButton: UIButton { target.playButton }
+        var horizontalStackView: UIStackView { target.horizontalStackView }
+        var verticalStackView: UIStackView { target.verticalStackView }
+    }
+}
+#endif

@@ -23,6 +23,7 @@ class PresetsCoordinator: Coordinator {
     var navigationController: UINavigationController
     private let timerCoordinator: TimerCoordiantor
     weak var liveActivityManager: LiveActivityManaging?
+    var hapticsManager: HapticsManaging?
     private var editorCompletion: (() -> Void)?
     weak var preferences: CatodoroPreferences?
     private var configuration: PresetsCoordinatorConfiguration
@@ -49,7 +50,7 @@ class PresetsCoordinator: Coordinator {
         navigationController.pushViewController(presetsViewController, animated: false)
     }
 
-    func navigateToAddPreset(onFinish: @escaping(() -> Void)) {
+    private func navigateToAddPreset(onFinish: @escaping(() -> Void)) {
         editorCompletion = onFinish
         let addPresetViewController = AddPresetViewController(preferences: preferences, coreDataManager: coreDataManager)
         addPresetViewController.delegate = self
@@ -70,6 +71,7 @@ extension PresetsCoordinator: PresetsViewControllerDelegate {
 
         timerCoordinator.preferences = preferences
         timerCoordinator.liveActivityManager = liveActivityManager
+        timerCoordinator.hapticsManager = hapticsManager
         timerCoordinator.navigateToTimerView(viewModel: .init(timerModel: configuration, coreDataManager: coreDataManager))
     }
     

@@ -8,7 +8,7 @@
 import UIKit
 
 class BaseNavigationController: UINavigationController {
-    var isNewViewControllerBeingAdded: Bool = false
+    private var isNewViewControllerBeingAdded: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,3 +42,20 @@ extension BaseNavigationController: UINavigationControllerDelegate {
         isNewViewControllerBeingAdded = false
     }
 }
+
+#if DEBUG
+extension BaseNavigationController {
+    var testHooks: TestHooks {
+        .init(target: self)
+    }
+
+    struct TestHooks {
+        let target: BaseNavigationController
+
+        var isNewViewControllerBeingAdded: Bool {
+            get { target.isNewViewControllerBeingAdded }
+            nonmutating set { target.isNewViewControllerBeingAdded = newValue }
+        }
+    }
+}
+#endif

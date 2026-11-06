@@ -22,9 +22,12 @@ final class TimerViewController: BaseViewController {
 
     init(preferences: CatodoroPreferencesProtocol?,
          liveActivityManager: LiveActivityManaging?,
+         hapticsManager: HapticsManaging? = nil,
          shouldHidesBottomBarWhen: Bool = true
     ) {
-        viewModel = TimerViewModel(preferences: preferences, liveActivityManager: liveActivityManager)
+        viewModel = TimerViewModel(preferences: preferences,
+                                   liveActivityManager: liveActivityManager,
+                                   hapticsManager: hapticsManager ?? HapticsManager())
         timerView = TimerView(frame: .zero, strokeColor: ColorOptions(preferences?.color ?? "").color)
         super.init(nibName: nil, bundle: nil)
         hidesBottomBarWhenPushed = shouldHidesBottomBarWhen

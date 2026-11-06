@@ -17,7 +17,7 @@ class TimePickerViewTests: XCTestCase {
         let pickerView = TimePickerView(frame: .zero, min: minTime, max: maxTime)
 
         // Act
-        let timeOptions = pickerView.timeOptions
+        let timeOptions = pickerView.testHooks.timeOptions
 
         // Assert
         XCTAssertEqual(timeOptions.count, maxTime - minTime + 1, "Time options should include all integers between min and max inclusive.")
@@ -33,7 +33,7 @@ class TimePickerViewTests: XCTestCase {
         let numberOfRows = pickerView.pickerView(pickerView, numberOfRowsInComponent: 0)
 
         // Assert
-        XCTAssertEqual(numberOfRows, pickerView.timeOptions.count, "Number of rows should match the count of time options.")
+        XCTAssertEqual(numberOfRows, pickerView.testHooks.timeOptions.count, "Number of rows should match the count of time options.")
     }
 
     func test_titleForRow_shouldReturnCorrectTitle() {

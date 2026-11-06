@@ -58,7 +58,7 @@ final class TimerViewModelTests: XCTestCase {
         let expectation = self.expectation(description: "Timer updates current value")
         let expectedValue = "00:25:00"
 
-        viewModel.timerSubject
+        viewModel.testHooks.timerSubject
             .first()
             .sink { value in
                 expectation.fulfill()
@@ -67,15 +67,15 @@ final class TimerViewModelTests: XCTestCase {
             .store(in: &cancellables)
 
         viewModel.configure(totalDuration: 1500, intervalDuration: 300, intervals: 4)
-        viewModel.startTimer()
+        viewModel.testHooks.startTimer()
 
         waitForExpectations(timeout: 2.0)
     }
 
     func test_pauseTimer_expectTimerIsPaused() {
         viewModel.configure(totalDuration: 1500, intervalDuration: 300, intervals: 4)
-        viewModel.startTimer()
-        viewModel.pauseTimer()
+        viewModel.testHooks.startTimer()
+        viewModel.testHooks.pauseTimer()
 
         XCTAssertEqual(viewModel.testHooks.timerStatus, .paused)
         XCTAssertNil(viewModel.testHooks.backgroundTimer)
@@ -83,9 +83,9 @@ final class TimerViewModelTests: XCTestCase {
 
     func test_resumeTimer_expectTimerResumesPlaying() {
         viewModel.configure(totalDuration: 1500, intervalDuration: 300, intervals: 4)
-        viewModel.startTimer()
-        viewModel.pauseTimer()
-        viewModel.resumeTimer()
+        viewModel.testHooks.startTimer()
+        viewModel.testHooks.pauseTimer()
+        viewModel.testHooks.resumeTimer()
 
         XCTAssertEqual(viewModel.testHooks.timerStatus, .playing)
         XCTAssertNotNil(viewModel.testHooks.backgroundTimer)
@@ -93,7 +93,7 @@ final class TimerViewModelTests: XCTestCase {
 
     func test_stopTimer_expectTimerResets() {
         viewModel.configure(totalDuration: 1500, intervalDuration: 300, intervals: 4)
-        viewModel.startTimer()
+        viewModel.testHooks.startTimer()
         viewModel.stopTimer()
 
         XCTAssertEqual(viewModel.testHooks.timerStatus, .paused)
@@ -104,7 +104,7 @@ final class TimerViewModelTests: XCTestCase {
 
     func test_startLiveActivity_expectLiveActivityIsStarted() {
         viewModel.configure(totalDuration: 1500, intervalDuration: 300, intervals: 4)
-        viewModel.startTimer()
+        viewModel.testHooks.startTimer()
 
         XCTAssertTrue(liveActivityManagerMock.didStartLiveActivity)
     }
@@ -121,8 +121,8 @@ final class TimerViewModelTests: XCTestCase {
         }
 
         viewModel.configure(totalDuration: 1500, intervalDuration: 300, intervals: 4)
-        viewModel.startTimer()
-        viewModel.pauseTimer()
+        viewModel.testHooks.startTimer()
+        viewModel.testHooks.pauseTimer()
 
         await fulfillment(of: [updated], timeout: 1.0)
         XCTAssertTrue(liveActivityManagerMock.didUpdateLiveActivity)
@@ -146,7 +146,7 @@ final class TimerPresentationTests: XCTestCase {
                                    liveActivityManager: nil, now: { [unowned self] in self.instant },
                                    schedulesTicks: false)
         model.configure(totalDuration: focus, intervalDuration: rest, intervals: count)
-        model.startTimer()
+        model.testHooks.startTimer()
 
         return model
     }
@@ -196,13 +196,13 @@ final class TimerPresentationTests: XCTestCase {
     func test_pauseFreezesTimeAndResumeUsesRemainingDuration() {
         let model = makeTimer()
         instant.addTimeInterval(3)
-        model.pauseTimer()
+        model.testHooks.pauseTimer()
         XCTAssertEqual(model.currentTimerValue, 7)
         XCTAssertEqual(model.presentationSubject.value.progress, 0.3, accuracy: 0.001)
         instant.addTimeInterval(100)
         model.refresh()
         XCTAssertEqual(model.currentTimerValue, 7)
-        model.resumeTimer()
+        model.testHooks.resumeTimer()
         instant.addTimeInterval(2)
         model.refresh()
         XCTAssertEqual(model.currentTimerValue, 5)
@@ -252,7 +252,7 @@ final class TimerPresentationTests: XCTestCase {
                                    now: { [unowned self] in self.instant }, schedulesTicks: false,
                                    applicationIsActive: { true })
         model.configure(totalDuration: 10, intervalDuration: 5, intervals: 2)
-        model.startTimer()
+        model.testHooks.startTimer()
         await model.testHooks.flushAudioOperations()
         XCTAssertEqual(audio.playCount, 0)
         instant.addTimeInterval(10)
@@ -286,7 +286,7 @@ final class TimerPresentationTests: XCTestCase {
             liveActivityManager: activity, now: { [unowned self] in self.instant },
             schedulesTicks: false, applicationIsActive: { false })
         model.configure(totalDuration: 10, intervalDuration: 5, intervals: 2)
-        model.startTimer()
+        model.testHooks.startTimer()
 
         instant.addTimeInterval(10)
         model.refresh()
@@ -316,7 +316,7 @@ final class TimerPresentationTests: XCTestCase {
             liveActivityManager: nil, now: { [unowned self] in self.instant },
             schedulesTicks: false, applicationIsActive: { true })
         model.configure(totalDuration: 10, intervalDuration: 5, intervals: 2)
-        model.startTimer()
+        model.testHooks.startTimer()
         instant.addTimeInterval(10)
         model.refresh()
         await model.testHooks.flushAudioOperations()
@@ -336,7 +336,7 @@ final class TimerPresentationTests: XCTestCase {
                                    now: { [unowned self] in self.instant }, schedulesTicks: false,
                                    applicationIsActive: { true })
         model.configure(totalDuration: 10, intervalDuration: 0, intervals: 1)
-        model.startTimer()
+        model.testHooks.startTimer()
         instant.addTimeInterval(10)
         model.refresh()
         await model.testHooks.flushAudioOperations()
@@ -363,7 +363,7 @@ final class TimerPresentationTests: XCTestCase {
                 return task
             }, endBackgroundTask: { ended.append($0) })
         model.configure(totalDuration: 5, intervalDuration: 5, intervals: 2)
-        model.startTimer()
+        model.testHooks.startTimer()
         NotificationCenter.default.post(name: UIApplication.didEnterBackgroundNotification, object: nil)
         NotificationCenter.default.post(name: UIApplication.didEnterBackgroundNotification, object: nil)
         XCTAssertEqual(requests, 1)
@@ -393,7 +393,7 @@ final class TimerPresentationTests: XCTestCase {
                 return UIBackgroundTaskIdentifier(rawValue: 42)
             }, endBackgroundTask: { _ in ends += 1 })
         model.configure(totalDuration: 5, intervalDuration: 5, intervals: 2)
-        model.startTimer()
+        model.testHooks.startTimer()
         NotificationCenter.default.post(name: UIApplication.didEnterBackgroundNotification, object: nil)
         expiration?()
         XCTAssertEqual(ends, 1)
@@ -422,7 +422,7 @@ final class TimerPresentationTests: XCTestCase {
                 released.fulfill()
             })
         model.configure(totalDuration: 5, intervalDuration: 5, intervals: 1)
-        model.startTimer()
+        model.testHooks.startTimer()
         NotificationCenter.default.post(name: UIApplication.didEnterBackgroundNotification, object: nil)
         instant.addTimeInterval(5)
         model.refresh()

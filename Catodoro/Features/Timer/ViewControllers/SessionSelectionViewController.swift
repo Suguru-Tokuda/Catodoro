@@ -48,13 +48,13 @@ final class SessionSelectionViewController: RoutineSelectionViewController {
         }
     }
 
-    func adjustCount(by delta: Int) {
+    private func adjustCount(by delta: Int) {
         draftCount = min(20, max(1, draftCount + min(20, max(-20, delta))))
         render()
         sessionView.announceCount(draftCount)
     }
 
-    func confirm() {
+    private func confirm() {
         guard !hasCommitted, (1...20).contains(draftCount) else {
             return
         }
@@ -101,6 +101,17 @@ extension SessionSelectionViewController {
 
     var canIncrease: Bool {
         sessionView.canIncrease
+    }
+
+    var testHooks: TestHooks {
+        .init(target: self)
+    }
+
+    struct TestHooks {
+        let target: SessionSelectionViewController
+
+        func adjustCount(by delta: Int) { target.adjustCount(by: delta) }
+        func confirm() { target.confirm() }
     }
 }
 #endif

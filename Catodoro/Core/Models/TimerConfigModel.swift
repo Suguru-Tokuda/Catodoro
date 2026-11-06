@@ -26,7 +26,7 @@ struct TimerConfigModel {
             && (1...20).contains(intervals)
     }
 
-    var focusSubtotal: TimeInterval {
+    private var focusSubtotal: TimeInterval {
         mainTimer.duration * Double(max(0, intervals))
     }
 

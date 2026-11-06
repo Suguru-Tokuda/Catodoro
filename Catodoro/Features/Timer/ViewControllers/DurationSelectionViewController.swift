@@ -51,12 +51,12 @@ final class DurationSelectionViewController: RoutineSelectionViewController {
         updateConfirmation()
     }
 
-    func updateDraft(_ value: TimerModel) {
+    private func updateDraft(_ value: TimerModel) {
         viewModel.updateDraft(value)
         updateConfirmation()
     }
 
-    func selectShortcut(minutes: Int) {
+    private func selectShortcut(minutes: Int) {
         guard viewModel.selectShortcut(minutes: minutes) else {
             return
         }
@@ -65,7 +65,7 @@ final class DurationSelectionViewController: RoutineSelectionViewController {
         updateConfirmation()
     }
 
-    func confirm() {
+    private func confirm() {
         guard let duration = viewModel.confirm() else {
             return
         }
@@ -93,6 +93,18 @@ extension DurationSelectionViewController {
 
     var selectedMinutes: Int {
         durationView.selectedMinutes
+    }
+
+    var testHooks: TestHooks {
+        .init(target: self)
+    }
+
+    struct TestHooks {
+        let target: DurationSelectionViewController
+
+        func updateDraft(_ value: TimerModel) { target.updateDraft(value) }
+        func selectShortcut(minutes: Int) { target.selectShortcut(minutes: minutes) }
+        func confirm() { target.confirm() }
     }
 }
 #endif

@@ -75,11 +75,13 @@ class MainCoordinator: @preconcurrency MainCoordinatorProtocol {
     private let preferences: CatodoroPreferences
     private let coreDataManager: CatodoroCoreDataManaging
     weak var liveActivityManager: LiveActivityManaging?
+    private let hapticsManager: HapticsManaging?
     private let syncLifecycleManager: SyncLifecycleManaging
 
     required init(_ navigationController: UINavigationController? = nil,
                   preferences: CatodoroPreferences,
                   liveActivityManager: LiveActivityManaging?,
+                  hapticsManager: HapticsManaging? = nil,
                   coreDataManager: CatodoroCoreDataManaging,
                   syncLifecycleManager: SyncLifecycleManaging
     ) {
@@ -87,6 +89,7 @@ class MainCoordinator: @preconcurrency MainCoordinatorProtocol {
         self.navigationController = navigationController ?? BaseNavigationController()
         self.preferences = preferences
         self.liveActivityManager = liveActivityManager
+        self.hapticsManager = hapticsManager
         self.syncLifecycleManager = syncLifecycleManager
         self.navigationController.setNavigationBarHidden(true, animated: false)        
     }
@@ -112,6 +115,7 @@ class MainCoordinator: @preconcurrency MainCoordinatorProtocol {
         let tabCoordinator = TabCoordinator.init(navigationController,
                                                  preferences: preferences,
                                                  liveActivityManager: liveActivityManager,
+                                                 hapticsManager: hapticsManager,
                                                  coreDataManager: coreDataManager,
                                                  syncLifecycleManager: syncLifecycleManager)
         tabCoordinator.finishDelegate = self
