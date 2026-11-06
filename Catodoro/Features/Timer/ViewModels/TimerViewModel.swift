@@ -10,6 +10,7 @@ import Combine
 import CatodoroShared
 import Foundation
 import UIKit
+import os
 
 enum TimerActions {
     case start
@@ -93,6 +94,8 @@ class TimerViewModel {
     private weak var liveActivityManager: LiveActivityManaging?
 
     private(set) var timerStatus: TimerStatus = .paused
+
+    private let timerLog = Logger(subsystem: Bundle.main.bundleIdentifier ?? "Catodoro", category: "timer")
 
     init(audioManager: AudioManaging = AudioManager(),
          preferences: CatodoroPreferencesProtocol?,
@@ -322,6 +325,7 @@ class TimerViewModel {
         publishState()
 
         if changedPhase {
+            timerLog.notice("phase -> \(self.isBreak ? "break" : "focus", privacy: .public) #\(self.interval) remaining=\(self.currentTimerValue) appActive=\(self.applicationIsActive())")
             timerActionSubject.send(.start)
             notifyPhaseChange(isComplete: false)
         }
@@ -359,14 +363,19 @@ class TimerViewModel {
     // finite runtime to finish nearby phase transitions and their ActivityKit updates.
     // iOS may expire this grant; deadline reconciliation remains the source of truth.
     @objc private func retainBackgroundRuntime() {
+        timerLog.notice("retainBackgroundRuntime status=\(self.timerStatus.rawValue, privacy: .public) existingTask=\(self.backgroundTask != .invalid)")
         guard timerStatus == .playing, backgroundTask == .invalid else { return }
         backgroundTask = beginBackgroundTask { [weak self] in
-            self?.releaseBackgroundRuntime()
+            guard let self else { return }
+            timerLog.notice("bg task EXPIRED")
+            releaseBackgroundRuntime()
         }
+        timerLog.notice("bg task begin remaining=\(UIApplication.shared.backgroundTimeRemaining)")
     }
 
     private func releaseBackgroundRuntime() {
         guard backgroundTask != .invalid else { return }
+        timerLog.notice("bg task end")
         let task = backgroundTask
         backgroundTask = .invalid
         endBackgroundTask(task)
@@ -396,6 +405,7 @@ class TimerViewModel {
         refresh()
         updateLiveActivity()
         releaseBackgroundRuntime()
+        timerLog.notice("app active")
     }
 
     @objc private func handleSkipBreakAction() {

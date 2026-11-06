@@ -5,7 +5,6 @@
 //  Created by Suguru Tokuda on 1/21/25.
 //
 
-import AlarmKit
 import CatodoroShared
 import WidgetKit
 import SwiftUI
@@ -55,56 +54,19 @@ struct CatodoroWidgetEntryView : View {
     }
 }
 
-@available(iOS 26.0, *)
 struct CatodoroWidget: Widget {
     let kind: String = "CatodoroWidget"
 
     var body: some WidgetConfiguration {
-        ActivityConfiguration(
-            for: AlarmAttributes<CatodoroAlarmMetadata>.self
-        ) { context in
-            countdown(context.state)
-                .padding()
-        } dynamicIsland: { context in
-            DynamicIsland {
-                DynamicIslandExpandedRegion(.center) {
-                    countdown(context.state)
-                }
-            } compactLeading: {
-                Image(systemName: "pawprint.fill")
-            } compactTrailing: {
-                countdown(context.state)
-                    .frame(width: 56)
-            } minimal: {
-                Image(systemName: "pawprint.fill")
-            }
+        StaticConfiguration(kind: kind, provider: Provider()) { entry in
+            CatodoroWidgetEntryView(entry: entry)
+                .containerBackground(.fill.tertiary, for: .widget)
         }
-    }
-
-    @ViewBuilder
-    private func countdown(
-        _ state: AlarmPresentationState
-    ) -> some View {
-        switch state.mode {
-        case .countdown(let timer):
-            Text(
-                timerInterval: timer.startDate...timer.fireDate,
-                countsDown: true
-            )
-            .monospacedDigit()
-        case .paused:
-            Text("Paused")
-
-        case .alert:
-            Text("Time's up")
-        
-        @unknown default:
-            Label("Catodoro", systemImage: "pawprint.fill")
-        }
+        .configurationDisplayName(AppStrings.Widget.myWidget)
+        .description(AppStrings.Widget.thisIsAnExampleWidget)
     }
 }
 
-@available(iOS 26.0, *)
 #Preview(as: .systemSmall) {
     CatodoroWidget()
 } timeline: {

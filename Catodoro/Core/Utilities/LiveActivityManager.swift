@@ -8,6 +8,7 @@
 import ActivityKit
 import CatodoroShared
 import Foundation
+import os
 
 protocol LiveActivityManaging: AnyObject {
     func startLiveActivity(name: String,
@@ -51,7 +52,7 @@ final class LiveActivityManager: LiveActivityManaging {
     private var currentActivity: Activity<TimerAttributes>?
     private var pendingOperation: Task<Void, Never>?
     private let activitiesEnabled: () -> Bool
-
+    private let laLog = Logger(subsystem: Bundle.main.bundleIdentifier ?? "Catodoro", category: "liveActivity")
     init(activitiesEnabled: @escaping () -> Bool = { ActivityAuthorizationInfo().areActivitiesEnabled }) {
         self.activitiesEnabled = activitiesEnabled
     }
@@ -96,8 +97,10 @@ final class LiveActivityManager: LiveActivityManaging {
                                                 timerType: timerType, timerStatus: timerStatus,
                                                 phaseDuration: phaseDuration, accentCode: accentCode)
         let task: Task<Void, Never>? = lock.withLock {
-            guard let activity = currentActivity else { return nil }
-
+            guard let activity = currentActivity else {
+                laLog.notice("update skipped: no current activity")
+                return nil
+            }
             let previous = pendingOperation
             let task = Task {
                 await previous?.value
@@ -108,6 +111,7 @@ final class LiveActivityManager: LiveActivityManaging {
                                                sound: .named("\(soundName).mp3"))
                 }
                 await activity.update(ActivityContent(state: state, staleDate: nil), alertConfiguration: alert)
+                laLog.notice("updated type=\(timerType.rawValue, privacy: .public) status=\(timerStatus.rawValue, privacy: .public) end=\(endTime) sound=\(soundName ?? "nil", privacy: .public) activityState=\(String(describing: activity.activityState), privacy: .public)")   // ← 2
             }
             pendingOperation = task
             return task
