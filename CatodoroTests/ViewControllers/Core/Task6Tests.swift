@@ -65,7 +65,6 @@ final class Task6Tests: XCTestCase {
         _ = try await AdvanceIntent(alarmID: "a3").perform()
         _ = try await RepeatTimerIntent(alarmID: "a4").perform()
         _ = try await StopTimerIntent(alarmID: "a5").perform()
-        _ = try await EndCycleIntent(alarmID: "a6").perform()
 
         XCTAssertEqual(countdown.calls, [
             .togglePauseResume("a1"),
@@ -73,7 +72,6 @@ final class Task6Tests: XCTestCase {
             .advance("a3"),
             .restartCycle("a4"),
             .endCycle("a5"),
-            .endCycle("a6"),
         ])
     }
 

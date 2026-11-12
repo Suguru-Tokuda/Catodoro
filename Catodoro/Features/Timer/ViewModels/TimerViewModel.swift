@@ -378,16 +378,6 @@ extension TimerViewModel {
     struct TestHooks {
         let target: TimerViewModel
 
-        func flushAudioOperations() async {
-            await withCheckedContinuation { continuation in
-                AudioManager.playbackQueue.async {
-                    DispatchQueue.main.async {
-                        continuation.resume()
-                    }
-                }
-            }
-        }
-
         var session: CycleSession? { target.session }
         var hapticsError: Error? { target.hapticsError }
         var countdownError: Error? { target.countdownError }

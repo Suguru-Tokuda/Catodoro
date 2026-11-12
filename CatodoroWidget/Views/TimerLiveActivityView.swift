@@ -11,9 +11,19 @@ import SwiftUI
 
 struct TimerLiveActivityView: View {
     let context: ActivityViewContext<TimerAttributes>
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
-        TimerLiveActivityCard(state: context.state)
+        VStack(spacing: 0) {
+            TimerLiveActivityCard(state: context.state)
+            if context.isStale {
+                Text(AppStrings.Widget.openToContinue)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .padding(.bottom, Spacing.space8)
+            }
+        }
+        .background(ActivityTheme.background(colorScheme))
     }
 }
 

@@ -441,14 +441,6 @@ public enum AppStrings {
 
         public static let noBreaks = String(localized: "timer.noBreaks", defaultValue: "No breaks", bundle: bundle)
 
-        public static func numberedBreak(_ number: Int) -> String {
-            String(localized: "timer.numberedBreak", defaultValue: "Catnap break \(number)", bundle: bundle)
-        }
-
-        public static func numberedFocus(_ number: Int) -> String {
-            String(localized: "timer.numberedFocus", defaultValue: "Focus session \(number)", bundle: bundle)
-        }
-
         public static let onePawAtATime = String(localized: "timer.onePawAtATime", defaultValue: "One paw at a time.", bundle: bundle)
 
         public static let onePawAtATimeYouDidIt = String(localized: "timer.onePawAtATimeYouDidIt", defaultValue: "One paw at a time. You did it!", bundle: bundle)
@@ -498,5 +490,7 @@ public enum AppStrings {
         public static let thisIsAnExampleWidget = String(localized: "widget.thisIsAnExampleWidget", defaultValue: "This is an example widget.", bundle: bundle)
 
         public static let time = String(localized: "widget.time", defaultValue: "Time:", bundle: bundle)
+
+        public static let openToContinue = String(localized: "widget.openToContinue", defaultValue: "Open Catodoro to continue", bundle: bundle)
     }
 }

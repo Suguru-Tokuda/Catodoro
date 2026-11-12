@@ -57,13 +57,6 @@ public struct TimerAttributes: ActivityAttributes {
     }
 }
 
-public extension TimerAttributes {
-    enum TimerAction: Codable, Hashable {
-        case play
-        case stop
-    }
-}
-
 public extension TimerAttributes.ContentState {
     var canSkipBreak: Bool {
         timerType == .interval && timerStatus != .finished && interval < intervals
