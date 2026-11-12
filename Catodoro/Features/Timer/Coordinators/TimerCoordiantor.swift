@@ -47,9 +47,12 @@ class TimerCoordiantor: Coordinator {
 
     /// Puts the timer screen back for a cycle that survived a relaunch.
     func showRunningCycle(_ session: CycleSession) {
+        guard !(navigationController.topViewController is TimerViewController) else { return }
         let controller = makeTimerViewController()
         controller.attach(to: session)
-        navigationController.pushViewController(controller, animated: false)
+        // Not pushViewController: BaseNavigationController drops a push until the previous
+        // one reports didShow, which may not have happened yet this early in launch.
+        navigationController.setViewControllers(navigationController.viewControllers + [controller], animated: false)
     }
 
     private func makeTimerViewController() -> TimerViewController {

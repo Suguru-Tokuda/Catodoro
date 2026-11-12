@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 11/11/26.
 //
 
+@testable import Catodoro
 import XCTest
 
 extension XCTestCase {

@@ -247,6 +247,7 @@ final class TimerViewModel {
             stopSound()
             timerActionSubject.send(.start)
         } else if stepChanged {
+            stopSound() // a cue from the previous phase must nost carry into this one.
             timerActionSubject.send(.start)
             phaseFeedback(playSound: new.step.phase.isBreak)
         } else if justFinished {
