@@ -5,64 +5,68 @@
 //  Created by Suguru Tokuda on 11/5/26.
 //
 
-import Combine
 import XCTest
 @testable import Catodoro
 
-/// Verifies the shared HapticsManager reaches every coordinator that can start a timer.
+/// Verifies the shared haptics manager and countdown reach the timer screen
+/// through every coordinator that can start a timer.
 @MainActor
 final class HapticsDependencyTests: XCTestCase {
-    func test_tabCoordinator_passesHapticsToTimerAndPresetsCoordinators() throws {
-        let haptics = MockHapticsManager()
-        let tabs = TabCoordinator(preferences: nil, liveActivityManager: nil,
-                                  hapticsManager: haptics, coreDataManager: InMemoryPresetStore())
+    private var dependencies: TestDependencies!
 
-        tabs.start()
-
-        let timerHaptics = try XCTUnwrap(tabs.testHooks.timerCoordinator?.hapticsManager as? MockHapticsManager)
-        let presetsHaptics = try XCTUnwrap(tabs.testHooks.presetsCoordiantor?.hapticsManager as? MockHapticsManager)
-        XCTAssertTrue(timerHaptics === haptics)
-        XCTAssertTrue(presetsHaptics === haptics)
+    override func setUp() async throws {
+        try await super.setUp()
+        dependencies = TestDependencies()
     }
 
-    func test_mainCoordinator_passesHapticsThroughToTimerTab() throws {
-        let domain = "HapticsDependencyTests.\(UUID().uuidString)"
-        let defaults = try XCTUnwrap(UserDefaults(suiteName: domain))
-        defer { defaults.removePersistentDomain(forName: domain) }
-        let preferences = CatodoroPreferences(userDefaults: defaults)
-        preferences.completeOnboarding(syncEnabled: false)
-        let haptics = MockHapticsManager()
-        let coordinator = MainCoordinator(preferences: preferences, liveActivityManager: nil,
-                                          hapticsManager: haptics,
-                                          coreDataManager: InMemoryPresetStore(),
-                                          syncLifecycleManager: LifecycleStub())
+    override func tearDown() async throws {
+        dependencies.tearDown()
+        dependencies = nil
+        try await super.tearDown()
+    }
 
+    func test_mainCoordinator_passesDependenciesThroughToTimerTab() async throws {
+        let coordinator = MainCoordinator(dependencies: dependencies.app)
         coordinator.start()
-
+        // Let TabCoordinator's restore check finish while no session exists,
+        // so it doesn't open a second timer screen for the one set up below.
+        await settle()
         let tabs = try XCTUnwrap(coordinator.childCoordinators.first as? TabCoordinator)
-        let timerHaptics = try XCTUnwrap(tabs.testHooks.timerCoordinator?.hapticsManager as? MockHapticsManager)
-        XCTAssertTrue(timerHaptics === haptics)
+        let timerCoordinator = try XCTUnwrap(tabs.testHooks.timerCoordinator)
+
+        try await runOnePhaseChange { timerCoordinator.navigateToTimerView(viewModel: $0) }
     }
 
-    func test_coordinatorsWithoutHaptics_stillBuildTimerScreen() throws {
-        let navigation = UINavigationController()
-        let coordinator = TimerCoordiantor(navigationController: navigation, coreDataManager: InMemoryPresetStore())
+    func test_tabCoordinator_passesDependenciesToPresetsTimer() async throws {
+        let tabs = TabCoordinator(dependencies: dependencies.app)
+        tabs.start()
+        await settle()   // see above
+        let presets = try XCTUnwrap(tabs.testHooks.presetsCoordiantor)
+        let list = try XCTUnwrap(presets.navigationController.viewControllers.last as? PresetsViewController)
+        let preset = PresetModel(id: UUID(), totalDuration: 10, intervalDuration: 5, intervals: 2)
 
-        coordinator.navigateToTimerView(viewModel: TimerConfigViewModel(coreDataManager: InMemoryPresetStore()))
-
-        XCTAssertNil(coordinator.hapticsManager)
-        XCTAssertTrue(navigation.topViewController is TimerViewController)
-    }
-}
-
-@MainActor
-private final class LifecycleStub: SyncLifecycleManaging {
-    @Published var syncStatus = SyncStatus(isEnabled: false)
-    var syncStatusPublisher: AnyPublisher<SyncStatus, Never> {
-        $syncStatus.eraseToAnyPublisher()
+        try await runOnePhaseChange { _ in presets.presetsViewControllerDidSelectPreset(list, preset: preset) }
     }
 
-    func start() {}
-    func stop() async {}
-    func setSyncEnabled(_ enabled: Bool) async throws { syncStatus.isEnabled = enabled }
+    /// Opens the timer, then moves the cycle from focus to break and checks the
+    /// injected haptics manager fired, which proves the screen uses the shared instances.
+    private func runOnePhaseChange(open: (TimerConfigViewModel) -> Void) async throws {
+        let countdown = dependencies.countdown
+        let haptics = dependencies.hapticsManager
+        let steps = CycleStep.cycle(intervals: 2, focus: 10, breakDuration: 5)
+        let cycleID = UUID()
+        let first = CycleSession.test(id: cycleID, steps: steps, state: .running(endDate: Date() + 10))
+        countdown.startID = cycleID
+        countdown.session = first
+
+        open(TimerConfigViewModel(coreDataManager: dependencies.coreDataManager))
+
+        await waitUntil { countdown.startedSteps.count == 1 }
+        await settle()
+        haptics.reset()
+
+        countdown.send(first.moved(to: 1, state: .running(endDate: Date() + 5)))
+
+        await waitUntil { haptics.startCount == 1 }
+    }
 }

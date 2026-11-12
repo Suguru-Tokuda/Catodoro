@@ -8,6 +8,9 @@
 import CatodoroShared
 import Foundation
 
+/// First onboarding step: iCloud sync or this device only.
+/// Saves the sync choice; `AlertOnboardingViewModel` marks onboarding complete
+/// after the next step, so quitting in between shows the alert step again.
 @MainActor
 final class OnboardingViewModel {
     private let lifecycle: SyncLifecycleManaging
@@ -37,7 +40,7 @@ final class OnboardingViewModel {
 
         do {
             try await lifecycle.setSyncEnabled(true)
-            preferences.completeOnboarding(syncEnabled: true)
+            preferences.setSyncEnabled(true)
             onComplete?()
         } catch is CancellationError {
             // Superseded activation
@@ -60,7 +63,7 @@ final class OnboardingViewModel {
 
         do {
             try await lifecycle.setSyncEnabled(false)
-            preferences.completeOnboarding(syncEnabled: false)
+            preferences.setSyncEnabled(false)
             onComplete?()
         } catch is CancellationError {
             // Superseded request.

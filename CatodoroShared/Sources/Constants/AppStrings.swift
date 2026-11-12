@@ -5,6 +5,73 @@ public enum AppStrings {
     private final class BundleToken {}
     private static let bundle = Bundle(for: BundleToken.self)
 
+    /// AlarmKit alert, countdown and paused presentations. AlarmKit takes `LocalizedStringResource`.
+    public enum Alarm {
+        public static var pauseButton: LocalizedStringResource {
+            LocalizedStringResource("alarm.pauseButton", defaultValue: "Pause", bundle: .atURL(bundle.bundleURL))
+        }
+
+        public static var resumeButton: LocalizedStringResource {
+            LocalizedStringResource("alarm.resumeButton", defaultValue: "Resume", bundle: .atURL(bundle.bundleURL))
+        }
+
+        public static var restartButton: LocalizedStringResource {
+            LocalizedStringResource("alarm.restartButton", defaultValue: "Restart", bundle: .atURL(bundle.bundleURL))
+        }
+
+        public static var startBreakButton: LocalizedStringResource {
+            LocalizedStringResource("alarm.startBreakButton", defaultValue: "Start break", bundle: .atURL(bundle.bundleURL))
+        }
+
+        public static var paused: LocalizedStringResource {
+            LocalizedStringResource("alarm.paused", defaultValue: "Paused", bundle: .atURL(bundle.bundleURL))
+        }
+
+        public static var cycleComplete: LocalizedStringResource {
+            LocalizedStringResource("alarm.cycleComplete", defaultValue: "Cycle complete", bundle: .atURL(bundle.bundleURL))
+        }
+
+        public static var focusComplete: LocalizedStringResource {
+            LocalizedStringResource("alarm.focusComplete", defaultValue: "Focus complete", bundle: .atURL(bundle.bundleURL))
+        }
+
+        public static var breakOver: LocalizedStringResource {
+            LocalizedStringResource("alarm.breakOver", defaultValue: "Break's over", bundle: .atURL(bundle.bundleURL))
+        }
+
+        public static var catnapBreak: LocalizedStringResource {
+            LocalizedStringResource("alarm.catnapBreak", defaultValue: "Catnap break", bundle: .atURL(bundle.bundleURL))
+        }
+
+        public static func focusCountdown(_ interval: Int, of total: Int) -> LocalizedStringResource {
+            LocalizedStringResource("alarm.focusCountdown", defaultValue: "Focus · \(interval) of \(total)", bundle: .atURL(bundle.bundleURL))
+        }
+    }
+
+    public enum AlertStyles {
+        public static let alarmTitle = String(localized: "alertStyles.alarmTitle", defaultValue: "Alarm", bundle: bundle)
+
+        public static let notificationTitle = String(localized: "alertStyles.notificationTitle", defaultValue: "Notification", bundle: bundle)
+
+        public static let liveActivityTitle = String(localized: "alertStyles.liveActivityTitle", defaultValue: "Live Activity Only", bundle: bundle)
+
+        public static let alarmDetail = String(localized: "alertStyles.alarmDetail", defaultValue: "Rings like an alarm when a phase ends, even in Silent mode.", bundle: bundle)
+
+        public static let notificationDetail = String(localized: "alertStyles.notificationDetail", defaultValue: "Shows a notification with sound when a phase ends.", bundle: bundle)
+
+        public static let liveActivityDetail = String(localized: "alertStyles.liveActivityDetail", defaultValue: "Shows the countdown on the Lock Screen. No alert sounds when a phase ends while you're away.", bundle: bundle)
+
+        public static let alarmsTurnedOff = String(localized: "alertStyles.alarmsTurnedOff", defaultValue: "Alarms are turned off", bundle: bundle)
+
+        public static let notificationsTurnedOff = String(localized: "alertStyles.notificationsTurnedOff", defaultValue: "Notifications are turned off", bundle: bundle)
+
+        public static let allowAlarmsInSettings = String(localized: "alertStyles.allowAlarmsInSettings", defaultValue: "Allow alarms for Catodoro in Settings to use this alert style.", bundle: bundle)
+
+        public static let allowNotificationsInSettings = String(localized: "alertStyles.allowNotificationsInSettings", defaultValue: "Allow notifications for Catodoro in Settings to use this alert style.", bundle: bundle)
+
+        public static let openSettings = String(localized: "alertStyles.openSettings", defaultValue: "Open Settings", bundle: bundle)
+    }
+
     public enum Colors {
         public static let blue = String(localized: "colors.blue", defaultValue: "Blue", bundle: bundle)
 
@@ -39,6 +106,8 @@ public enum AppStrings {
         public static let noBreak = String(localized: "common.noBreak", defaultValue: "No break", bundle: bundle)
 
         public static let notSelected = String(localized: "common.notSelected", defaultValue: "Not Selected", bundle: bundle)
+
+        public static let end = String(localized: "common.end", defaultValue: "End", bundle: bundle)
 
         public static let ok = String(localized: "common.ok", defaultValue: "OK", bundle: bundle)
 
@@ -75,6 +144,46 @@ public enum AppStrings {
         public static let totalTime = String(localized: "common.totalTime", defaultValue: "Total time", bundle: bundle)
     }
 
+    /// `CountdownError` descriptions.
+    public enum CountdownErrors {
+        public static let alreadyRunning = String(localized: "countdownErrors.alreadyRunning", defaultValue: "A countdown is already running.", bundle: bundle)
+
+        public static let alarmKitUnavailable = String(localized: "countdownErrors.alarmKitUnavailable", defaultValue: "AlarmKit requires iOS 26.", bundle: bundle)
+
+        public static let invalidSteps = String(localized: "countdownErrors.invalidSteps", defaultValue: "Invalid steps", bundle: bundle)
+
+        public static let notAuthorized = String(localized: "countdownErrors.notAuthorized", defaultValue: "Permission was not granted.", bundle: bundle)
+    }
+
+    /// Developer-facing messages for preconditions, crashes and debug identifiers.
+    /// Never shown to users, so not localized.
+    public enum Diagnostics {
+        public static let onboardingNeedsSteps = "Onboarding needs at least one step"
+
+        public static let initCoderNotImplemented = "init(coder:) has not been implemented"
+
+        public static let missingStoreDescription = "Unable to get a persistent store description."
+
+        public static func localStoreLoadFailed(_ error: Error) -> String {
+            "Unable to load Catodoro's local store: \(error)"
+        }
+
+        public static func localStoreReopenFailed(_ error: Error) -> String {
+            "Couldn't reopen the local store: \(error)"
+        }
+
+        public static let phaseTransitionTaskName = "Catodoro phase transition"
+    }
+
+    /// Titles of the phase-end notifications.
+    public enum Notifications {
+        public static let cycleComplete = String(localized: "notifications.cycleComplete", defaultValue: "Cycle complete", bundle: bundle)
+
+        public static let focusCompleteBreakNext = String(localized: "notifications.focusCompleteBreakNext", defaultValue: "Focus complete · Break next", bundle: bundle)
+
+        public static let breakOverFocusNext = String(localized: "notifications.breakOverFocusNext", defaultValue: "Break's over · Focus next", bundle: bundle)
+    }
+
     public enum Onboarding {
         public static let bringBackPresetsAlreadySavedInICloud = String(localized: "onboarding.bringBackPresetsAlreadySavedInICloud", defaultValue: "Bring back presets already saved in iCloud", bundle: bundle)
 
@@ -99,6 +208,28 @@ public enum AppStrings {
         public static let youCanChangeThisLaterInSettings = String(localized: "onboarding.youCanChangeThisLaterInSettings", defaultValue: "You can change this later in Settings.", bundle: bundle)
 
         public static let headline = String(localized: "onboarding.headline", defaultValue: "Your routines,\nwherever you focus.", bundle: bundle)
+
+        public static let alertHeadline = String(localized: "onboarding.alertHeadline", defaultValue: "Know when\neach phase ends.", bundle: bundle)
+
+        public static let alarmDescription = String(localized: "onboarding.alarmDescription", defaultValue: "Catodoro can ring an alarm when a focus session or catnap ends, even if your iPhone is locked or in Silent mode.", bundle: bundle)
+
+        public static let notificationDescription = String(localized: "onboarding.notificationDescription", defaultValue: "Catodoro can send a notification when a focus session or catnap ends, even when the app is closed.", bundle: bundle)
+
+        public static let alarmRingsInSilentMode = String(localized: "onboarding.alarmRingsInSilentMode", defaultValue: "Rings even in Silent mode or a Focus", bundle: bundle)
+
+        public static let alarmShowsCountdownOnLockScreen = String(localized: "onboarding.alarmShowsCountdownOnLockScreen", defaultValue: "Shows the countdown on the Lock Screen and in the Dynamic Island", bundle: bundle)
+
+        public static let alarmStopFromLockScreen = String(localized: "onboarding.alarmStopFromLockScreen", defaultValue: "Stop the alarm right from the Lock Screen", bundle: bundle)
+
+        public static let notificationAlertsWhenPhaseEnds = String(localized: "onboarding.notificationAlertsWhenPhaseEnds", defaultValue: "Get an alert when each phase ends", bundle: bundle)
+
+        public static let notificationShowsOnLockScreen = String(localized: "onboarding.notificationShowsOnLockScreen", defaultValue: "See it on the Lock Screen, even when Catodoro is closed", bundle: bundle)
+
+        public static let allowAlarms = String(localized: "onboarding.allowAlarms", defaultValue: "Allow Alarms", bundle: bundle)
+
+        public static let allowNotifications = String(localized: "onboarding.allowNotifications", defaultValue: "Allow Notifications", bundle: bundle)
+
+        public static let notNow = String(localized: "onboarding.notNow", defaultValue: "Not Now", bundle: bundle)
     }
 
     public enum Presets {
@@ -179,6 +310,8 @@ public enum AppStrings {
         }
 
         public static let checkingICloudAvailability = String(localized: "settings.checkingICloudAvailability", defaultValue: "Checking iCloud availability…", bundle: bundle)
+
+        public static let alarm = String(localized: "settings.alarm", defaultValue: "Alarm", bundle: bundle)
 
         public static let color = String(localized: "settings.color", defaultValue: "Color", bundle: bundle)
 

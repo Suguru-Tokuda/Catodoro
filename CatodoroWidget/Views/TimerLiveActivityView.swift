@@ -22,14 +22,14 @@ struct TimerLiveActivityCard: View {
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: Spacing.space12) {
             Image("Activity" + state.artworkName, bundle: ActivityTheme.imageBundle)
                 .resizable()
                 .scaledToFit()
-                .frame(width: 76, height: 96)
+                .frame(width: Spacing.space76, height: Spacing.space96)
                 .accessibilityHidden(true)
 
-            VStack(alignment: .leading, spacing: 5) {
+            VStack(alignment: .leading, spacing: Spacing.space5) {
                 Text(state.phaseTitle)
                     .font(.system(.headline, design: .rounded, weight: .bold))
                     .foregroundStyle(accent)
@@ -47,7 +47,7 @@ struct TimerLiveActivityCard: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(16)
+        .padding(Spacing.space16)
         .foregroundStyle(ActivityTheme.text(colorScheme))
         .background(ActivityTheme.background(colorScheme))
         .contentTransition(.identity)
@@ -62,14 +62,14 @@ struct ExpandedTimerActivity: View {
     let state: TimerAttributes.ContentState
 
     var body: some View {
-        VStack(spacing: 8) {
-            HStack(spacing: 12) {
+        VStack(spacing: Spacing.space8) {
+            HStack(spacing: Spacing.space12) {
                 Image("Activity" + state.artworkName, bundle: ActivityTheme.imageBundle)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 64, height: 56)
+                    .frame(width: Spacing.space64, height: Spacing.space56)
                     .accessibilityHidden(true)
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: Spacing.space4) {
                     Text(state.phaseTitle)
                         .font(.system(.headline, design: .rounded))
                     Text(state.sessionSummary)

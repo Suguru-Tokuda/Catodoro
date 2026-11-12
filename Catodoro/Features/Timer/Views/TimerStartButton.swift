@@ -70,7 +70,7 @@ class TimerStartButton: UIButton {
         stackView.axis = .horizontal
         stackView.alignment = .center
         stackView.distribution = .equalSpacing
-        stackView.spacing = 8
+        stackView.spacing = Spacing.space8
         stackView.isUserInteractionEnabled = false
 
         // Add the stack view as the button's cutstom view
@@ -91,16 +91,16 @@ class TimerStartButton: UIButton {
 
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-            leadingImageView.heightAnchor.constraint(equalToConstant: 28),
-            leadingImageView.widthAnchor.constraint(equalToConstant: 30),
-            trailingImageView.heightAnchor.constraint(equalToConstant: 28),
-            trailingImageView.widthAnchor.constraint(equalToConstant: 30),
+            leadingImageView.heightAnchor.constraint(equalToConstant: Spacing.space28),
+            leadingImageView.widthAnchor.constraint(equalToConstant: Spacing.space30),
+            trailingImageView.heightAnchor.constraint(equalToConstant: Spacing.space28),
+            trailingImageView.widthAnchor.constraint(equalToConstant: Spacing.space30),
             stackView.centerXAnchor.constraint(equalTo: centerXAnchor),
             stackView.centerYAnchor.constraint(equalTo: centerYAnchor),
-            stackView.topAnchor.constraint(equalTo: topAnchor, constant: 16),
-            stackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
-            stackView.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor, constant: 16),
-            stackView.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -16)
+            stackView.topAnchor.constraint(equalTo: topAnchor, constant: Spacing.space16),
+            stackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -Spacing.space16),
+            stackView.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor, constant: Spacing.space16),
+            stackView.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -Spacing.space16)
         ])
     }
 

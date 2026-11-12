@@ -74,4 +74,11 @@ final class MockPreferences: CatodoroPreferencesProtocol {
     func setSound(_ newSound: SoundOptions) {
         sound = newSound.id
     }
+
+    var alertStyle: AlertStyle = .liveActivity {
+        didSet { alertStyleSubject.send(alertStyle) }
+    }
+    private let alertStyleSubject = CurrentValueSubject<AlertStyle, Never>(.liveActivity)
+    var alertStylePublisher: AnyPublisher<AlertStyle, Never> { alertStyleSubject.eraseToAnyPublisher() }
+    func setAlertStyle(_ style: AlertStyle) { alertStyle = style }
 }

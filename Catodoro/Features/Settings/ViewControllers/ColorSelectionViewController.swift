@@ -8,18 +8,21 @@
 import UIKit
 
 protocol ColorSelectionViewControllerDelegate: AnyObject {
-    func onColorSelected()
+    /// A color was picked; the screen can be dismissed.
+    func colorSelectionViewControllerDidFinish(_ viewController: ColorSelectionViewController)
+    /// The screen left the navigation stack (Back, swipe or pop).
+    func colorSelectionViewControllerDidClose(_ viewController: ColorSelectionViewController)
 }
 
-class ColorSelectionViewController: BaseOptionSelectionViewController {
+final class ColorSelectionViewController: BaseOptionSelectionViewController {
     weak var delegate: ColorSelectionViewControllerDelegate?
-    var viewModel: OptionSelectionViewModel
+    private let viewModel: ColorSelectionViewModel
 
-    init(viewModel: OptionSelectionViewModel, titleLabelText: String) {
+    init(viewModel: ColorSelectionViewModel, titleLabelText: String) {
         self.viewModel = viewModel
         super.init(titleLabelText: titleLabelText)
     }
-    
+
     required init?(coder: NSCoder) {
         nil
     }
@@ -29,19 +32,25 @@ class ColorSelectionViewController: BaseOptionSelectionViewController {
         optionTableView.delegate = self
         optionTableView.dataSource = self
     }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        if isMovingFromParent {
+            delegate?.colorSelectionViewControllerDidClose(self)
+        }
+    }
 }
 
 extension ColorSelectionViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectedId = viewModel.options[indexPath.row].id
-        viewModel.selectedId = selectedId
         tableView.deselectRow(at: indexPath, animated: true)
-        viewModel.setColor(colorCode: selectedId)
+        viewModel.selectOption(at: indexPath.row)
         optionTableView.reloadData()
 
+        // Short pause so the paw moves before the screen pops.
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
             guard let self else { return }
-            delegate?.onColorSelected()
+            delegate?.colorSelectionViewControllerDidFinish(self)
         }
     }
 }
@@ -50,14 +59,14 @@ extension ColorSelectionViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         viewModel.options.count
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if let cell = tableView.dequeueReusableCell(withIdentifier: OptionSelectionViewCell.reuseIdentifier, for: indexPath) as? OptionSelectionViewCell {
-            let option = viewModel.options[indexPath.row]
-            cell.configure(optionLabelText: option.title, isSelected: option.selected, textColor: option.color)
-            return cell
-        } else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: OptionSelectionViewCell.reuseIdentifier,
+                                                       for: indexPath) as? OptionSelectionViewCell else {
             return UITableViewCell()
         }
+        let option = viewModel.options[indexPath.row]
+        cell.configure(optionLabelText: option.title, isSelected: option.selected, textColor: option.color)
+        return cell
     }
 }

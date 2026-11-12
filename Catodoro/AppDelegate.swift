@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 8/21/24.
 //
 
+import CatodoroShared
 import UIKit
 
 @main
@@ -12,6 +13,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     lazy var dependencies = AppDependencies()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        CountdownIntentRouter.handler = dependencies.countdown
         return true
     }
 

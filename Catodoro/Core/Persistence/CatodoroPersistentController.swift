@@ -1,3 +1,4 @@
+import CatodoroShared
 import CloudKit
 import CoreData
 
@@ -31,7 +32,7 @@ final class CatodoroPersistentController: CloudSyncPersistence, @unchecked Senda
         container = NSPersistentCloudKitContainer(name: Constants.containerName)
 
         guard let description = container.persistentStoreDescriptions.first else {
-            fatalError("Unable to get a persistent store description.")
+            fatalError(AppStrings.Diagnostics.missingStoreDescription)
         }
 
         if inMemory {
@@ -53,7 +54,7 @@ final class CatodoroPersistentController: CloudSyncPersistence, @unchecked Senda
         do {
             try Self.loadStores(in: container)
         } catch {
-            fatalError("Unable to load Catodoro's local store: \(error)")
+            fatalError(AppStrings.Diagnostics.localStoreLoadFailed(error))
         }
 
         writeContext = container.newBackgroundContext()
@@ -100,7 +101,7 @@ final class CatodoroPersistentController: CloudSyncPersistence, @unchecked Senda
                 do {
                     try Self.loadStores(in: container)
                 } catch let restoreError {
-                    assertionFailure("Couldn't reopen the local store: \(restoreError)")
+                    assertionFailure(AppStrings.Diagnostics.localStoreReopenFailed(restoreError))
                 }
 
                 throw error

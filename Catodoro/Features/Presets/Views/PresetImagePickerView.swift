@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 10/30/26.
 //
 
+import CatodoroShared
 import UIKit
 
 final class PresetImagePickerView: BaseView {
@@ -14,7 +15,7 @@ final class PresetImagePickerView: BaseView {
     private let stack: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
-        stack.spacing = 12
+        stack.spacing = Spacing.space12
         return stack
     }()
 
@@ -26,7 +27,7 @@ final class PresetImagePickerView: BaseView {
 
         for pair in stride(from: 0, to: CatPose.allCases.count, by: 2) {
             let row = UIStackView()
-            row.spacing = 12
+            row.spacing = Spacing.space12
             row.distribution = .fillEqually
 
             for pose in CatPose.allCases[pair..<min(pair + 2, CatPose.allCases.count)] {
@@ -50,7 +51,7 @@ final class PresetImagePickerView: BaseView {
             }
         configuration.title = pose.displayName
         configuration.imagePlacement = .top
-        configuration.imagePadding = 8
+        configuration.imagePadding = Spacing.space8
         configuration.baseBackgroundColor = CatTheme.card
         configuration.baseForegroundColor = CatTheme.text
         configuration.cornerStyle = .large
@@ -70,11 +71,11 @@ final class PresetImagePickerView: BaseView {
             scrollView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
             scrollView.leadingAnchor.constraint(equalTo: leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            stack.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor, constant: 16),
-            stack.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
-            stack.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor, constant: -16),
-            stack.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -16),
-            stack.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor, constant: -32)
+            stack.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor, constant: Spacing.space16),
+            stack.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: Spacing.space16),
+            stack.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor, constant: -Spacing.space16),
+            stack.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -Spacing.space16),
+            stack.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor, constant: -Spacing.space16 * 2)
         ])
     }
 }

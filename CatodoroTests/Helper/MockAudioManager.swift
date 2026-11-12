@@ -47,6 +47,13 @@ final class MockAudioManager: AudioManaging {
         isPaused = true
     }
 
+    /// Forgets calls made so far, so a test only sees what happens next.
+    func clearRecordedCalls() {
+        commands.removeAll()
+        playCount = 0
+        lastNumberOfLoops = nil
+    }
+
     func stop() throws {
         wasCalledOnMainThread = wasCalledOnMainThread || Thread.isMainThread
         commands.append("stop")

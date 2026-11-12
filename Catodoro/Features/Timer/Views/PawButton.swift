@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 10/23/24.
 //
 
+import CatodoroShared
 import UIKit
 
 class PawButton: UIButton {
@@ -37,8 +38,8 @@ class PawButton: UIButton {
             stackView.leadingAnchor.constraint(equalTo: leadingAnchor),
             stackView.trailingAnchor.constraint(equalTo: trailingAnchor),
 
-            pawImage.heightAnchor.constraint(equalToConstant: 48),
-            pawImage.widthAnchor.constraint(equalToConstant: 52)
+            pawImage.heightAnchor.constraint(equalToConstant: Spacing.space48),
+            pawImage.widthAnchor.constraint(equalToConstant: Spacing.space52)
         ])
     }
     

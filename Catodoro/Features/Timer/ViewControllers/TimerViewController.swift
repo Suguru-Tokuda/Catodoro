@@ -20,15 +20,13 @@ final class TimerViewController: BaseViewController {
     private let viewModel: TimerViewModel
     private let timerView: TimerView
 
-    init(preferences: CatodoroPreferencesProtocol?,
-         liveActivityManager: LiveActivityManaging?,
-         hapticsManager: HapticsManaging? = nil,
+    init(
+        viewModel: TimerViewModel,
+        preferences: CatodoroPreferencesProtocol,
          shouldHidesBottomBarWhen: Bool = true
     ) {
-        viewModel = TimerViewModel(preferences: preferences,
-                                   liveActivityManager: liveActivityManager,
-                                   hapticsManager: hapticsManager ?? HapticsManager())
-        timerView = TimerView(frame: .zero, strokeColor: ColorOptions(preferences?.color ?? "").color)
+        self.viewModel = viewModel
+        timerView = TimerView(frame: .zero, strokeColor: ColorOptions(preferences.color ?? "").color)
         super.init(nibName: nil, bundle: nil)
         hidesBottomBarWhenPushed = shouldHidesBottomBarWhen
         addSubscriptions()
@@ -41,6 +39,11 @@ final class TimerViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.setHidesBackButton(true, animated: false)
+        setupClosures()
+        timerView.configure(viewModel.presentationSubject.value)
+    }
+
+    private func setupClosures() {
         timerView.onPlayPauseButtonTap = { [weak self] in
             self?.viewModel.handlePlayPauseButtonTap()
         }
@@ -53,7 +56,6 @@ final class TimerViewController: BaseViewController {
         timerView.onDismissButtonTap = { [weak self] in
             self?.viewModel.stopTimer()
         }
-        timerView.configure(viewModel.presentationSubject.value)
     }
 
     private func addSubscriptions() {
@@ -79,12 +81,12 @@ final class TimerViewController: BaseViewController {
             .store(in: &cancellables)
     }
 
-    func configure(timerConfigViewModel: TimerConfigViewModel) {
-        let routine = timerConfigViewModel.timerModel
-        TimerController.shared.activeTimer = viewModel
-        viewModel.configure(totalDuration: routine.mainTimer.duration,
-                            intervalDuration: routine.interval.duration,
-                            intervals: routine.intervals)
+    func configure(config: TimerConfigModel) {
+        viewModel.configure(config: config)
+    }
+
+    func attach(to session: CycleSession) {
+        viewModel.attach(to: session)
     }
 
     override func constructSubviews() {

@@ -13,5 +13,6 @@ struct CatodoroWidgetBundle: WidgetBundle {
     var body: some Widget {
         CatodoroWidget()
         CatodoroWidgetLiveActivity()
+        CatodoroAlarmLiveActivity()
     }
 }

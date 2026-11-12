@@ -26,7 +26,7 @@ final class PresetsView: BaseView {
         tableView.backgroundColor = CatTheme.background
         tableView.separatorStyle = .none
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 180
+        tableView.estimatedRowHeight = Spacing.space180
         tableView.register(PresetListViewCell.self,
                            forCellReuseIdentifier: PresetListViewCell.reuseIdentifier)
         tableView.separatorInset = .init(top: 0, left: 0, bottom: 0, right: 0)

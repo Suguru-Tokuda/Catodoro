@@ -28,7 +28,7 @@ final class SessionSelectionView: RoutineSelectionView {
         let stack = UIStackView()
         stack.axis = .horizontal
         stack.alignment = .center
-        stack.spacing = CatTheme.Spacing.medium
+        stack.spacing = Spacing.space16
 
         return stack
     }()
@@ -60,7 +60,7 @@ final class SessionSelectionView: RoutineSelectionView {
         let stack = UIStackView()
         stack.axis = .horizontal
         stack.alignment = .center
-        stack.spacing = 12
+        stack.spacing = Spacing.space12
         stack.isAccessibilityElement = false
 
         return stack
@@ -86,7 +86,7 @@ final class SessionSelectionView: RoutineSelectionView {
     private let stepperContent: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
-        stack.spacing = 8
+        stack.spacing = Spacing.space8
 
         return stack
     }()
@@ -115,7 +115,7 @@ final class SessionSelectionView: RoutineSelectionView {
     private let breakdownStack: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
-        stack.spacing = 12
+        stack.spacing = Spacing.space12
 
         return stack
     }()
@@ -181,24 +181,24 @@ final class SessionSelectionView: RoutineSelectionView {
     override func constructSubviewLayoutConstraints() {
         super.constructSubviewLayoutConstraints()
         NSLayoutConstraint.activate([
-            separator.heightAnchor.constraint(equalToConstant: 1),
-            minusButton.widthAnchor.constraint(equalToConstant: 52),
-            minusButton.heightAnchor.constraint(equalToConstant: 52),
-            plusButton.widthAnchor.constraint(equalToConstant: 52),
-            plusButton.heightAnchor.constraint(equalToConstant: 52),
-            stepperContent.leadingAnchor.constraint(equalTo: stepperCard.leadingAnchor, constant: 16),
-            stepperContent.trailingAnchor.constraint(equalTo: stepperCard.trailingAnchor, constant: -16),
-            stepperContent.topAnchor.constraint(equalTo: stepperCard.topAnchor, constant: 16),
-            stepperContent.bottomAnchor.constraint(equalTo: stepperCard.bottomAnchor, constant: -16),
-            breakdownStack.leadingAnchor.constraint(equalTo: breakdownCard.leadingAnchor, constant: 16),
-            breakdownStack.trailingAnchor.constraint(equalTo: breakdownCard.trailingAnchor, constant: -16),
-            breakdownStack.topAnchor.constraint(equalTo: breakdownCard.topAnchor, constant: 16),
-            breakdownStack.bottomAnchor.constraint(equalTo: breakdownCard.bottomAnchor, constant: -16)
+            separator.heightAnchor.constraint(equalToConstant: Spacing.space1),
+            minusButton.widthAnchor.constraint(equalToConstant: Spacing.space52),
+            minusButton.heightAnchor.constraint(equalToConstant: Spacing.space52),
+            plusButton.widthAnchor.constraint(equalToConstant: Spacing.space52),
+            plusButton.heightAnchor.constraint(equalToConstant: Spacing.space52),
+            stepperContent.leadingAnchor.constraint(equalTo: stepperCard.leadingAnchor, constant: Spacing.space16),
+            stepperContent.trailingAnchor.constraint(equalTo: stepperCard.trailingAnchor, constant: -Spacing.space16),
+            stepperContent.topAnchor.constraint(equalTo: stepperCard.topAnchor, constant: Spacing.space16),
+            stepperContent.bottomAnchor.constraint(equalTo: stepperCard.bottomAnchor, constant: -Spacing.space16),
+            breakdownStack.leadingAnchor.constraint(equalTo: breakdownCard.leadingAnchor, constant: Spacing.space16),
+            breakdownStack.trailingAnchor.constraint(equalTo: breakdownCard.trailingAnchor, constant: -Spacing.space16),
+            breakdownStack.topAnchor.constraint(equalTo: breakdownCard.topAnchor, constant: Spacing.space16),
+            breakdownStack.bottomAnchor.constraint(equalTo: breakdownCard.bottomAnchor, constant: -Spacing.space16)
         ])
 
         NSLayoutConstraint.activate(pawIndicators.flatMap { indicator in
-            [indicator.widthAnchor.constraint(equalToConstant: 28),
-             indicator.heightAnchor.constraint(equalToConstant: 28)]
+            [indicator.widthAnchor.constraint(equalToConstant: Spacing.space28),
+             indicator.heightAnchor.constraint(equalToConstant: Spacing.space28)]
         })
     }
 
@@ -247,14 +247,14 @@ final class SessionSelectionView: RoutineSelectionView {
         let row = UIStackView(arrangedSubviews: [label, value])
         row.axis = .horizontal
         row.alignment = .center
-        row.spacing = 12
+        row.spacing = Spacing.space12
 
         if let symbol {
             let icon = UIImageView(image: UIImage(systemName: symbol))
             icon.tintColor = ColorOptions.neonBlue.color
             icon.contentMode = .scaleAspectFit
-            icon.widthAnchor.constraint(equalToConstant: 24).isActive = true
-            icon.heightAnchor.constraint(equalToConstant: 24).isActive = true
+            icon.widthAnchor.constraint(equalToConstant: Spacing.space24).isActive = true
+            icon.heightAnchor.constraint(equalToConstant: Spacing.space24).isActive = true
             icon.isAccessibilityElement = false
             row.insertArrangedSubview(icon, at: 0)
         }

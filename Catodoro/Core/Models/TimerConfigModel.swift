@@ -70,3 +70,12 @@ struct TimerConfigModel {
         self.intervals = intervals
     }
 }
+
+extension TimerConfigModel {
+    var cycleSteps: [CycleStep] {
+        CycleStep.cycle(intervals: intervals,
+                        focus: mainTimer.duration,
+                        breakDuration: interval.duration
+        )
+    }
+}

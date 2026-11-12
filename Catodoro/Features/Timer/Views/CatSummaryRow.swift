@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 10/11/26.
 //
 
+import CatodoroShared
 import UIKit
 
 final class CatSummaryRow: UIControl {
@@ -52,7 +53,7 @@ final class CatSummaryRow: UIControl {
         let stack = UIStackView()
         stack.axis = .horizontal
         stack.alignment = .center
-        stack.spacing = CatTheme.Spacing.medium
+        stack.spacing = Spacing.space16
         stack.isUserInteractionEnabled = false
 
         return stack
@@ -78,16 +79,16 @@ final class CatSummaryRow: UIControl {
         NSLayoutConstraint.activate([
             stack.leadingAnchor.constraint(equalTo: leadingAnchor),
             stack.trailingAnchor.constraint(equalTo: trailingAnchor),
-            stack.topAnchor.constraint(equalTo: topAnchor, constant: 10),
-            stack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10),
+            stack.topAnchor.constraint(equalTo: topAnchor, constant: Spacing.space10),
+            stack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -Spacing.space10),
             heightAnchor.constraint(greaterThanOrEqualToConstant: CatTheme.minimumTouchTarget),
-            iconBadge.widthAnchor.constraint(equalToConstant: 36),
-            iconBadge.heightAnchor.constraint(equalToConstant: 36),
-            iconView.widthAnchor.constraint(equalToConstant: 20),
-            iconView.heightAnchor.constraint(equalToConstant: 20),
+            iconBadge.widthAnchor.constraint(equalToConstant: Spacing.space36),
+            iconBadge.heightAnchor.constraint(equalToConstant: Spacing.space36),
+            iconView.widthAnchor.constraint(equalToConstant: Spacing.space20),
+            iconView.heightAnchor.constraint(equalToConstant: Spacing.space20),
             iconView.centerXAnchor.constraint(equalTo: iconBadge.centerXAnchor),
             iconView.centerYAnchor.constraint(equalTo: iconBadge.centerYAnchor),
-            chevron.widthAnchor.constraint(equalToConstant: 12)
+            chevron.widthAnchor.constraint(equalToConstant: Spacing.space12)
         ])
 
         isAccessibilityElement = true

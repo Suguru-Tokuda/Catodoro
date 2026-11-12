@@ -74,14 +74,14 @@ final class PresetListViewCell: BaseTableViewCell {
         let stack = UIStackView()
         stack.axis = .horizontal
         stack.alignment = .center
-        stack.spacing = 12
+        stack.spacing = Spacing.space12
         return stack
     }()
 
     private let verticalStackView: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
-        stack.spacing = 8
+        stack.spacing = Spacing.space8
         return stack
     }()
 
@@ -101,18 +101,18 @@ final class PresetListViewCell: BaseTableViewCell {
     override func constructSubviewLayoutConstraints() {
         super.constructSubviewLayoutConstraints()
         NSLayoutConstraint.activate([
-            card.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            card.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            card.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
-            card.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
-            horizontalStackView.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 16),
-            horizontalStackView.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -16),
-            horizontalStackView.topAnchor.constraint(equalTo: card.topAnchor, constant: 20),
-            horizontalStackView.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -20),
-            artwork.widthAnchor.constraint(equalToConstant: 64),
-            artwork.heightAnchor.constraint(equalToConstant: 90),
-            playButton.widthAnchor.constraint(equalToConstant: 44),
-            playButton.heightAnchor.constraint(equalToConstant: 44)
+            card.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Spacing.space16),
+            card.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Spacing.space16),
+            card.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Spacing.space8),
+            card.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -Spacing.space8),
+            horizontalStackView.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: Spacing.space16),
+            horizontalStackView.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -Spacing.space16),
+            horizontalStackView.topAnchor.constraint(equalTo: card.topAnchor, constant: Spacing.space20),
+            horizontalStackView.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -Spacing.space20),
+            artwork.widthAnchor.constraint(equalToConstant: Spacing.space64),
+            artwork.heightAnchor.constraint(equalToConstant: Spacing.space90),
+            playButton.widthAnchor.constraint(equalToConstant: Spacing.space44),
+            playButton.heightAnchor.constraint(equalToConstant: Spacing.space44)
         ])
     }
 

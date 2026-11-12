@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 12/9/24.
 //
 
+import CatodoroShared
 import UIKit
 
 class SettingOptionsViewCell: BaseTableViewCell {
@@ -30,17 +31,17 @@ class SettingOptionsViewCell: BaseTableViewCell {
 
     override func constructSubviewLayoutConstraints() {
         super.constructSubviewLayoutConstraints()
-        let bottomConstraint = settingLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16)
+        let bottomConstraint = settingLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -Spacing.space16)
         bottomConstraint.priority = .defaultHigh
 
         NSLayoutConstraint.activate([
-            icon.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            icon.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Spacing.space16),
             icon.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            icon.widthAnchor.constraint(equalToConstant: 24),
-            icon.heightAnchor.constraint(equalToConstant: 24),
+            icon.widthAnchor.constraint(equalToConstant: Spacing.space24),
+            icon.heightAnchor.constraint(equalToConstant: Spacing.space24),
 
-            settingLabel.leadingAnchor.constraint(equalTo: icon.trailingAnchor, constant: 16),
-            settingLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            settingLabel.leadingAnchor.constraint(equalTo: icon.trailingAnchor, constant: Spacing.space16),
+            settingLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Spacing.space16),
             settingLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             bottomConstraint
         ])

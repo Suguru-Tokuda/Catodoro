@@ -9,7 +9,7 @@ import UIKit
 
 final class OnboardingViewController: BaseViewController {
     private let viewModel: OnboardingViewModel
-    private let onboardingView = OnboardingView()
+    private let onboardingView = SyncOnboardingView()
 
     init(viewModel: OnboardingViewModel) {
         self.viewModel = viewModel
@@ -49,12 +49,19 @@ final class OnboardingViewController: BaseViewController {
         ])
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: animated)
-    }
-
     private func render() {
         onboardingView.render(isBusy: viewModel.isBusy, error: viewModel.errorMessage)
     }
 }
+
+#if DEBUG
+extension OnboardingViewController {
+    var testHooks: TestHooks { .init(target: self) }
+
+    struct TestHooks {
+        let target: OnboardingViewController
+
+        var viewModel: OnboardingViewModel { target.viewModel }
+    }
+}
+#endif

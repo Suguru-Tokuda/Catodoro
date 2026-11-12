@@ -13,11 +13,10 @@ final class OnboardingViewModelTests: XCTestCase {
         model.onComplete = { completed = true }
         await model.continueLocally()
         XCTAssertTrue(completed)
-        XCTAssertTrue(preferences.hasCompletedOnboarding)
         XCTAssertFalse(preferences.syncEnabled)
         XCTAssertEqual(sync.enableCount, 0)
         XCTAssertEqual(sync.disableCount, 1)
-        XCTAssertTrue(CatodoroPreferences(userDefaults: defaults).hasCompletedOnboarding)
+        XCTAssertFalse(preferences.hasCompletedOnboarding, "the alert step finishes onboarding")
     }
 
     func test_cloudSuccessPersistsChoiceAndCompletes() async {
@@ -30,7 +29,8 @@ final class OnboardingViewModelTests: XCTestCase {
         await model.enableSync()
         XCTAssertTrue(completed)
         XCTAssertTrue(preferences.syncEnabled)
-        XCTAssertTrue(preferences.hasCompletedOnboarding)
+        XCTAssertTrue(CatodoroPreferences(userDefaults: defaults).syncEnabled, "choice is persisted")
+        XCTAssertFalse(preferences.hasCompletedOnboarding, "the alert step finishes onboarding")
         XCTAssertFalse(model.isBusy)
     }
 
@@ -40,15 +40,18 @@ final class OnboardingViewModelTests: XCTestCase {
         let sync = MockOnboardingSync()
         sync.shouldFail = true
         let model = OnboardingViewModel(lifecycle: sync, preferences: preferences)
+        var completed = false
+        model.onComplete = { completed = true }
         await model.enableSync()
-        XCTAssertFalse(preferences.hasCompletedOnboarding)
+        XCTAssertFalse(completed)
         XCTAssertFalse(preferences.syncEnabled)
         XCTAssertNotNil(model.errorMessage)
         XCTAssertEqual(sync.disableCount, 0)
         XCTAssertFalse(model.isBusy)
         sync.shouldFail = false
         await model.enableSync()
-        XCTAssertTrue(preferences.hasCompletedOnboarding)
+        XCTAssertTrue(completed)
+        XCTAssertTrue(preferences.syncEnabled)
         XCTAssertNil(model.errorMessage)
     }
 
@@ -64,7 +67,7 @@ final class OnboardingViewModelTests: XCTestCase {
             if enabled { await model.enableSync() } else { await model.continueLocally() }
             XCTAssertEqual(lifecycle.requests, [enabled])
             XCTAssertFalse(completed)
-            XCTAssertFalse(preferences.hasCompletedOnboarding)
+            XCTAssertFalse(preferences.syncEnabled)
             XCTAssertNil(model.errorMessage)
             XCTAssertFalse(model.isBusy)
         }
@@ -80,14 +83,12 @@ final class OnboardingViewModelTests: XCTestCase {
         model.onComplete = { completed = true }
         await model.continueLocally()
         XCTAssertFalse(completed)
-        XCTAssertFalse(preferences.hasCompletedOnboarding)
         XCTAssertNotNil(model.errorMessage)
         XCTAssertFalse(model.isBusy)
         lifecycle.shouldFail = false
         await model.continueLocally()
         XCTAssertTrue(completed)
         XCTAssertEqual(lifecycle.requests, [false, false])
-        XCTAssertTrue(preferences.hasCompletedOnboarding)
         XCTAssertFalse(preferences.syncEnabled)
         XCTAssertNil(model.errorMessage)
     }

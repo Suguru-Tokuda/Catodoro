@@ -32,33 +32,21 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
     private var presetsCoordiantor: PresetsCoordinator?
     private var settingsCoordinator: SettingsCoordinator?
 
-    weak var preferences: CatodoroPreferences?
-    private let syncLifecycleManager: SyncLifecycleManaging?
-    private let coreDataManager: CatodoroCoreDataManaging
-    weak var liveActivityManager: LiveActivityManaging?
-    private let hapticsManager: HapticsManaging?
+    private let dependencies: AppDependencies
 
     private var subscriptions: Set<AnyCancellable> = .init()
 
     required init(_ navigationController: UINavigationController = BaseNavigationController(),
-                  preferences: CatodoroPreferences?,
-                  liveActivityManager: LiveActivityManaging?,
-                  hapticsManager: HapticsManaging? = nil,
-                  coreDataManager: CatodoroCoreDataManaging,
-                  syncLifecycleManager: SyncLifecycleManaging? = nil) {
-        self.syncLifecycleManager = syncLifecycleManager
-        self.coreDataManager = coreDataManager
+                  dependencies: AppDependencies) {
         self.navigationController = navigationController
-        self.preferences = preferences
-        self.liveActivityManager = liveActivityManager
-        self.hapticsManager = hapticsManager
+        self.dependencies = dependencies
         self.tabBarController = .init()
         super.init()
         self.addSubscriptions()
     }
 
     private func addSubscriptions() {
-        preferences?
+        dependencies.preferences
             .colorPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] color in
@@ -79,9 +67,9 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
 
     func start() {
         let pages: [TabBarPage] = [.timer, .presets, .settings].sorted(by: { $0.tabOrderNumber < $1.tabOrderNumber })
-        // Initialization of ViewControllers
         let controllers: [UINavigationController] = pages.compactMap({ getTabController($0) })
         prepareTabBarController(withTabControllers: controllers)
+        restoreRunningCycle()
     }
 
     private func getTabController(_ page: TabBarPage) -> UINavigationController? {
@@ -89,26 +77,21 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
 
         switch page {
         case .timer:
-            timerCoordinator = TimerCoordiantor(configuration: TimerCoordinatorConfiguration(shouldHideBottomBarWhenTimerStart: true), coreDataManager: coreDataManager)
-            timerCoordinator?.preferences = preferences
-            timerCoordinator?.liveActivityManager = liveActivityManager
-            timerCoordinator?.hapticsManager = hapticsManager
+            timerCoordinator = TimerCoordiantor(configuration: TimerCoordinatorConfiguration(shouldHideBottomBarWhenTimerStart: true),
+                                                dependencies: dependencies)
             if let timerCoordinator {
                 timerCoordinator.start()
                 navController = timerCoordinator.navigationController
             }
         case .presets:
-            presetsCoordiantor = PresetsCoordinator(configuration: PresetsCoordinatorConfiguration(shouldHideBottomBar: true), coreDataManager: coreDataManager)
-            presetsCoordiantor?.preferences = preferences
-            presetsCoordiantor?.liveActivityManager = liveActivityManager
-            presetsCoordiantor?.hapticsManager = hapticsManager
+            presetsCoordiantor = PresetsCoordinator(configuration: PresetsCoordinatorConfiguration(shouldHideBottomBar: true),
+                                                    dependencies: dependencies)
             if let presetsCoordiantor {
                 presetsCoordiantor.start()
                 navController = presetsCoordiantor.navigationController
             }
         case .settings:
-            settingsCoordinator = SettingsCoordinator(syncLifecycleManager: syncLifecycleManager)
-            settingsCoordinator?.preferences = preferences
+            settingsCoordinator = SettingsCoordinator(dependencies: dependencies)
             if let settingsCoordinator {
                 settingsCoordinator.start()
                 navController = settingsCoordinator.navigationController
@@ -138,12 +121,23 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
         tabBarController.tabBar.standardAppearance = appearance
         tabBarController.tabBar.scrollEdgeAppearance = appearance
         tabBarController.tabBar.unselectedItemTintColor = CatTheme.secondaryText
-        tabBarController.tabBar.tintColor = ColorOptions(preferences?.color ?? "").color
+        tabBarController.tabBar.tintColor = ColorOptions(dependencies.preferences.color ?? "").color
         tabBarController.view.backgroundColor = .clear
         tabBarController.tabBar.isTranslucent = true
 
         /// In this step, we attach tabBarController to navigation controller associated with this coordiantor
         navigationController.viewControllers = [tabBarController]
+    }
+
+    private func restoreRunningCycle() {
+        let countdown = dependencies.countdown
+        Task { @MainActor [weak self] in
+            // Catch up first, so a cycle that ended while the app was gone isn't shown.
+            await countdown.reconcile()
+            guard let self, let session = await countdown.currentSession() else { return }
+            selectPage(.timer)
+            timerCoordinator?.showRunningCycle(session)
+        }
     }
 
     func selectPage(_ page: TabBarPage) {

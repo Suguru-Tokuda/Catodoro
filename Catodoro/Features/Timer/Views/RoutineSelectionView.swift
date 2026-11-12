@@ -17,7 +17,7 @@ class RoutineSelectionView: BaseView {
     let contentStack: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
-        stack.spacing = CatTheme.Spacing.medium
+        stack.spacing = Spacing.space16
 
         return stack
     }()
@@ -44,7 +44,7 @@ class RoutineSelectionView: BaseView {
 
             return updated
         }
-        configuration.contentInsets = .init(top: 16, leading: 20, bottom: 16, trailing: 20)
+        configuration.contentInsets = .init(top: Spacing.space16, leading: Spacing.space20, bottom: Spacing.space16, trailing: Spacing.space20)
         button.configuration = configuration
         button.titleLabel?.font = CatTheme.font(.headline)
 
@@ -81,9 +81,9 @@ class RoutineSelectionView: BaseView {
     private let headerLabels: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
-        stack.spacing = 4
+        stack.spacing = Spacing.space4
         stack.isLayoutMarginsRelativeArrangement = true
-        stack.layoutMargins = .init(top: 0, left: 0, bottom: 0, right: 36)
+        stack.layoutMargins = .init(top: 0, left: 0, bottom: 0, right: Spacing.space36)
 
         return stack
     }()
@@ -92,7 +92,7 @@ class RoutineSelectionView: BaseView {
         let stack = UIStackView()
         stack.axis = .horizontal
         stack.alignment = .center
-        stack.spacing = 12
+        stack.spacing = Spacing.space12
 
         return stack
     }()
@@ -140,27 +140,27 @@ class RoutineSelectionView: BaseView {
     override func constructSubviewLayoutConstraints() {
         super.constructSubviewLayoutConstraints()
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 20),
-            closeButton.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 12),
-            closeButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12),
-            closeButton.widthAnchor.constraint(equalToConstant: 44),
-            closeButton.heightAnchor.constraint(equalToConstant: 44),
-            imagePlate.widthAnchor.constraint(equalToConstant: 72),
-            imagePlate.heightAnchor.constraint(equalToConstant: 72),
+            scrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: Spacing.space20),
+            closeButton.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: Spacing.space12),
+            closeButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Spacing.space12),
+            closeButton.widthAnchor.constraint(equalToConstant: Spacing.space44),
+            closeButton.heightAnchor.constraint(equalToConstant: Spacing.space44),
+            imagePlate.widthAnchor.constraint(equalToConstant: Spacing.space72),
+            imagePlate.heightAnchor.constraint(equalToConstant: Spacing.space72),
             headerImage.centerXAnchor.constraint(equalTo: imagePlate.centerXAnchor),
             headerImage.centerYAnchor.constraint(equalTo: imagePlate.centerYAnchor),
             headerImage.widthAnchor.constraint(equalTo: imagePlate.widthAnchor, multiplier: 0.85),
             headerImage.heightAnchor.constraint(equalTo: imagePlate.heightAnchor, multiplier: 0.85),
-            scrollView.bottomAnchor.constraint(equalTo: confirmButton.topAnchor, constant: -16),
-            confirmButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            confirmButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            confirmButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            scrollView.bottomAnchor.constraint(equalTo: confirmButton.topAnchor, constant: -Spacing.space16),
+            confirmButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Spacing.space16),
+            confirmButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Spacing.space16),
+            confirmButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -Spacing.space16),
             scrollView.leadingAnchor.constraint(equalTo: leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            contentStack.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor, constant: 16),
-            contentStack.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -24),
+            contentStack.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor, constant: Spacing.space16),
+            contentStack.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -Spacing.space24),
             contentStack.centerXAnchor.constraint(equalTo: scrollView.frameLayoutGuide.centerXAnchor),
-            contentStack.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor, constant: -32),
+            contentStack.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor, constant: -Spacing.space16 * 2),
             confirmButton.heightAnchor.constraint(greaterThanOrEqualToConstant: CatTheme.minimumTouchTarget)
         ])
     }

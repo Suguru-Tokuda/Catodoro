@@ -5,12 +5,13 @@
 //  Created by Suguru Tokuda on 12/29/24.
 //
 
+import CatodoroShared
 import UIKit
 
 class DismissButton: UIButton {
     var onButtonTap: (() -> ())?
-    let buttonHeight = 80
-    let buttonWidth = 80
+    let buttonHeight = Spacing.space80
+    let buttonWidth = Spacing.space80
 
     init() {
         super.init(frame: .zero)

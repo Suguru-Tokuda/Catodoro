@@ -118,12 +118,9 @@
 		BB522A612D40AC200064F9DC /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Intents/PlayTimerIntent.swift,
-				Intents/RepeatTimerIntent.swift,
-				Intents/SkipBreakIntent.swift,
-				Intents/StopTimerIntent.swift,
 				Views/ActivityTheme.swift,
 				Views/CircleButtonView.swift,
+				Views/PawIconView.swift,
 				Views/TimerLiveActivityView.swift,
 			);
 			target = BBF4F4532C763FF80079448E /* Catodoro */;
@@ -959,7 +956,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1.1;
+				MARKETING_VERSION = 2.2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sugurutokuda.Catodoro;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -997,7 +994,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1.1;
+				MARKETING_VERSION = 2.2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sugurutokuda.Catodoro;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

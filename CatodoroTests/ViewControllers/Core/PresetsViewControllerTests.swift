@@ -110,7 +110,9 @@ class PresetsViewControllerTests: XCTestCase {
 
     @MainActor
     func test_presetTimerUsesPresetsNavigationStackWithoutSwitchingTabs() throws {
-        let tabs = TabCoordinator(preferences: nil, liveActivityManager: nil, coreDataManager: InMemoryPresetStore())
+        let dependencies = TestDependencies()
+        defer { dependencies.tearDown() }
+        let tabs = TabCoordinator(dependencies: dependencies.app)
         tabs.start()
         tabs.selectPage(.presets)
         let presets = try XCTUnwrap(tabs.testHooks.presetsCoordiantor)

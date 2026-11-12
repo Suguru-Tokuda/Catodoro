@@ -20,7 +20,7 @@ enum AudioState {
     case stopped
 }
 
-protocol AudioManaging {
+protocol AudioManaging: AnyObject, Sendable {
     var audioState: AudioState { get }
     func setPlayer(fileName: String, fileExtension: String) throws
     func play(numberOfLoops: Int) throws
@@ -28,7 +28,7 @@ protocol AudioManaging {
     func stop() throws
 }
 
-class AudioManager: NSObject, AudioManaging {
+final class AudioManager: NSObject, AudioManaging, @unchecked Sendable {
     /// Session and player commands share a serial queue so stop cannot overtake activation.
     static let playbackQueue = DispatchQueue(label: "com.catodoro.audio", qos: .userInitiated)
     private let stateLock = NSLock()

@@ -50,7 +50,7 @@ class TimerConfigView: BaseView {
     private let stackView: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
-        stack.spacing = CatTheme.Spacing.medium
+        stack.spacing = Spacing.space16
         return stack
     }()
 
@@ -104,7 +104,7 @@ class TimerConfigView: BaseView {
     private func separator() -> UIView {
         let view = UIView()
         view.backgroundColor = CatTheme.separator
-        view.heightAnchor.constraint(equalToConstant: 0.5).isActive = true
+        view.heightAnchor.constraint(equalToConstant: Spacing.hairline).isActive = true
 
         return view
     }
@@ -116,7 +116,7 @@ class TimerConfigView: BaseView {
         addAutolayoutSubview(scrollView)
         scrollView.addAutolayoutSubview(stackView)
         stackView.addArrangedSubviews([heading, tagline, heroView, routineCard, startButton])
-        stackView.setCustomSpacing(4, after: heading)
+        stackView.setCustomSpacing(Spacing.space4, after: heading)
         stackView.setCustomSpacing(0, after: tagline)
         heroView.addAutolayoutSubview(companion)
         routineCard.addAutolayoutSubview(routineStack)
@@ -124,8 +124,8 @@ class TimerConfigView: BaseView {
             routineTitle, focusRow, separator(), breakRow, separator(), sessionsRow,
             separator(), summaryLabel
         ])
-        routineStack.setCustomSpacing(8, after: routineTitle)
-        routineStack.setCustomSpacing(12, after: routineStack.arrangedSubviews[6])
+        routineStack.setCustomSpacing(Spacing.space8, after: routineTitle)
+        routineStack.setCustomSpacing(Spacing.space12, after: routineStack.arrangedSubviews[6])
         configureSelectionActions()
         applyModel()
     }
@@ -145,25 +145,25 @@ class TimerConfigView: BaseView {
     override func constructSubviewLayoutConstraints() {
         super.constructSubviewLayoutConstraints()
         NSLayoutConstraint.activate([
-            heroView.heightAnchor.constraint(equalToConstant: 200),
+            heroView.heightAnchor.constraint(equalToConstant: Spacing.space200),
             companion.heightAnchor.constraint(equalTo: heroView.heightAnchor),
             companion.widthAnchor.constraint(equalTo: heroView.widthAnchor, multiplier: 0.7),
-            companion.centerXAnchor.constraint(equalTo: heroView.centerXAnchor, constant: -20),
+            companion.centerXAnchor.constraint(equalTo: heroView.centerXAnchor, constant: -Spacing.space20),
             companion.bottomAnchor.constraint(equalTo: heroView.bottomAnchor),
-            routineStack.leadingAnchor.constraint(equalTo: routineCard.leadingAnchor, constant: 16),
-            routineStack.trailingAnchor.constraint(equalTo: routineCard.trailingAnchor, constant: -16),
-            routineStack.topAnchor.constraint(equalTo: routineCard.topAnchor, constant: 16),
-            routineStack.bottomAnchor.constraint(equalTo: routineCard.bottomAnchor, constant: -16),
-            scrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 16),
-            scrollView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            scrollView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            routineStack.leadingAnchor.constraint(equalTo: routineCard.leadingAnchor, constant: Spacing.space16),
+            routineStack.trailingAnchor.constraint(equalTo: routineCard.trailingAnchor, constant: -Spacing.space16),
+            routineStack.topAnchor.constraint(equalTo: routineCard.topAnchor, constant: Spacing.space16),
+            routineStack.bottomAnchor.constraint(equalTo: routineCard.bottomAnchor, constant: -Spacing.space16),
+            scrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: Spacing.space16),
+            scrollView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Spacing.space16),
+            scrollView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Spacing.space16),
             scrollView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
             stackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
             stackView.leadingAnchor.constraint(equalTo: scrollView.frameLayoutGuide.leadingAnchor),
             stackView.trailingAnchor.constraint(equalTo: scrollView.frameLayoutGuide.trailingAnchor),
-            stackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -24),
+            stackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -Spacing.space24),
             stackView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
-            startButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 56)
+            startButton.heightAnchor.constraint(greaterThanOrEqualToConstant: Spacing.space56)
         ])
     }
 
