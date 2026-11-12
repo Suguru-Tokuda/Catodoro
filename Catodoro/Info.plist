@@ -8,8 +8,6 @@
 	</array>
 	<key>NSAlarmKitUsageDescription</key>
 	<string>Catodoro uses alarms to let you know when a focus session or catnap break ends.</string>
-	<key>NSSupportLiveActivities</key>
-	<true/>
 	<key>UIApplicationExpectsUserActivityInMainApp</key>
 	<true/>
 	<key>UIApplicationExtensions</key>
@@ -39,5 +37,16 @@
 		<string>audio</string>
 		<string>processing</string>
 	</array>
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLName</key>
+            <string>com.sugurutokuda.Catodoro</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>catodoro</string>
+            </array>
+        </dict>
+    </array>
 </dict>
 </plist>

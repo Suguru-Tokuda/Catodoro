@@ -155,6 +155,14 @@ class TabCoordinator: NSObject, TabCoordinatorProtocol {
         .init(index: tabBarController.selectedIndex)
     }
 
+    func showRunningCycle() {
+        if presetsCoordiantor?.navigationController.topViewController is TimerViewController {
+            selectPage(.presets)
+            return
+        }
+        restoreRunningCycle()
+    }
+
     deinit {
         removeSubscriptions()
     }

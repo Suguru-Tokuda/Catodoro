@@ -16,6 +16,7 @@ struct CatodoroWidgetLiveActivity: Widget {
             TimerLiveActivityView(context: context)
                 .activityBackgroundTint(.clear)
                 .activitySystemActionForegroundColor(.black)
+                .widgetURL(DeepLink.timer)
         } dynamicIsland: { context in
             catodoroDynamicIsland(state: context.state)
         }
@@ -39,6 +40,7 @@ func catodoroDynamicIsland(state: TimerAttributes.ContentState) -> DynamicIsland
     } minimal: {
         PawIconView(accent: accent, accessibilityLabelTitle: state.phaseTitle)
     }
+    .widgetURL(DeepLink.timer)
     .keylineTint(accent)
 }
 

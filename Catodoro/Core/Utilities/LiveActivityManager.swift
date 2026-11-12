@@ -77,8 +77,12 @@ final class LiveActivityManager: LiveActivityManaging {
         try lock.withLock {
             guard currentActivity == nil else { return }
 
-            currentActivity = try Activity.request(attributes: TimerAttributes(name: name),
-                                                   content: ActivityContent(state: state, staleDate: nil))
+            currentActivity = try Activity.request(
+                attributes: TimerAttributes(name: name),
+                content: ActivityContent(
+                    state: state,
+                    staleDate: Self.staleDate(for: timerStatus, endTime: endTime)
+                ))
         }
     }
 
@@ -107,7 +111,7 @@ final class LiveActivityManager: LiveActivityManaging {
                                                body: timerType == .interval ? AppStrings.Resources.restYourPaws : AppStrings.Resources.timeToFocus,
                                                sound: .named("\(soundName).mp3"))
                 }
-                await activity.update(ActivityContent(state: state, staleDate: nil), alertConfiguration: alert)
+                await activity.update(ActivityContent(state: state, staleDate: Self.staleDate(for: timerStatus, endTime: endTime)), alertConfiguration: alert)
             }
             pendingOperation = task
             return task
@@ -146,4 +150,13 @@ final class LiveActivityManager: LiveActivityManaging {
             }
         }
     }
+
+    /// A running phase is out of date once it ends without an update (e.g. the app was killed).
+    /// Paused and finished states don't expire. The extra second keeps a normal phase change,
+    /// whose update lands right at the end, from showing as stale.
+    static func staleDate(for status: TimerStatus, endTime: Date) -> Date? {
+        status == .playing ? endTime.addingTimeInterval(1) : nil
+    }
+
+    
 }

@@ -101,6 +101,15 @@ class MainCoordinator: @preconcurrency MainCoordinatorProtocol {
         tabCoordinator.start()
         childCoordinators.append(tabCoordinator)
     }
+
+    func handle(_ url: URL) {
+        guard DeepLink.isTimer(url),
+              let tabs = childCoordinators.first(where: { $0 is TabCoordinator }) as? TabCoordinator else {
+            return
+        }
+
+        tabs.showRunningCycle()
+    }
 }
 
 extension MainCoordinator: @preconcurrency CoordinatorFinishDelegate {

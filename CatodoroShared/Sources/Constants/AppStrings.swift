@@ -498,5 +498,7 @@ public enum AppStrings {
         public static let thisIsAnExampleWidget = String(localized: "widget.thisIsAnExampleWidget", defaultValue: "This is an example widget.", bundle: bundle)
 
         public static let time = String(localized: "widget.time", defaultValue: "Time:", bundle: bundle)
+
+        public static let openToContinue = String(localized: "widget.openToContinue", defaultValue: "Open Catodoro to continue", bundle: bundle)
     }
 }

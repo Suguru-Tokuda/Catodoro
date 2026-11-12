@@ -17,6 +17,7 @@ struct CatodoroAlarmLiveActivity: Widget {
             TimerLiveActivityCard(state: .init(alarm: context.state, metadata: context.attributes.metadata))
                 .activityBackgroundTint(.clear)
                 .activitySystemActionForegroundColor(.black)
+                .widgetURL(DeepLink.timer)
             } dynamicIsland: { context in
                 catodoroDynamicIsland(state: .init(alarm: context.state, metadata: context.attributes.metadata))
             }
@@ -46,35 +47,35 @@ private struct AlarmCountdownText: View {
     }
 }
 
-private struct AlarmControls: View {
-    let state: AlarmPresentationState
-    let metadata: CatodoroAlarmMetadata?
-
-    var body: some View {
-        let id = state.alarmID.uuidString
-        HStack(spacing: Spacing.space8) {
-            if metadata?.phase.isBreak == true {
-                Button(intent: SkipBreakIntent(alarmID: id)) {
-                    Label(AppStrings.Common.skipBreak, systemImage: "forward.end.fill")
-                }
-            } else {
-                Button(intent: PlayTimerIntent(alarmID: id)) {
-                    if case .paused = state.mode {
-                        Label(AppStrings.Common.resume, systemImage: "play.fill")
-                    } else {
-                        Label(AppStrings.Common.pause, systemImage: "pause.fill")
-                    }
-                }
-            }
-            Button(intent: StopTimerIntent(alarmID: id)) {
-                Label(AppStrings.Common.end, systemImage: "xmark")
-            }
-        }
-        .font(.system(.caption, design: .rounded, weight: .semibold))
-        .buttonStyle(.bordered)
-        .buttonBorderShape(.capsule)
-    }
-}
+//private struct AlarmControls: View {
+//    let state: AlarmPresentationState
+//    let metadata: CatodoroAlarmMetadata?
+//
+//    var body: some View {
+//        let id = state.alarmID.uuidString
+//        HStack(spacing: Spacing.space8) {
+//            if metadata?.phase.isBreak == true {
+//                Button(intent: SkipBreakIntent(alarmID: id)) {
+//                    Label(AppStrings.Common.skipBreak, systemImage: "forward.end.fill")
+//                }
+//            } else {
+//                Button(intent: PlayTimerIntent(alarmID: id)) {
+//                    if case .paused = state.mode {
+//                        Label(AppStrings.Common.resume, systemImage: "play.fill")
+//                    } else {
+//                        Label(AppStrings.Common.pause, systemImage: "pause.fill")
+//                    }
+//                }
+//            }
+//            Button(intent: StopTimerIntent(alarmID: id)) {
+//                Label(AppStrings.Common.end, systemImage: "xmark")
+//            }
+//        }
+//        .font(.system(.caption, design: .rounded, weight: .semibold))
+//        .buttonStyle(.bordered)
+//        .buttonBorderShape(.capsule)
+//    }
+//}
 
 extension TimerAttributes.ContentState {
     /// Maps an AlarmKit countdown onto the state the Catodoro views already understand.

@@ -11,7 +11,7 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private var themeSubscription: AnyCancellable?
     var window: UIWindow?
-    private var mainCoordinator: Coordinator?
+    private var mainCoordinator: MainCoordinator?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
@@ -19,7 +19,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.backgroundColor = CatTheme.background
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
         let dependencies = appDelegate.dependencies
-        // Timer state isn't restored across launches, so any existing activity is orphaned.
+        // The previous process's activity can't be updated any more; `reconcile()` starts a
+        // fresh one if the cycle is still running.
         dependencies.liveActivityManager.endStaleActivities()
 
         let coordinator = MainCoordinator(dependencies: dependencies)
@@ -42,7 +43,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
-        (UIApplication.shared.delegate as? AppDelegate)?.dependencies.liveActivityManager.endLiveActivity()
+        // Nothing to end here. iOS doesn't call this when a suspended app is killed, and when
+        // it does (the scene was only discarded) the cycle is still running and keeps its activity.
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
@@ -57,6 +59,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
+    }
+
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        guard let url = URLContexts.first?.url else { return }
+        mainCoordinator?.handle(url)
     }
 }
 
