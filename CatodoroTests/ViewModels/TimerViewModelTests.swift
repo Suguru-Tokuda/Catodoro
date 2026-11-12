@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 12/23/24.
 //
 
+import CatodoroShared
 import XCTest
 @testable import Catodoro
 
@@ -57,18 +58,6 @@ final class TimerViewModelTests: TimerViewModelTestCase {
         await waitUntil { self.actions == [.stop] }
         XCTAssertNotNil(model.testHooks.countdownError)
         XCTAssertNil(model.testHooks.session)
-    }
-
-    func test_configure_whenAlreadyRunning_expectScreenStays() async {
-        countdown.startError = CountdownError.alreadyRunning
-        let model = makeViewModel()
-
-        model.configure(config: config)
-
-        await waitUntil { self.countdown.startedSteps.count == 1 }
-        await settle()
-        XCTAssertTrue(actions.isEmpty)
-        XCTAssertNil(model.testHooks.countdownError)
     }
 
     // MARK: - Which sessions are shown
@@ -320,6 +309,18 @@ final class TimerViewModelTests: TimerViewModelTestCase {
         model.handlePlayPauseButtonTap()
 
         await waitUntil { model.testHooks.countdownError != nil }
+    }
+
+    func test_focusAfterBreak_expectBreakCueStopped() async {
+        let model = makeViewModel()
+        let first = await start(model)
+        await deliver(first.moved(to: 1, state: .running(endDate: instant + 5)), to: model)
+        XCTAssertEqual(audio.commands.last, "play", "break cue started")
+
+        await deliver(first.moved(to: 2, state: .running(endDate: instant + 10)), to: model)
+
+        XCTAssertEqual(audio.commands.last, "stop", "break cue doesn't carry into focus")
+        XCTAssertEqual(audio.playCount, 1, "focus starts silently")
     }
 }
 

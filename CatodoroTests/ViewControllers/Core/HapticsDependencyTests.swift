@@ -33,6 +33,8 @@ final class HapticsDependencyTests: XCTestCase {
         await settle()
         let tabs = try XCTUnwrap(coordinator.childCoordinators.first as? TabCoordinator)
         let timerCoordinator = try XCTUnwrap(tabs.testHooks.timerCoordinator)
+        // Off-screen navigation never reports didShow, so BaseNavigationController would drop the push.
+        (timerCoordinator.navigationController as? BaseNavigationController)?.testHooks.isNewViewControllerBeingAdded = false
 
         try await runOnePhaseChange { timerCoordinator.navigateToTimerView(viewModel: $0) }
     }
@@ -42,6 +44,7 @@ final class HapticsDependencyTests: XCTestCase {
         tabs.start()
         await settle()   // see above
         let presets = try XCTUnwrap(tabs.testHooks.presetsCoordiantor)
+        (presets.navigationController as? BaseNavigationController)?.testHooks.isNewViewControllerBeingAdded = false
         let list = try XCTUnwrap(presets.navigationController.viewControllers.last as? PresetsViewController)
         let preset = PresetModel(id: UUID(), totalDuration: 10, intervalDuration: 5, intervals: 2)
 

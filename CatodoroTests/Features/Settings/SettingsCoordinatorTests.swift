@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 11/11/26.
 //
 
+import CatodoroShared
 import UIKit
 import XCTest
 @testable import Catodoro
