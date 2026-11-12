@@ -24,59 +24,6 @@ struct CatodoroAlarmLiveActivity: Widget {
     }
 }
 
-private func alarmPhaseTitle(_ metadata: CatodoroAlarmMetadata?) -> String {
-    guard let metadata else { return AppStrings.Common.focusTime }
-    return metadata.phase.isBreak ? AppStrings.Common.catnapBreak : AppStrings.Common.focusTime
-}
-
-private struct AlarmCountdownText: View {
-    let state: AlarmPresentationState
-
-    var body: some View {
-        switch state.mode {
-        case .alert(_):
-            Text("0:00")
-        case .countdown(let countdown):
-            Text(timerInterval: Date.now...max(Date.now, countdown.fireDate), countsDown: true)
-        case .paused(let paused):
-            let remaining = max(0, paused.totalCountdownDuration - paused.previouslyElapsedDuration)
-            Text(Duration.seconds(remaining.rounded(.up)), format: .time(pattern: .minuteSecond))
-        @unknown default:
-            EmptyView()
-        }
-    }
-}
-
-//private struct AlarmControls: View {
-//    let state: AlarmPresentationState
-//    let metadata: CatodoroAlarmMetadata?
-//
-//    var body: some View {
-//        let id = state.alarmID.uuidString
-//        HStack(spacing: Spacing.space8) {
-//            if metadata?.phase.isBreak == true {
-//                Button(intent: SkipBreakIntent(alarmID: id)) {
-//                    Label(AppStrings.Common.skipBreak, systemImage: "forward.end.fill")
-//                }
-//            } else {
-//                Button(intent: PlayTimerIntent(alarmID: id)) {
-//                    if case .paused = state.mode {
-//                        Label(AppStrings.Common.resume, systemImage: "play.fill")
-//                    } else {
-//                        Label(AppStrings.Common.pause, systemImage: "pause.fill")
-//                    }
-//                }
-//            }
-//            Button(intent: StopTimerIntent(alarmID: id)) {
-//                Label(AppStrings.Common.end, systemImage: "xmark")
-//            }
-//        }
-//        .font(.system(.caption, design: .rounded, weight: .semibold))
-//        .buttonStyle(.bordered)
-//        .buttonBorderShape(.capsule)
-//    }
-//}
-
 extension TimerAttributes.ContentState {
     /// Maps an AlarmKit countdown onto the state the Catodoro views already understand.
     init(alarm: AlarmPresentationState, metadata: CatodoroAlarmMetadata?) {

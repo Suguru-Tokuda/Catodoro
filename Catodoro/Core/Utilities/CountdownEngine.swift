@@ -22,15 +22,11 @@ enum AuthorizationStatus {
 final class CountdownEngine: NSObject, ObservableObject {
     /// Source of truth for the current countdown. Persisted so it survives relaunch.
     @Published private(set) var session: CycleSession?
-    @Published private(set) var authorization = "unknown"
     /// The backend the user chose. `.liveActivity` needs no permission;
     /// `.alarmKit` and `.notification` are opt-in and fall back to `.liveActivity` if denied.
     var preferredBackend: CycleSession.Backend {
         preferences.alertStyle.resolved().backend
     }
-
-    /// Human-readable trace for debug UI.
-    let events = PassthroughSubject<String, Never>()
 
     private let liveActivityManager: LiveActivityManaging
     private let preferences: CatodoroPreferencesProtocol
@@ -58,7 +54,6 @@ final class CountdownEngine: NSObject, ObservableObject {
         if #available(iOS 26.0, *) {
             cancelOrphanedAlarms()
         }
-        refreshAuthorization()
         observeAppLifeCycle()
 
         if #available(iOS 26.0, *) {
@@ -70,8 +65,6 @@ final class CountdownEngine: NSObject, ObservableObject {
 
     @discardableResult
     func requestAuthorization(for backend: CycleSession.Backend) async -> Bool {
-        defer { refreshAuthorization() }
-
         switch backend {
         case .alarmKit:
             guard #available(iOS 26.0, *) else { return false }
@@ -688,36 +681,8 @@ final class CountdownEngine: NSObject, ObservableObject {
         return alarmID == session?.alarmID.uuidString
     }
 
-    private func refreshAuthorization() {
-        switch preferredBackend {
-        case .alarmKit:
-            if #available(iOS 26.0, *) {
-                authorization = String(describing: AlarmManager.shared.authorizationState)
-            }
-        case .liveActivity:
-           authorization = "notRequired"
-        case .notification:
-            Task {
-                let status = await notificationCenter.notificationSettings().authorizationStatus
-                authorization = Self.describe(status)
-            }
-        }
-    }
-
-    private static func describe(_ status: UNAuthorizationStatus) -> String {
-        switch status {
-        case .notDetermined: "notDetermined"
-        case .denied: "denied"
-        case .authorized: "authorized"
-        case .provisional: "provisional"
-        case .ephemeral: "ephemeral"
-        @unknown default: "unknown"
-        }
-    }
-
     private func log(_ text: String) {
         print("⏱️", text)
-        events.send(text)
     }
 
     // MARK: - Per-step content

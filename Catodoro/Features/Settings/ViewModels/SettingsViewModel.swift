@@ -10,11 +10,6 @@ import ActivityKit
 import Combine
 import Foundation
 
-struct SettingModel {
-    let iconName: String
-    let title: String
-}
-
 enum SettingOptions: String, CaseIterable {
     case alertStyle = "Alarm"
     case color = "Color"

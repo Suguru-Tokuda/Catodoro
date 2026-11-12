@@ -46,10 +46,4 @@ extension CycleStep {
         return steps
     }
 
-    static func cycle(from config: TimerConfigModel) -> [CycleStep] {
-        cycle(intervals: config.intervals,
-              focus: config.mainTimer.duration,
-              breakDuration: config.interval.duration
-        )
-    }
 }

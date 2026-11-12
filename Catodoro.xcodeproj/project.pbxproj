@@ -119,13 +119,11 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Intents/AdvanceIntent.swift,
-				Intents/EndCycleIntent.swift,
 				Intents/PlayTimerIntent.swift,
 				Intents/RepeatTimerIntent.swift,
 				Intents/SkipBreakIntent.swift,
 				Intents/StopTimerIntent.swift,
 				Views/ActivityTheme.swift,
-				Views/CircleButtonView.swift,
 				Views/PawIconView.swift,
 				Views/TimerLiveActivityView.swift,
 			);

@@ -84,10 +84,6 @@ final class CountdownService: CountdownControlling {
         try await countdownEngine.resume(alarmID: alarmID)
     }
     
-    func stop(alarmID: String?) async {
-        await countdownEngine.stop(alarmID: alarmID)
-    }
-
     func togglePauseResume(alarmID: String) async throws {
         try await countdownEngine.togglePauseResume(alarmID: alarmID)
     }
