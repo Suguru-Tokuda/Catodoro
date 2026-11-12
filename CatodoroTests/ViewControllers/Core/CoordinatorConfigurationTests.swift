@@ -11,11 +11,24 @@ import XCTest
 
 @MainActor
 final class CoordinatorConfigurationTests: XCTestCase {
+    private var dependencies: TestDependencies!
+
+    override func setUp() async throws {
+        try await super.setUp()
+        dependencies = TestDependencies()
+    }
+
+    override func tearDown() async throws {
+        dependencies.tearDown()
+        dependencies = nil
+        try await super.tearDown()
+    }
+
     func test_defaultTimerCoordinatorKeepsBottomBarVisible() throws {
         let navigation = UINavigationController()
-        let coordinator = TimerCoordiantor(navigationController: navigation, coreDataManager: InMemoryPresetStore())
+        let coordinator = TimerCoordiantor(navigationController: navigation, dependencies: dependencies.app)
 
-        coordinator.navigateToTimerView(viewModel: TimerConfigViewModel(coreDataManager: InMemoryPresetStore()))
+        coordinator.navigateToTimerView(viewModel: configViewModel())
 
         let timer = try XCTUnwrap(navigation.topViewController as? TimerViewController)
         XCTAssertFalse(timer.hidesBottomBarWhenPushed)
@@ -25,11 +38,12 @@ final class CoordinatorConfigurationTests: XCTestCase {
         for shouldHide in [false, true] {
             let navigation = UINavigationController()
             let coordinator = TimerCoordiantor(navigationController: navigation,
-                                               configuration: .init(shouldHideBottomBarWhenTimerStart: shouldHide), coreDataManager: InMemoryPresetStore())
+                                               configuration: .init(shouldHideBottomBarWhenTimerStart: shouldHide),
+                                               dependencies: dependencies.app)
             coordinator.start()
             let setup = try XCTUnwrap(navigation.topViewController as? TimerConfigViewController)
 
-            coordinator.didFinishConfiguring(viewModel: TimerConfigViewModel(coreDataManager: InMemoryPresetStore()))
+            coordinator.didFinishConfiguring(viewModel: configViewModel())
 
             let timer = try XCTUnwrap(navigation.topViewController as? TimerViewController)
             XCTAssertEqual(timer.hidesBottomBarWhenPushed, shouldHide)
@@ -42,9 +56,23 @@ final class CoordinatorConfigurationTests: XCTestCase {
         }
     }
 
+    func test_timerScreenStartsCycleOnInjectedCountdown() async {
+        let navigation = UINavigationController()
+        let coordinator = TimerCoordiantor(navigationController: navigation, dependencies: dependencies.app)
+        let config = TimerConfigModel(mainTimer: .init(hours: 0, minutes: 25, seconds: 0),
+                                      interval: .init(hours: 0, minutes: 5, seconds: 0),
+                                      intervals: 2)
+
+        coordinator.navigateToTimerView(viewModel: TimerConfigViewModel(timerModel: config,
+                                                                        coreDataManager: dependencies.coreDataManager))
+
+        await waitUntil { self.dependencies.countdown.startedSteps.count == 1 }
+        XCTAssertEqual(dependencies.countdown.startedSteps.first, config.cycleSteps)
+    }
+
     func test_defaultPresetsCoordinatorKeepsBottomBarVisibleForPresetTimer() throws {
         let navigation = UINavigationController()
-        let coordinator = PresetsCoordinator(navigationController: navigation, coreDataManager: InMemoryPresetStore())
+        let coordinator = PresetsCoordinator(navigationController: navigation, dependencies: dependencies.app)
         coordinator.start()
         let list = try XCTUnwrap(navigation.topViewController as? PresetsViewController)
 
@@ -58,7 +86,8 @@ final class CoordinatorConfigurationTests: XCTestCase {
         for shouldHide in [false, true] {
             let navigation = UINavigationController()
             let coordinator = PresetsCoordinator(navigationController: navigation,
-                                                 configuration: .init(shouldHideBottomBar: shouldHide), coreDataManager: InMemoryPresetStore())
+                                                 configuration: .init(shouldHideBottomBar: shouldHide),
+                                                 dependencies: dependencies.app)
             coordinator.start()
             let list = try XCTUnwrap(navigation.topViewController as? PresetsViewController)
 
@@ -77,8 +106,8 @@ final class CoordinatorConfigurationTests: XCTestCase {
     }
 
     func test_timerControllerDefaultsToHidingBottomBarButAcceptsOverride() {
-        let defaultTimer = TimerViewController(preferences: nil, liveActivityManager: nil)
-        let visibleTimer = TimerViewController(preferences: nil, liveActivityManager: nil,
+        let defaultTimer = TimerViewController(viewModel: timerViewModel(), preferences: MockPreferences())
+        let visibleTimer = TimerViewController(viewModel: timerViewModel(), preferences: MockPreferences(),
                                                shouldHidesBottomBarWhen: false)
         XCTAssertTrue(defaultTimer.hidesBottomBarWhenPushed)
         XCTAssertFalse(visibleTimer.hidesBottomBarWhenPushed)
@@ -92,7 +121,7 @@ final class CoordinatorConfigurationTests: XCTestCase {
     }
 
     func test_tabCoordinatorOptsFocusIntoHidingBottomBarWithoutSwitchingTabs() throws {
-        let tabs = TabCoordinator(preferences: nil, liveActivityManager: nil, coreDataManager: InMemoryPresetStore())
+        let tabs = TabCoordinator(dependencies: dependencies.app)
         tabs.start()
         tabs.selectPage(.timer)
         let coordinator = try XCTUnwrap(tabs.testHooks.timerCoordinator)
@@ -100,11 +129,33 @@ final class CoordinatorConfigurationTests: XCTestCase {
         // Off-screen navigation does not deliver the initial didShow callback.
         navigation.testHooks.isNewViewControllerBeingAdded = false
 
-        coordinator.didFinishConfiguring(viewModel: TimerConfigViewModel(coreDataManager: InMemoryPresetStore()))
+        coordinator.didFinishConfiguring(viewModel: configViewModel())
 
         let timer = try XCTUnwrap(navigation.topViewController as? TimerViewController)
         XCTAssertTrue(timer.hidesBottomBarWhenPushed)
         XCTAssertEqual(tabs.currentPage(), .timer)
+    }
+
+    func test_tabCoordinatorBuildsSettingsTabFromDependencies() throws {
+        let tabs = TabCoordinator(dependencies: dependencies.app)
+        tabs.start()
+        tabs.selectPage(.settings)
+
+        let settingsNavigation = try XCTUnwrap(tabs.tabBarController.viewControllers?.compactMap { $0 as? UINavigationController }
+            .first { $0.viewControllers.first is SettingsViewController })
+        XCTAssertNotNil(settingsNavigation)
+        XCTAssertEqual(tabs.currentPage(), .settings)
+    }
+
+    // MARK: Helpers
+
+    private func configViewModel() -> TimerConfigViewModel {
+        TimerConfigViewModel(coreDataManager: dependencies.coreDataManager)
+    }
+
+    private func timerViewModel() -> TimerViewModel {
+        TimerViewModel(countdown: MockCountdown(), audioManager: MockAudioManager(), preferences: nil,
+                       hapticsManager: MockHapticsManager(), schedulesTicks: false)
     }
 
     private func preset() -> PresetModel {

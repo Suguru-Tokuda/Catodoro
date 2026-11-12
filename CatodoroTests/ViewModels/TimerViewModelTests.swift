@@ -1,432 +1,444 @@
-// TimerViewModelTests.swift
-// CatodoroTests
-// Created by Suguru Tokuda on 12/23/24.
+//
+//  TimerViewModelTests.swift
+//  CatodoroTests
+//
+//  Created by Suguru Tokuda on 12/23/24.
+//
 
 import XCTest
-import Combine
-import UIKit
-import AppIntents
-import CatodoroShared
 @testable import Catodoro
 
-final class TimerViewModelTests: XCTestCase {
-    private var viewModel: TimerViewModel!
-    private var audioManagerMock: MockAudioManager!
-    private var preferencesMock: MockPreferences!
-    private var liveActivityManagerMock: MockLiveActivityManager!
-    private var cancellables: Set<AnyCancellable>!
+final class TimerViewModelTests: TimerViewModelTestCase {
+    private enum TestError: Error { case failed }
 
-    override func setUp() {
-        super.setUp()
-        audioManagerMock = MockAudioManager()
-        preferencesMock = MockPreferences()
-        liveActivityManagerMock = MockLiveActivityManager()
-        viewModel = TimerViewModel(audioManager: audioManagerMock, preferences: preferencesMock, liveActivityManager: liveActivityManagerMock)
-        cancellables = []
+    // MARK: - Setup
+
+    func test_init_expectIdleStateAndPreferredSoundLoaded() async {
+        preferences.setSound(.kitty)
+        let model = makeViewModel()
+        await flushAudioQueue()
+
+        let state = model.presentationSubject.value
+        XCTAssertEqual(state.status, .paused)
+        XCTAssertEqual(state.sessionCount, 0)
+        XCTAssertEqual(state.remainingDuration, 0)
+        XCTAssertEqual(model.timerActionSubject.value, .stop)
+        XCTAssertTrue(actions.isEmpty)
+        XCTAssertEqual(audio.commands, ["setup"])
+        XCTAssertEqual(audio.playedFileName, SoundOptions.kitty.fileName)
+        XCTAssertEqual(audio.playedFileExtension, "mp3")
     }
 
-    override func tearDown() {
-        viewModel = nil
-        audioManagerMock = nil
-        preferencesMock = nil
-        liveActivityManagerMock = nil
-        cancellables = nil
-        super.tearDown()
+    func test_configure_expectCycleStartedAndFirstFocusShown() async {
+        let model = makeViewModel()
+        let first = firstSession()
+        countdown.startID = cycleID
+        countdown.session = first
+
+        model.configure(config: config)
+
+        await waitUntil { model.testHooks.session == first }
+        XCTAssertEqual(countdown.startedSteps, [config.cycleSteps])
+        XCTAssertEqual(actions, [.start])
+        XCTAssertEqual(model.presentationSubject.value, TimerPresentationState(
+            isBreak: false, status: .playing, sessionIndex: 1, sessionCount: 2,
+            remainingDuration: 10, phaseDuration: 10))
+        await flushAudioQueue()
+        XCTAssertEqual(audio.playCount, 0, "the first focus starts silently")
+        XCTAssertEqual(haptics.startCount, 0)
     }
 
-    func test_init_expectInitialState() {
-        XCTAssertEqual(viewModel.testHooks.timerStatus, .paused)
-        XCTAssertEqual(viewModel.currentTimerValue, 0)
+    func test_configure_whenStartFails_expectErrorAndScreenExits() async {
+        countdown.startError = TestError.failed
+        let model = makeViewModel()
+
+        model.configure(config: config)
+
+        await waitUntil { self.actions == [.stop] }
+        XCTAssertNotNil(model.testHooks.countdownError)
+        XCTAssertNil(model.testHooks.session)
     }
 
-    func test_configure_expectTimerIsConfiguredCorrectly() {
-        let duration: TimeInterval = 1500 // 25 minutes
-        let intervalTime: TimeInterval = 300 // 5 minutes
-        let intervals = 4
+    func test_configure_whenAlreadyRunning_expectScreenStays() async {
+        countdown.startError = CountdownError.alreadyRunning
+        let model = makeViewModel()
 
-        viewModel.configure(totalDuration: duration, intervalDuration: intervalTime, intervals: intervals)
+        model.configure(config: config)
 
-        XCTAssertEqual(viewModel.duration, duration)
-        XCTAssertEqual(viewModel.testHooks.totalDuration, duration)
-        XCTAssertEqual(viewModel.testHooks.intervalDuration, intervalTime)
-        XCTAssertEqual(viewModel.currentTimerValue, duration)
-        XCTAssertEqual(viewModel.testHooks.timerType, .main)
-        XCTAssertEqual(viewModel.testHooks.timerStatus, .paused)
+        await waitUntil { self.countdown.startedSteps.count == 1 }
+        await settle()
+        XCTAssertTrue(actions.isEmpty)
+        XCTAssertNil(model.testHooks.countdownError)
     }
 
-    func test_startTimer_expectTimerValueUpdates() {
-        let expectation = self.expectation(description: "Timer updates current value")
-        let expectedValue = "00:25:00"
+    // MARK: - Which sessions are shown
 
-        viewModel.testHooks.timerSubject
-            .first()
-            .sink { value in
-                expectation.fulfill()
-                XCTAssertEqual(value, expectedValue)
-            }
-            .store(in: &cancellables)
+    func test_sessionBeforeStart_expectIgnored() async {
+        let model = makeViewModel()
 
-        viewModel.configure(totalDuration: 1500, intervalDuration: 300, intervals: 4)
-        viewModel.testHooks.startTimer()
+        countdown.send(firstSession())
+        await settle()
 
-        waitForExpectations(timeout: 2.0)
+        XCTAssertNil(model.testHooks.session)
+        XCTAssertTrue(actions.isEmpty)
     }
 
-    func test_pauseTimer_expectTimerIsPaused() {
-        viewModel.configure(totalDuration: 1500, intervalDuration: 300, intervals: 4)
-        viewModel.testHooks.startTimer()
-        viewModel.testHooks.pauseTimer()
+    func test_sessionFromAnotherCycle_expectIgnored() async {
+        let model = makeViewModel()
+        let first = await start(model)
 
-        XCTAssertEqual(viewModel.testHooks.timerStatus, .paused)
-        XCTAssertNil(viewModel.testHooks.backgroundTimer)
+        countdown.send(.test(steps: steps, index: 1, state: .running(endDate: instant + 5)))
+        await settle()
+
+        XCTAssertEqual(model.testHooks.session, first)
+        XCTAssertTrue(actions.isEmpty)
     }
 
-    func test_resumeTimer_expectTimerResumesPlaying() {
-        viewModel.configure(totalDuration: 1500, intervalDuration: 300, intervals: 4)
-        viewModel.testHooks.startTimer()
-        viewModel.testHooks.pauseTimer()
-        viewModel.testHooks.resumeTimer()
+    // MARK: - Presentation
 
-        XCTAssertEqual(viewModel.testHooks.timerStatus, .playing)
-        XCTAssertNotNil(viewModel.testHooks.backgroundTimer)
+    func test_runningRemaining_expectClampedBetweenZeroAndPhaseDuration() async {
+        let model = makeViewModel()
+        let first = await start(model)
+
+        await deliver(first.with(state: .running(endDate: instant + 6.2)), to: model)
+        XCTAssertEqual(model.presentationSubject.value.remainingDuration, 6.2, accuracy: 0.001)
+        XCTAssertEqual(model.presentationSubject.value.countdown, "00:07", "rounds remaining seconds up")
+
+        await deliver(first.with(state: .running(endDate: instant + 100)), to: model)
+        XCTAssertEqual(model.presentationSubject.value.remainingDuration, 10)
+
+        await deliver(first.with(state: .running(endDate: instant - 3)), to: model)
+        XCTAssertEqual(model.presentationSubject.value.remainingDuration, 0)
     }
 
-    func test_stopTimer_expectTimerResets() {
-        viewModel.configure(totalDuration: 1500, intervalDuration: 300, intervals: 4)
-        viewModel.testHooks.startTimer()
-        viewModel.stopTimer()
+    func test_break_expectBreakPresentation() async {
+        let model = makeViewModel()
+        let first = await start(model)
 
-        XCTAssertEqual(viewModel.testHooks.timerStatus, .paused)
-        XCTAssertNil(viewModel.testHooks.backgroundTimer)
-        XCTAssertEqual(viewModel.currentTimerValue, 1500)
-        XCTAssertEqual(viewModel.testHooks.timerType, .main)
+        await deliver(first.moved(to: 1, state: .running(endDate: instant + 5)), to: model)
+
+        XCTAssertEqual(model.presentationSubject.value, TimerPresentationState(
+            isBreak: true, status: .playing, sessionIndex: 1, sessionCount: 2,
+            remainingDuration: 5, phaseDuration: 5))
+        XCTAssertTrue(model.isBreak)
+        XCTAssertEqual(actions, [.start])
     }
 
-    func test_startLiveActivity_expectLiveActivityIsStarted() {
-        viewModel.configure(totalDuration: 1500, intervalDuration: 300, intervals: 4)
-        viewModel.testHooks.startTimer()
+    func test_alertingBeforeLastStep_expectStillPlayingAtZero() async {
+        let model = makeViewModel()
+        let first = await start(model)
 
-        XCTAssertTrue(liveActivityManagerMock.didStartLiveActivity)
+        await deliver(first.with(state: .alerting), to: model)
+
+        XCTAssertEqual(model.timerStatus, .playing)
+        XCTAssertEqual(model.presentationSubject.value.remainingDuration, 0)
+        XCTAssertFalse(actions.contains(.finish))
     }
 
-    @MainActor
-    func test_updateLiveActivity_expectLiveActivityIsUpdated() async {
-        let updated = expectation(description: "LiveActivityManager receives paused state")
-        // Refresh and pause may both update the activity; either paused update satisfies this test.
-        updated.assertForOverFulfill = false
-        liveActivityManagerMock.onUpdate = { status in
-            if status == .paused {
-                updated.fulfill()
-            }
-        }
+    func test_lastStepAlerting_expectFinished() async {
+        let model = makeViewModel()
+        let first = await start(model)
+        let last = first.moved(to: 2, state: .running(endDate: instant + 10))
+        await deliver(last, to: model)
 
-        viewModel.configure(totalDuration: 1500, intervalDuration: 300, intervals: 4)
-        viewModel.testHooks.startTimer()
-        viewModel.testHooks.pauseTimer()
+        await deliver(last.with(state: .alerting), to: model)
 
-        await fulfillment(of: [updated], timeout: 1.0)
-        XCTAssertTrue(liveActivityManagerMock.didUpdateLiveActivity)
-        liveActivityManagerMock.onUpdate = nil
+        XCTAssertEqual(model.timerStatus, .finished)
+        XCTAssertEqual(model.presentationSubject.value.sessionIndex, 2)
+        XCTAssertEqual(model.presentationSubject.value.remainingDuration, 0)
+        XCTAssertEqual(actions, [.start, .finish])
     }
 
-    func test_endLiveActivity_expectLiveActivityIsEnded() {
-        viewModel.configure(totalDuration: 1500, intervalDuration: 300, intervals: 4)
-        viewModel.stopTimer()
+    func test_pauseAndResume_expectStatusRemainingAndActions() async {
+        let model = makeViewModel()
+        let first = await start(model)
 
-        XCTAssertTrue(liveActivityManagerMock.didEndLiveActivity)
+        await deliver(first.with(state: .paused(remaining: 4)), to: model)
+        XCTAssertEqual(model.timerStatus, .paused)
+        XCTAssertEqual(model.presentationSubject.value.remainingDuration, 4)
+
+        instant += 30   // paused time doesn't count
+        await deliver(first.with(state: .running(endDate: instant + 4)), to: model)
+        XCTAssertEqual(model.timerStatus, .playing)
+        XCTAssertEqual(model.presentationSubject.value.remainingDuration, 4)
+
+        XCTAssertEqual(actions, [.pause, .resume])
+    }
+
+    func test_cycleEnded_expectScreenExitsAndSoundStops() async {
+        let model = makeViewModel()
+        await start(model)
+
+        await deliverEnd(to: model)
+
+        XCTAssertEqual(actions, [.stop])
+        XCTAssertEqual(audio.commands, ["stop"])
+        XCTAssertEqual(haptics.events, ["stop"])
+    }
+
+    // MARK: - Sound
+
+    func test_foreground_expectSoundWhenBreakStartsAndOnCompletionOnly() async {
+        let model = makeViewModel()
+        let first = await start(model)
+
+        await deliver(first.moved(to: 1, state: .running(endDate: instant + 5)), to: model)
+        XCTAssertEqual(audio.playCount, 1, "break begins")
+
+        let last = first.moved(to: 2, state: .running(endDate: instant + 10))
+        await deliver(last, to: model)
+        XCTAssertEqual(audio.playCount, 1, "focus begins silently")
+
+        await deliver(last.with(state: .alerting), to: model)
+        XCTAssertEqual(audio.playCount, 2, "routine complete")
+        XCTAssertEqual(audio.lastNumberOfLoops, 0)
+    }
+
+    func test_background_expectNoInAppSound() async {
+        let model = makeViewModel()
+        let first = await start(model)
+        setAppActive(false)
+        defer { setAppActive(true) }
+
+        await deliver(first.moved(to: 1, state: .running(endDate: instant + 5)), to: model)
+        let last = first.moved(to: 2, state: .running(endDate: instant + 10))
+        await deliver(last, to: model)
+        await deliver(last.with(state: .alerting), to: model)
+
+        XCTAssertEqual(model.timerStatus, .finished)
+        XCTAssertEqual(audio.playCount, 0, "AlarmKit or the notification alerts in the background")
+    }
+
+    func test_playbackFailure_expectRecordedWithoutBreakingTransition() async {
+        audio.playbackError = TestError.failed
+        let model = makeViewModel()
+        let first = await start(model)
+
+        await deliver(first.moved(to: 1, state: .running(endDate: instant + 5)), to: model)
+
+        await waitUntil { model.audioError != nil }
+        XCTAssertTrue(model.isBreak)
+    }
+
+    // MARK: - Buttons
+
+    func test_playPause_whilePlayingOrPaused_expectToggleForShownAlarm() async {
+        let model = makeViewModel()
+        let first = await start(model)
+
+        model.handlePlayPauseButtonTap()
+        await waitUntil { self.countdown.calls.count == 1 }
+
+        let paused = first.with(state: .paused(remaining: 4))
+        await deliver(paused, to: model)
+        model.handlePlayPauseButtonTap()
+        await waitUntil { self.countdown.calls.count == 2 }
+
+        XCTAssertEqual(countdown.calls, [.togglePauseResume(first.alarmID.uuidString),
+                                         .togglePauseResume(first.alarmID.uuidString)])
+    }
+
+    func test_playPause_whenFinished_expectRestart() async {
+        let model = makeViewModel()
+        let first = await start(model)
+        let finished = first.moved(to: 2, state: .alerting)
+        await deliver(finished, to: model)
+
+        model.handlePlayPauseButtonTap()
+
+        await waitUntil { !self.countdown.calls.isEmpty }
+        XCTAssertEqual(countdown.calls, [.restartCycle(finished.alarmID.uuidString)])
+    }
+
+    func test_skipBreak_duringFocusOrAfterFinishing_expectIgnored() async {
+        let model = makeViewModel()
+        let first = await start(model)
+
+        model.skipBreak()
+        await deliver(first.moved(to: 2, state: .alerting), to: model)
+        model.skipBreak()
+        await settle()
+
+        XCTAssertTrue(countdown.calls.isEmpty)
+    }
+
+    func test_skipBreak_duringRunningOrPausedBreak_expectSkipForThatBreak() async {
+        let model = makeViewModel()
+        let first = await start(model)
+        let rest = first.moved(to: 1, state: .running(endDate: instant + 5))
+        await deliver(rest, to: model)
+
+        model.skipBreak()
+        await waitUntil { self.countdown.calls.count == 1 }
+        await deliver(rest.with(state: .paused(remaining: 2)), to: model)
+        model.skipBreak()
+        await waitUntil { self.countdown.calls.count == 2 }
+
+        XCTAssertEqual(countdown.calls, [.skipBreak(rest.alarmID.uuidString),
+                                         .skipBreak(rest.alarmID.uuidString)])
+    }
+
+    func test_tapAfterPhaseChange_expectNewAlarmIDSent() async {
+        let model = makeViewModel()
+        let first = await start(model)
+        let rest = first.moved(to: 1, state: .running(endDate: instant + 5))
+        await deliver(rest, to: model)
+
+        model.handlePlayPauseButtonTap()
+
+        await waitUntil { !self.countdown.calls.isEmpty }
+        XCTAssertNotEqual(rest.alarmID, first.alarmID)
+        XCTAssertEqual(countdown.calls, [.togglePauseResume(rest.alarmID.uuidString)])
+    }
+
+    func test_stop_withoutCycle_expectScreenExitsWithoutEngineCall() async {
+        let model = makeViewModel()
+
+        model.stopTimer()
+        await settle()
+
+        XCTAssertEqual(actions, [.stop])
+        XCTAssertTrue(countdown.calls.isEmpty)
+    }
+
+    func test_stop_duringCycle_expectCurrentCycleEnded() async {
+        let model = makeViewModel()
+        await start(model)
+
+        model.stopTimer()
+
+        await waitUntil { !self.countdown.calls.isEmpty }
+        XCTAssertEqual(countdown.calls, [.endCycle("")], "an empty ID means the current session")
+        XCTAssertTrue(actions.isEmpty, "the screen exits when the engine reports the end")
+    }
+
+    func test_actionFailure_expectErrorRecorded() async {
+        countdown.actionError = TestError.failed
+        let model = makeViewModel()
+        await start(model)
+
+        model.handlePlayPauseButtonTap()
+
+        await waitUntil { model.testHooks.countdownError != nil }
     }
 }
 
-@MainActor
-final class TimerPresentationTests: XCTestCase {
-    private var instant = Date(timeIntervalSince1970: 1000)
-
-    private func makeTimer(focus: TimeInterval = 10, rest: TimeInterval = 5, count: Int = 3) -> TimerViewModel {
-        let model = TimerViewModel(audioManager: MockAudioManager(), preferences: nil,
-                                   liveActivityManager: nil, now: { [unowned self] in self.instant },
-                                   schedulesTicks: false)
-        model.configure(totalDuration: focus, intervalDuration: rest, intervals: count)
-        model.testHooks.startTimer()
-
-        return model
+/// Formatting of the snapshot the timer screen renders.
+final class TimerPresentationStateTests: XCTestCase {
+    private func state(isBreak: Bool = false, status: TimerStatus = .playing,
+                       index: Int = 1, count: Int = 4,
+                       remaining: TimeInterval, phase: TimeInterval = 10) -> TimerPresentationState {
+        .init(isBreak: isBreak, status: status, sessionIndex: index, sessionCount: count,
+              remainingDuration: remaining, phaseDuration: phase)
     }
 
-    func test_allFocusSessionsAndOnlyInterveningBreaksRun() {
-        let model = makeTimer()
-        for (elapsed, isBreak, index) in [(10.0, true, 1), (15, false, 2), (25, true, 2), (30, false, 3)] {
-            instant = Date(timeIntervalSince1970: 1000 + elapsed)
-            model.refresh()
-            XCTAssertEqual(model.presentationSubject.value.isBreak, isBreak)
-            XCTAssertEqual(model.presentationSubject.value.sessionIndex, index)
-            XCTAssertEqual(model.timerStatus, .playing)
-        }
-
-        instant = Date(timeIntervalSince1970: 1040)
-        model.refresh()
-        XCTAssertEqual(model.timerStatus, .finished)
-        XCTAssertEqual(model.currentTimerValue, 0)
-        XCTAssertEqual(model.presentationSubject.value.sessionIndex, 3)
-        model.handlePlayPauseButtonTap()
-        XCTAssertEqual(model.timerStatus, .playing)
-        XCTAssertEqual(model.presentationSubject.value.sessionIndex, 1)
-        XCTAssertFalse(model.isBreak)
-        XCTAssertEqual(model.currentTimerValue, 10)
+    func test_countdown_expectHoursOnlyWhenNeededAndSecondsRoundedUp() {
+        XCTAssertEqual(state(remaining: 3661).countdown, "1:01:01")
+        XCTAssertEqual(state(remaining: 3598.1).countdown, "59:59")
+        XCTAssertEqual(state(remaining: 0.2).countdown, "00:01")
+        XCTAssertEqual(state(remaining: 0).countdown, "00:00")
+        XCTAssertEqual(state(remaining: -5).countdown, "00:00")
     }
 
-    func test_zeroBreakNeverCreatesAnEmptyBreakAndIncludesLastSession() {
-        let model = makeTimer(rest: 0)
-        instant.addTimeInterval(20)
-        model.refresh()
-        XCTAssertFalse(model.isBreak)
-        XCTAssertEqual(model.presentationSubject.value.sessionIndex, 3)
-        XCTAssertEqual(model.currentTimerValue, 10)
-        instant.addTimeInterval(10)
-        model.refresh()
-        XCTAssertEqual(model.timerStatus, .finished)
+    func test_progress_expectFractionElapsedClampedToZeroAndOne() {
+        XCTAssertEqual(state(remaining: 2.5, phase: 10).progress, 0.75, accuracy: 0.0001)
+        XCTAssertEqual(state(remaining: 20, phase: 10).progress, 0)
+        XCTAssertEqual(state(remaining: -1, phase: 10).progress, 1)
+        XCTAssertEqual(state(remaining: 5, phase: 0).progress, 0)
     }
 
-    func test_singleSessionFinishesWithoutBreak() {
-        let model = makeTimer(count: 1)
-        instant.addTimeInterval(10)
-        model.refresh()
-        XCTAssertEqual(model.timerStatus, .finished)
-        XCTAssertFalse(model.isBreak)
+    func test_phaseTitle_expectFocusBreakOrComplete() {
+        XCTAssertEqual(state(remaining: 1).phaseTitle, AppStrings.Timer.focusSession)
+        XCTAssertEqual(state(isBreak: true, remaining: 1).phaseTitle, AppStrings.Common.catnapBreak)
+        XCTAssertEqual(state(status: .finished, remaining: 0).phaseTitle, AppStrings.Common.routineComplete)
     }
 
-    func test_pauseFreezesTimeAndResumeUsesRemainingDuration() {
-        let model = makeTimer()
-        instant.addTimeInterval(3)
-        model.testHooks.pauseTimer()
-        XCTAssertEqual(model.currentTimerValue, 7)
-        XCTAssertEqual(model.presentationSubject.value.progress, 0.3, accuracy: 0.001)
-        instant.addTimeInterval(100)
-        model.refresh()
-        XCTAssertEqual(model.currentTimerValue, 7)
-        model.testHooks.resumeTimer()
-        instant.addTimeInterval(2)
-        model.refresh()
-        XCTAssertEqual(model.currentTimerValue, 5)
-        model.stopTimer()
+    func test_sessionSummary_expectBreaksCountedOutOfOneFewer() {
+        XCTAssertEqual(state(index: 2, count: 4, remaining: 1).sessionSummary,
+                       AppStrings.Timer.sessionProgress(2, 4))
+        XCTAssertEqual(state(isBreak: true, index: 2, count: 4, remaining: 1).sessionSummary,
+                       AppStrings.Timer.sessionProgress(2, 3))
+        XCTAssertEqual(state(status: .finished, index: 4, count: 4, remaining: 0).sessionSummary,
+                       AppStrings.Timer.sessionsCompleted(4))
+    }
+}
+
+/// Showing a cycle that survived a relaunch.
+final class TimerViewModelAttachTests: TimerViewModelTestCase {
+    func test_attach_expectSessionShownWithoutStartingAnything() async {
+        let model = makeViewModel()
+        let restored = firstSession().moved(to: 1, state: .paused(remaining: 3))
+        countdown.session = restored
+
+        model.attach(to: restored)
+
+        XCTAssertEqual(model.testHooks.session, restored)
+        XCTAssertEqual(model.presentationSubject.value, TimerPresentationState(
+            isBreak: true, status: .paused, sessionIndex: 1, sessionCount: 2,
+            remainingDuration: 3, phaseDuration: 5))
+        XCTAssertTrue(countdown.startedSteps.isEmpty, "attaching must not start or replace a cycle")
+        await settle()
+        await flushAudioQueue()
+        XCTAssertEqual(audio.playCount, 0, "no cue for a cycle that was already running")
+        XCTAssertEqual(haptics.startCount, 0)
+    }
+
+    func test_attach_expectLaterUpdatesApplied() async {
+        let model = makeViewModel()
+        let restored = firstSession()
+        countdown.session = restored
+        model.attach(to: restored)
+
+        await deliver(restored.moved(to: 1, state: .running(endDate: instant + 5)), to: model)
+
+        XCTAssertTrue(model.isBreak)
+    }
+
+    func test_attach_expectNewerSessionPickedUp() async {
+        let model = makeViewModel()
+        let stale = firstSession()
+        let newer = stale.with(state: .paused(remaining: 7))
+        countdown.session = newer   // changed after the caller read `stale`
+
+        model.attach(to: stale)
+
+        await waitUntil { model.testHooks.session == newer }
         XCTAssertEqual(model.timerStatus, .paused)
-        XCTAssertEqual(model.currentTimerValue, 10)
-        XCTAssertEqual(model.presentationSubject.value.sessionIndex, 1)
     }
 
-    func test_appReturnConsumesElapsedPhasesAndReconcilesProgress() {
-        let model = makeTimer()
-        instant.addTimeInterval(32)
-        NotificationCenter.default.post(name: UIApplication.didBecomeActiveNotification, object: nil)
-        XCTAssertEqual(model.presentationSubject.value.sessionIndex, 3)
-        XCTAssertEqual(model.currentTimerValue, 8)
-        XCTAssertEqual(model.presentationSubject.value.progress, 0.2, accuracy: 0.001)
-        instant.addTimeInterval(100)
-        model.refresh()
+    func test_attach_whenCycleEndedMeanwhile_expectScreenExits() async {
+        let model = makeViewModel()
+        let stale = firstSession()
+        countdown.session = nil
+
+        model.attach(to: stale)
+
+        await waitUntil { self.actions.last == .stop }
+        XCTAssertNil(model.testHooks.session)
+    }
+
+    func test_attach_finishedCycle_expectFinishedScreenWithoutCue() async {
+        let model = makeViewModel()
+        let finished = firstSession().moved(to: 2, state: .alerting)
+        countdown.session = finished
+
+        model.attach(to: finished)
+
         XCTAssertEqual(model.timerStatus, .finished)
-    }
-
-    func test_remoteControlsPauseResumeRepeatAndStop() async throws {
-        let model = makeTimer(count: 1)
-        let previousTimer = TimerController.shared.activeTimer
-        TimerController.shared.activeTimer = model
-        defer { TimerController.shared.activeTimer = previousTimer }
-        _ = try await PlayTimerIntent().perform()
-        XCTAssertEqual(model.timerStatus, .paused)
-        _ = try await PlayTimerIntent().perform()
-        XCTAssertEqual(model.timerStatus, .playing)
-        instant.addTimeInterval(10)
-        model.refresh()
-        NotificationCenter.default.post(name: .repeatTimerActionTriggered, object: nil)
-        XCTAssertEqual(model.timerStatus, .playing)
-        XCTAssertEqual(model.currentTimerValue, 10)
-        NotificationCenter.default.post(name: .stopTimerActionTriggered, object: nil)
-        XCTAssertEqual(model.timerActionSubject.value, .stop)
-        XCTAssertEqual(model.timerStatus, .paused)
-        instant.addTimeInterval(100)
-        model.refresh()
-        XCTAssertEqual(model.currentTimerValue, 10)
-    }
-
-    func test_foregroundBreakAndCompletionPlayCueButFocusStartsSilently() async {
-        let audio = MockAudioManager()
-        let model = TimerViewModel(audioManager: audio, preferences: nil, liveActivityManager: nil,
-                                   now: { [unowned self] in self.instant }, schedulesTicks: false,
-                                   applicationIsActive: { true })
-        model.configure(totalDuration: 10, intervalDuration: 5, intervals: 2)
-        model.testHooks.startTimer()
-        await model.testHooks.flushAudioOperations()
-        XCTAssertEqual(audio.playCount, 0)
-        instant.addTimeInterval(10)
-        model.refresh()
-        await model.testHooks.flushAudioOperations()
-        XCTAssertEqual(audio.playCount, 1)
-        instant.addTimeInterval(5)
-        model.refresh()
-        await model.testHooks.flushAudioOperations()
-        XCTAssertEqual(audio.playCount, 1)
-        instant.addTimeInterval(10)
-        model.refresh()
-        await model.testHooks.flushAudioOperations()
-        XCTAssertEqual(audio.playCount, 2)
-        XCTAssertFalse(audio.wasCalledOnMainThread)
-        XCTAssertEqual(Array(audio.commands.prefix(2)), ["setup", "stop"])
-        XCTAssertEqual(audio.lastNumberOfLoops, 0)
-        model.refresh()
-        await model.testHooks.flushAudioOperations()
-        XCTAssertEqual(audio.playCount, 2)
-        model.handlePlayPauseButtonTap()
-        await model.testHooks.flushAudioOperations()
-        XCTAssertTrue(audio.isStopped)
-        XCTAssertEqual(audio.commands.last, "stop")
-    }
-
-    func test_backgroundFocusStartsSilentlyWhileBreakAndCompletionAlert() async {
-        let activity = MockLiveActivityManager()
-        let audio = MockAudioManager()
-        let model = TimerViewModel(audioManager: audio, preferences: nil,
-            liveActivityManager: activity, now: { [unowned self] in self.instant },
-            schedulesTicks: false, applicationIsActive: { false })
-        model.configure(totalDuration: 10, intervalDuration: 5, intervals: 2)
-        model.testHooks.startTimer()
-
-        instant.addTimeInterval(10)
-        model.refresh()
-        await model.testHooks.flushLiveActivityOperations()
-        XCTAssertEqual(activity.lastState?.timerType, .interval)
-        XCTAssertNotNil(activity.lastSoundName)
-
-        instant.addTimeInterval(5)
-        model.refresh()
-        await model.testHooks.flushLiveActivityOperations()
-        XCTAssertEqual(activity.lastState?.timerType, .main)
-        XCTAssertEqual(activity.lastState?.interval, 2)
-        XCTAssertNil(activity.lastSoundName)
-
-        instant.addTimeInterval(10)
-        model.refresh()
-        await model.testHooks.flushLiveActivityOperations()
-        XCTAssertEqual(activity.lastState?.timerStatus, .finished)
-        XCTAssertNotNil(activity.lastSoundName)
-        await model.testHooks.flushAudioOperations()
+        XCTAssertFalse(actions.contains(.finish), "the routine finished before the relaunch")
+        await flushAudioQueue()
         XCTAssertEqual(audio.playCount, 0)
     }
 
-    func test_skippingBreakStartsFocusWithoutAnotherSound() async {
-        let audio = MockAudioManager()
-        let model = TimerViewModel(audioManager: audio, preferences: nil,
-            liveActivityManager: nil, now: { [unowned self] in self.instant },
-            schedulesTicks: false, applicationIsActive: { true })
-        model.configure(totalDuration: 10, intervalDuration: 5, intervals: 2)
-        model.testHooks.startTimer()
-        instant.addTimeInterval(10)
-        model.refresh()
-        await model.testHooks.flushAudioOperations()
-        XCTAssertEqual(audio.playCount, 1)
+    func test_attach_expectButtonsActOnRestoredAlarm() async {
+        let model = makeViewModel()
+        let restored = firstSession()
+        countdown.session = restored
+        model.attach(to: restored)
 
-        model.skipBreak()
-        await model.testHooks.flushAudioOperations()
-        XCTAssertFalse(model.isBreak)
-        XCTAssertEqual(model.presentationSubject.value.sessionIndex, 2)
-        XCTAssertEqual(audio.playCount, 1)
-    }
+        model.handlePlayPauseButtonTap()
 
-    func test_playbackFailureIsRecordedWithoutBreakingCompletion() async {
-        let audio = MockAudioManager()
-        audio.playbackError = AudioError.playbackFailed
-        let model = TimerViewModel(audioManager: audio, preferences: nil, liveActivityManager: nil,
-                                   now: { [unowned self] in self.instant }, schedulesTicks: false,
-                                   applicationIsActive: { true })
-        model.configure(totalDuration: 10, intervalDuration: 0, intervals: 1)
-        model.testHooks.startTimer()
-        instant.addTimeInterval(10)
-        model.refresh()
-        await model.testHooks.flushAudioOperations()
-        XCTAssertEqual(model.timerStatus, .finished)
-        XCTAssertNotNil(model.audioError)
-    }
-
-    func test_countdownKeepsHoursOnlyWhenNeededAndRoundsRemainingSecondsUp() {
-        let model = makeTimer(focus: 3661)
-        XCTAssertEqual(model.presentationSubject.value.countdown, "1:01:01")
-        instant.addTimeInterval(62.1)
-        model.refresh()
-        XCTAssertEqual(model.presentationSubject.value.countdown, "59:59")
-    }
-
-    func test_lockedShortRoutineRetainsRuntimeThroughFiveSecondBreak() async {
-        var requests = 0
-        var ended: [UIBackgroundTaskIdentifier] = []
-        let task = UIBackgroundTaskIdentifier(rawValue: 42)
-        let model = TimerViewModel(audioManager: MockAudioManager(), preferences: nil,
-            liveActivityManager: nil, now: { [unowned self] in self.instant }, schedulesTicks: false,
-            applicationIsActive: { false }, beginBackgroundTask: { _ in
-                requests += 1
-                return task
-            }, endBackgroundTask: { ended.append($0) })
-        model.configure(totalDuration: 5, intervalDuration: 5, intervals: 2)
-        model.testHooks.startTimer()
-        NotificationCenter.default.post(name: UIApplication.didEnterBackgroundNotification, object: nil)
-        NotificationCenter.default.post(name: UIApplication.didEnterBackgroundNotification, object: nil)
-        XCTAssertEqual(requests, 1)
-
-        instant.addTimeInterval(5)
-        model.refresh()
-        XCTAssertTrue(model.isBreak)
-        XCTAssertEqual(model.currentTimerValue, 5)
-        XCTAssertTrue(ended.isEmpty)
-        instant.addTimeInterval(5)
-        model.refresh()
-        XCTAssertFalse(model.isBreak)
-        XCTAssertEqual(model.presentationSubject.value.sessionIndex, 2)
-        XCTAssertTrue(ended.isEmpty)
-        model.stopTimer()
-        XCTAssertEqual(ended, [task])
-        await Task.yield()
-    }
-
-    func test_backgroundRuntimeExpirationAndForegroundReturnReleaseGrantOnce() {
-        var expiration: (() -> Void)?
-        var ends = 0
-        let model = TimerViewModel(audioManager: MockAudioManager(), preferences: nil,
-            liveActivityManager: nil, now: { [unowned self] in self.instant }, schedulesTicks: false,
-            beginBackgroundTask: {
-                expiration = $0
-                return UIBackgroundTaskIdentifier(rawValue: 42)
-            }, endBackgroundTask: { _ in ends += 1 })
-        model.configure(totalDuration: 5, intervalDuration: 5, intervals: 2)
-        model.testHooks.startTimer()
-        NotificationCenter.default.post(name: UIApplication.didEnterBackgroundNotification, object: nil)
-        expiration?()
-        XCTAssertEqual(ends, 1)
-        instant.addTimeInterval(7)
-        NotificationCenter.default.post(name: UIApplication.didBecomeActiveNotification, object: nil)
-        XCTAssertTrue(model.isBreak)
-        XCTAssertEqual(model.currentTimerValue, 3)
-        XCTAssertEqual(ends, 1)
-
-        NotificationCenter.default.post(name: UIApplication.didEnterBackgroundNotification, object: nil)
-        NotificationCenter.default.post(name: UIApplication.didBecomeActiveNotification, object: nil)
-        XCTAssertEqual(ends, 2)
-        model.stopTimer()
-        XCTAssertEqual(ends, 2)
-    }
-
-    func test_completionReleasesBackgroundRuntimeAfterFinalActivityUpdate() async {
-        let released = expectation(description: "Background runtime released")
-        let activity = MockLiveActivityManager()
-        let model = TimerViewModel(audioManager: MockAudioManager(), preferences: nil,
-            liveActivityManager: activity, now: { [unowned self] in self.instant }, schedulesTicks: false,
-            applicationIsActive: { false },
-            beginBackgroundTask: { _ in UIBackgroundTaskIdentifier(rawValue: 42) },
-            endBackgroundTask: { _ in
-                XCTAssertTrue(activity.didUpdateLiveActivity)
-                released.fulfill()
-            })
-        model.configure(totalDuration: 5, intervalDuration: 5, intervals: 1)
-        model.testHooks.startTimer()
-        NotificationCenter.default.post(name: UIApplication.didEnterBackgroundNotification, object: nil)
-        instant.addTimeInterval(5)
-        model.refresh()
-        await fulfillment(of: [released], timeout: 2)
-        XCTAssertEqual(model.timerStatus, .finished)
+        await waitUntil { !self.countdown.calls.isEmpty }
+        XCTAssertEqual(countdown.calls, [.togglePauseResume(restored.alarmID.uuidString)])
     }
 }

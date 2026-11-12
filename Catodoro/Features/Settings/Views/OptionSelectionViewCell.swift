@@ -30,7 +30,7 @@ class OptionSelectionViewCell: BaseTableViewCell {
 
     private let stackView: UIStackView = {
         let stackView = UIStackView()
-        stackView.spacing = 16
+        stackView.spacing = Spacing.space16
         stackView.axis = .horizontal
         stackView.alignment = .center
         stackView.distribution = .fill
@@ -47,16 +47,15 @@ class OptionSelectionViewCell: BaseTableViewCell {
     override func constructSubviewLayoutConstraints() {
         super.constructSubviewLayoutConstraints()
         NSLayoutConstraint.activate([
-            selectedIcon.widthAnchor.constraint(equalToConstant: 24),
-            selectedIcon.heightAnchor.constraint(equalToConstant: 24),
+            selectedIcon.widthAnchor.constraint(equalToConstant: Spacing.space24),
+            selectedIcon.heightAnchor.constraint(equalToConstant: Spacing.space24),
         ])
         NSLayoutConstraint.activate([
-            stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
-            stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
-
-            stackView.heightAnchor.constraint(greaterThanOrEqualToConstant: 44)
+            stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Spacing.space16),
+            stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Spacing.space16),
+            stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Spacing.space8),
+            stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -Spacing.space8),
+            stackView.heightAnchor.constraint(greaterThanOrEqualToConstant: Spacing.space44)
         ])
     }
 

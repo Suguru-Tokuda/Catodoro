@@ -12,21 +12,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private var themeSubscription: AnyCancellable?
     var window: UIWindow?
     private var mainCoordinator: Coordinator?
-    var liveActivityManager: LiveActivityManaging = LiveActivityManager()
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(frame: windowScene.coordinateSpace.bounds)
         window?.backgroundColor = CatTheme.background
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-        // Timer state isn't restored across launches, so any existing activity is orphaned.
-        liveActivityManager.endStaleActivities()
         let dependencies = appDelegate.dependencies
-        let coordinator = MainCoordinator(preferences: dependencies.preferences, liveActivityManager: liveActivityManager,
-                                          hapticsManager: dependencies.hapticsManager,
-                                          coreDataManager: dependencies.coreDataManager,
-                                          syncLifecycleManager: dependencies.syncLifecycleManager
-        )
+        // Timer state isn't restored across launches, so any existing activity is orphaned.
+        dependencies.liveActivityManager.endStaleActivities()
+
+        let coordinator = MainCoordinator(dependencies: dependencies)
         mainCoordinator = coordinator
         coordinator.start()
         window?.rootViewController = coordinator.navigationController
@@ -46,10 +42,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
-        liveActivityManager.endLiveActivity()
+        (UIApplication.shared.delegate as? AppDelegate)?.dependencies.liveActivityManager.endLiveActivity()
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        Task { await appDelegate.dependencies.countdown.reconcile() }
     }
 
     func sceneWillResignActive(_ scene: UIScene) {

@@ -1,6 +1,7 @@
 import Foundation
 import Testing
 import CatodoroShared
+@testable import Catodoro
 
 struct AppStringsTests {
     @Test func catalogIsPackagedInSharedFramework() throws {
@@ -22,5 +23,44 @@ struct AppStringsTests {
         #expect(AppStrings.Presets.startNamedPreset("Mochi") == "Start Mochi")
         #expect(AppStrings.Presets.routineSummary("25 min", "5 min", 4)
                 == "25 min focus · 5 min break · 4 sessions")
+    }
+
+    @Test func newCatalogKeysAreCompiledIntoSharedFramework() throws {
+        let bundle = try #require(Bundle(identifier: "com.sugurutokuda.CatodoroShared"))
+        let expected = [
+            "alarm.startBreakButton": "Start break",
+            "alarm.breakOver": "Break's over",
+            "alertStyles.liveActivityTitle": "Live Activity Only",
+            "alertStyles.openSettings": "Open Settings",
+            "countdownErrors.notAuthorized": "Permission was not granted.",
+            "notifications.focusCompleteBreakNext": "Focus complete · Break next",
+            "common.end": "End",
+            "onboarding.allowAlarms": "Allow Alarms",
+        ]
+        for (key, value) in expected {
+            #expect(bundle.localizedString(forKey: key, value: nil, table: nil) == value, "\(key)")
+        }
+    }
+
+    @Test func alarmResourcesResolve() {
+        #expect(String(localized: AppStrings.Alarm.focusComplete) == "Focus complete")
+        #expect(String(localized: AppStrings.Alarm.focusCountdown(2, of: 4)) == "Focus · 2 of 4")
+        #expect(String(localized: AppStrings.Alarm.catnapBreak) == AppStrings.Common.catnapBreak)
+    }
+
+    @Test func alertStyleCopyComesFromAppStrings() {
+        #expect(AlertStyle.alarm.title == AppStrings.AlertStyles.alarmTitle)
+        #expect(AlertStyle.notification.detail == AppStrings.AlertStyles.notificationDetail)
+        #expect(AlertStyle.liveActivity.title == "Live Activity Only")
+    }
+
+    @Test func countdownErrorsUseAppStrings() {
+        #expect(CountdownError.alreadyRunning.errorDescription == AppStrings.CountdownErrors.alreadyRunning)
+        #expect(CountdownError.notAuthorized.errorDescription == AppStrings.CountdownErrors.notAuthorized)
+    }
+
+    @Test func diagnosticsIncludeTheUnderlyingError() {
+        struct Boom: Error, CustomStringConvertible { var description: String { "boom" } }
+        #expect(AppStrings.Diagnostics.localStoreLoadFailed(Boom()).hasSuffix("boom"))
     }
 }

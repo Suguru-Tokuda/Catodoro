@@ -47,15 +47,51 @@ protocol CatodoroPreferencesProtocol: AnyObject {
     var soundPublisher: AnyPublisher<String?, Never> { get }
     var color: String? { get }
     var sound: String? { get }
+    
     func setColor(_ newColor: ColorOptions)
     func setSound(_ newSound: SoundOptions)
+
+    var alertStyle: AlertStyle { get }
+    var alertStylePublisher: AnyPublisher<AlertStyle, Never> { get }
+    func setAlertStyle(_ style: AlertStyle)
 }
 
 class CatodoroPreferences: CatodoroPreferencesProtocol {
+    private enum Keys: String {
+        case alertStyle
+        case hasCompletedOnboarding
+        case presetSyncEnabled
+        case liveActivityEnabled
+        case theme
+        case color
+        case sound
+    }
+
     @Published private(set) var theme: ThemeOption
     @Published private(set) var liveActivityEnabled: Bool
     @Published private(set) var color: String?
     @Published private(set) var sound: String?
+    @Published private(set) var alertStyle: AlertStyle
+    
+    var liveActivityPublisher: AnyPublisher<Bool, Never> {
+        $liveActivityEnabled.eraseToAnyPublisher()
+    }
+
+    var alertStylePublisher: AnyPublisher<AlertStyle, Never> {
+        $alertStyle.eraseToAnyPublisher()
+    }
+
+    var themePublisher: AnyPublisher<ThemeOption, Never> {
+        $theme.eraseToAnyPublisher()
+    }
+
+    var colorPublisher: AnyPublisher<String?, Never> {
+        $color.eraseToAnyPublisher()
+    }
+
+    var soundPublisher: AnyPublisher<String?, Never> {
+        $sound.eraseToAnyPublisher()
+    }
 
     private let userDefaults: UserDefaults
     private var cancellables = Set<AnyCancellable>()
@@ -66,6 +102,7 @@ class CatodoroPreferences: CatodoroPreferencesProtocol {
         liveActivityEnabled = userDefaults.object(forKey: Keys.liveActivityEnabled.rawValue) as? Bool ?? true
         self.color = userDefaults.string(forKey: Keys.color.rawValue)
         self.sound = userDefaults.string(forKey: Keys.sound.rawValue)
+        alertStyle = AlertStyle(rawValue: userDefaults.string(forKey: Keys.alertStyle.rawValue) ?? "") ?? .liveActivity
 
         $theme
             .sink { [weak self] theme in
@@ -91,6 +128,12 @@ class CatodoroPreferences: CatodoroPreferencesProtocol {
                 self?.userDefaults.setValue(newValue, forKey: Keys.sound.rawValue)
             }
             .store(in: &cancellables)
+
+        $alertStyle
+            .sink { [weak self] newValue in
+                self?.userDefaults.setValue(newValue.rawValue, forKey: Keys.alertStyle.rawValue)
+            }
+            .store(in: &cancellables)
     }
 
     deinit {
@@ -114,18 +157,7 @@ class CatodoroPreferences: CatodoroPreferencesProtocol {
         userDefaults.set(true, forKey: Keys.hasCompletedOnboarding.rawValue)
     }
 
-    private enum Keys: String {
-        case hasCompletedOnboarding
-        case presetSyncEnabled
-        case liveActivityEnabled
-        case theme
-        case color
-        case sound
-    }
 
-    var liveActivityPublisher: AnyPublisher<Bool, Never> {
-        $liveActivityEnabled.eraseToAnyPublisher()
-    }
 
     func setLiveActivityEnabled(_ enabled: Bool) {
         liveActivityEnabled = enabled
@@ -139,20 +171,11 @@ class CatodoroPreferences: CatodoroPreferencesProtocol {
         sound = newSound.id
     }
 
-    var themePublisher: AnyPublisher<ThemeOption, Never> {
-        $theme.eraseToAnyPublisher()
-    }
-
     func setTheme(_ theme: ThemeOption) {
         self.theme = theme
     }
 
-    // Expose publishers for color and sound as required by the protocol
-    var colorPublisher: AnyPublisher<String?, Never> {
-        $color.eraseToAnyPublisher()
-    }
-
-    var soundPublisher: AnyPublisher<String?, Never> {
-        $sound.eraseToAnyPublisher()
+    func setAlertStyle(_ style: AlertStyle) {
+        self.alertStyle = style
     }
 }

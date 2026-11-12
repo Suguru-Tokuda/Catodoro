@@ -28,12 +28,6 @@ enum CatTheme {
     static let disabled = color(0xDDD5C9, 0x48414B)
     static let onAccent = color(0xFFFFFF, 0x152B27)
 
-    enum Spacing {
-        static let small: CGFloat = 8
-        static let medium: CGFloat = 16
-        static let large: CGFloat = 24
-    }
-
     static let cardRadius: CGFloat = 24
     static let controlRadius: CGFloat = 18
     static let minimumTouchTarget: CGFloat = 44

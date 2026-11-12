@@ -5,10 +5,8 @@
 //  Created by Suguru Tokuda on 8/21/24.
 //
 
-import AVFoundation
 import Combine
 import CatodoroShared
-import Foundation
 import UIKit
 
 enum TimerActions {
@@ -56,369 +54,266 @@ struct TimerPresentationState: Equatable {
     }
 }
 
-class TimerViewModel {
-    private(set) var currentTimerValue: TimeInterval = 0
-    private var totalDuration: TimeInterval = 0
-    private var intervalDuration: TimeInterval = 0
-    private var intervals = 0
-    private(set) var duration: TimeInterval = 0
-    private var interval = 1
-    private var timerType: TimerType? = .main
-    private var deadline: Date?
-    private var backgroundTimer: DispatchSourceTimer?
-    private var generation = 0
-    private let now: () -> Date
-    private let schedulesTicks: Bool
-    private let applicationIsActive: () -> Bool
-    private let beginBackgroundTask: (@escaping () -> Void) -> UIBackgroundTaskIdentifier
-    private let endBackgroundTask: (UIBackgroundTaskIdentifier) -> Void
-    private var backgroundTask = UIBackgroundTaskIdentifier.invalid
-    private var preferenceSubscription: AnyCancellable?
-    private var liveActivityTask: Task<Void, Never>?
-    private var liveActivityGeneration = 0
-    private(set) var liveActivityError: Error?
-    private(set) var audioError: Error?
-
-    let presentationSubject = CurrentValueSubject<TimerPresentationState, Never>(
-        .init(isBreak: false, status: .paused, sessionIndex: 1, sessionCount: 0,
-              remainingDuration: 0, phaseDuration: 0))
-    private let timerSubject = PassthroughSubject<String, Never>()
-    private let timerStatusSubject = PassthroughSubject<TimerStatus, Never>()
+final class TimerViewModel {
+    let presentationSubject = CurrentValueSubject<TimerPresentationState, Never>(TimerPresentationState(
+        isBreak: false,
+        status: .paused,
+        sessionIndex: 1,
+        sessionCount: 0,
+        remainingDuration: 0,
+        phaseDuration: 0
+    ))
     let timerActionSubject = CurrentValueSubject<TimerActions, Never>(.stop)
-    private let timerLabelSubject = PassthroughSubject<String, Never>()
-    private let timerIntervalSubject = PassthroughSubject<TimeInterval, Never>()
-    private var hapticsError: Error?
 
+    private(set) var countdownError: Error?
+    private(set) var audioError: Error?
+    private(set) var hapticsError: Error?
+    private var cycleID: UUID?
+    private let countdown: CountdownControlling
     private var audioManager: AudioManaging
     private weak var preferences: CatodoroPreferencesProtocol?
-    private weak var liveActivityManager: LiveActivityManaging?
     private let hapticsManager: HapticsManaging
+    private let now: () -> Date
+    private let schedulesTicks: Bool
+    private var isAppActive = true
+    private var appStateSubscription: AnyCancellable?
 
-    private(set) var timerStatus: TimerStatus = .paused
+    /// Last session received from the engine. Only used to render and to detect changes.
+    private var session: CycleSession?
+    private var observeTask: Task<Void, Never>?
+    private var ticker: AnyCancellable?
 
-    init(audioManager: AudioManaging = AudioManager(),
-         preferences: CatodoroPreferencesProtocol?,
-         liveActivityManager: LiveActivityManaging? = LiveActivityManager(),
-         hapticsManager: HapticsManaging = HapticsManager(),
-         now: @escaping () -> Date = Date.init,
-         schedulesTicks: Bool = true,
-         applicationIsActive: @escaping () -> Bool = { UIApplication.shared.applicationState == .active },
-         beginBackgroundTask: @escaping (@escaping () -> Void) -> UIBackgroundTaskIdentifier = {
-             UIApplication.shared.beginBackgroundTask(withName: "Timer phase transition", expirationHandler: $0)
-         },
-         endBackgroundTask: @escaping (UIBackgroundTaskIdentifier) -> Void = {
-             UIApplication.shared.endBackgroundTask($0)
-         }) {
+    var timerStatus: TimerStatus { presentationSubject.value.status }
+    var isBreak: Bool { presentationSubject.value.isBreak }
+
+    init(
+        countdown: CountdownControlling,
+        audioManager: AudioManaging = AudioManager(),
+        preferences: CatodoroPreferencesProtocol?,
+        hapticsManager: HapticsManaging = HapticsManager(),
+        schedulesTicks: Bool = true,
+        now: @escaping () -> Date = Date.init
+    ) {
+        self.countdown = countdown
         self.audioManager = audioManager
         self.preferences = preferences
-        self.liveActivityManager = liveActivityManager
         self.hapticsManager = hapticsManager
         self.now = now
         self.schedulesTicks = schedulesTicks
-        self.applicationIsActive = applicationIsActive
-        self.beginBackgroundTask = beginBackgroundTask
-        self.endBackgroundTask = endBackgroundTask
-        addNotificationCenterSubscriptions()
         setupPlayerSound()
-        preferenceSubscription = preferences?.liveActivityPublisher
-            .dropFirst()
-            .removeDuplicates()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] enabled in
-                guard let self else { return }
-
-                if enabled && self.intervals > 0 && self.timerActionSubject.value != .stop {
-                    self.startLiveActivity()
-                    self.updateLiveActivity()
-                } else if !enabled {
-                    self.endLiveActivity()
-                }
-            }
+        observeSession()
+        addSubscriptions()
     }
 
-    private var endTime: Date {
-        deadline ?? now().addingTimeInterval(currentTimerValue)
+    deinit {
+        removeSubscriptions()
     }
 
-    var isBreak: Bool {
-        timerType == .interval
-    }
-
-    private var timerNameString: String {
-        isBreak ? AppStrings.Timer.numberedBreak(interval) : AppStrings.Timer.numberedFocus(interval)
-    }
-
-    func configure(totalDuration: TimeInterval, intervalDuration: TimeInterval, intervals: Int) {
-        guard totalDuration.isFinite, totalDuration > 0,
-              intervalDuration.isFinite, intervalDuration >= 0, (1...20).contains(intervals) else {
-            return
+    private func addSubscriptions() {
+        appStateSubscription = Publishers.Merge(
+            NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification).map { _ in true },
+            NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification).map { _ in false }
+        )
+        .sink { [weak self] isActive in
+            self?.isAppActive = isActive
         }
+    }
 
-        self.totalDuration = totalDuration
-        self.intervalDuration = intervalDuration
-        self.intervals = intervals
-        resetTimer()
-        let configuredGeneration = generation
-        DispatchQueue.main.async { [weak self] in
-            guard let self, generation == configuredGeneration else {
-                return
+    private func removeSubscriptions() {
+        observeTask?.cancel()
+        observeTask = nil
+        appStateSubscription?.cancel()
+        appStateSubscription = nil
+    }
+
+    // MARK: - User actions
+
+    /// Starts a new cycle, replacing any running one.
+    func configure(config: TimerConfigModel) {
+        let steps = config.cycleSteps
+        let countdown = countdown
+
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            do {
+                let id = try await countdown.start(steps: steps)
+                cycleID = id
+                apply(await countdown.currentSession())
+            } catch {
+                countdownError = error
+                timerActionSubject.send(.stop)
             }
+        }
+    }
 
-            startTimer()
+    /// Shows a cycle that's already running, e.g. one restored after a relaunch.
+    /// Unlike `configure(config:)`, this doesn't start or replace anything.
+    func attach(to session: CycleSession) {
+        cycleID = session.id
+        apply(session)
+
+        // An update can land between the caller reading `session` and this call,
+        // and `apply` drops anything that arrives before `cycleID` is set, so re-read once.
+        let countdown = countdown
+        Task { @MainActor [weak self] in
+            self?.apply(await countdown.currentSession())
         }
     }
 
     func handlePlayPauseButtonTap() {
         switch timerStatus {
-        case .playing:
-            pauseTimer()
-        case .paused:
-            resumeTimer()
+        case .playing, .paused:
+            perform { try await $0.togglePauseResume(alarmID: $1) }
+
         case .finished:
-            repeatTimer()
+            perform { try await $0.restartCycle(from: $1) }
+
         @unknown default:
             break
         }
     }
 
-    private func startTimer() {
-        guard duration > 0 else {
-            return
-        }
-
-        generation += 1
-        currentTimerValue = duration
-        deadline = now().addingTimeInterval(duration)
-        timerStatus = .playing
-        setupBackgroundTimer()
-        publishState()
-        timerActionSubject.send(.start)
-        startLiveActivity()
-    }
-
-    private func pauseTimer() {
-        refresh()
-        guard timerStatus == .playing else {
-            return
-        }
-
-        generation += 1
-        deadline = nil
-        cancelBackgroundTimer()
-        timerStatus = .paused
-        publishState()
-        timerActionSubject.send(.pause)
-        updateLiveActivity()
-        releaseBackgroundRuntimeAfterUpdate()
-        stopHaptics()
-    }
-
-    private func resumeTimer() {
-        guard timerStatus == .paused, currentTimerValue > 0 else {
-            return
-        }
-
-        generation += 1
-        deadline = now().addingTimeInterval(currentTimerValue)
-        timerStatus = .playing
-        setupBackgroundTimer()
-        publishState()
-        timerActionSubject.send(.resume)
-        startLiveActivity()
-        updateLiveActivity()
-    }
-
-    private func finishTimer() {
-        currentTimerValue = 0
-        deadline = nil
-        cancelBackgroundTimer()
-        timerStatus = .finished
-        publishState()
-        timerActionSubject.send(.finish)
-        notifyPhaseChange(isComplete: true)
-        releaseBackgroundRuntimeAfterUpdate()
-    }
-
-    private func releaseBackgroundRuntimeAfterUpdate() {
-        let finishingGeneration = generation
-        let update = liveActivityTask
-        Task { @MainActor [weak self] in
-            await update?.value
-            guard let self, self.generation == finishingGeneration else { return }
-            releaseBackgroundRuntime()
-        }
-    }
-
-    /// A skipped break starts the next full focus session, including when the break was paused.
+    /// A skipped break starts the next focus session, including when the braek was paused.
     func skipBreak() {
-        let wasBreak = isBreak
-        refresh()
-        guard wasBreak, isBreak, timerStatus != .finished, interval < intervals else { return }
-
-        generation += 1
-        interval += 1
-        timerType = .main
-        duration = totalDuration
-        currentTimerValue = totalDuration
-        timerStatus = .playing
-        deadline = now().addingTimeInterval(totalDuration)
-        setupBackgroundTimer()
-        publishState()
-        timerActionSubject.send(.start)
-        notifyPhaseChange(isComplete: false)
+        guard isBreak, timerStatus != .finished else { return }
+        perform { try await $0.skipBreak(from: $1) }
     }
 
     func stopTimer() {
-        resetTimer()
-        timerActionSubject.send(.stop)
-        endLiveActivity()
-    }
-
-    private func repeatTimer() {
-        resetTimer()
-        startTimer()
-        updateLiveActivity()
-    }
-
-    private func resetTimer() {
-        generation += 1
-        stopSound()
-        stopHaptics()
-        cancelBackgroundTimer()
-        releaseBackgroundRuntime()
-        deadline = nil
-        timerType = .main
-        duration = totalDuration
-        currentTimerValue = totalDuration
-        timerStatus = .paused
-        interval = 1
-        publishState()
-    }
-
-    /// Deadline reconciliation also consumes missed phases after app suspension.
-    func refresh() {
-        guard timerStatus == .playing, var phaseDeadline = deadline else {
+        guard session != nil else {
+            // Nothing running (e.g. start failed): just leave the screen.
+            timerActionSubject.send(.stop)
             return
         }
 
-        let instant = now()
-        var changedPhase = false
+        let countdown = countdown
 
-        while instant >= phaseDeadline {
-            if !isBreak && interval >= intervals {
-                finishTimer()
-                return
-            }
-
-            if !isBreak && intervalDuration > 0 {
-                timerType = .interval
-                duration = intervalDuration
-            } else {
-                interval += 1
-                timerType = .main
-                duration = totalDuration
-            }
-
-            phaseDeadline = phaseDeadline.addingTimeInterval(duration)
-            deadline = phaseDeadline
-            changedPhase = true
-        }
-
-        currentTimerValue = min(duration, max(0, phaseDeadline.timeIntervalSince(instant)))
-        publishState()
-
-        if changedPhase {
-            timerActionSubject.send(.start)
-            notifyPhaseChange(isComplete: false)
-        }
+        Task { @MainActor in await countdown.endCycle(from: "") }
     }
 
-    private func publishState() {
-        presentationSubject.send(.init(isBreak: isBreak, status: timerStatus,
-            sessionIndex: interval, sessionCount: intervals,
-            remainingDuration: currentTimerValue, phaseDuration: duration))
-        timerSubject.send(currentTimerValue.getTimerLabelValue())
-        timerStatusSubject.send(timerStatus)
-        timerLabelSubject.send(timerNameString)
-        timerIntervalSubject.send(currentTimerValue)
-    }
+    private func perform(_ action: @escaping @Sendable (CountdownControlling, String) async throws -> Void) {
+        let countdown = countdown
+        let alarmID = session?.alarmID.uuidString ?? ""
 
-    private func setupBackgroundTimer() {
-        cancelBackgroundTimer()
-        guard schedulesTicks else {
-            return
-        }
-
-        let timer = DispatchSource.makeTimerSource(queue: .main)
-        timer.schedule(deadline: .now(), repeating: 0.2)
-        timer.setEventHandler { [weak self] in
-            self?.refresh()
-        }
-        backgroundTimer = timer
-        timer.resume()
-        if !applicationIsActive() {
-            retainBackgroundRuntime()
-        }
-    }
-
-    // A dispatch timer alone doesn't keep running after the phone locks. Request
-    // finite runtime to finish nearby phase transitions and their ActivityKit updates.
-    // iOS may expire this grant; deadline reconciliation remains the source of truth.
-    @objc private func retainBackgroundRuntime() {
-        guard timerStatus == .playing, backgroundTask == .invalid else { return }
-        backgroundTask = beginBackgroundTask { [weak self] in
+        Task { @MainActor [weak self] in
             guard let self else { return }
-            releaseBackgroundRuntime()
+
+            do {
+                try await action(countdown, alarmID)
+            } catch {
+                countdownError = error
+            }
         }
     }
 
-    private func releaseBackgroundRuntime() {
-        guard backgroundTask != .invalid else { return }
-        let task = backgroundTask
-        backgroundTask = .invalid
-        endBackgroundTask(task)
-    }
+    // MARK: - Observing the engine
 
-    private func cancelBackgroundTimer() {
-        backgroundTimer?.cancel()
-        backgroundTimer = nil
-    }
-
-    private func addNotificationCenterSubscriptions() {
-        let notifications: [(Notification.Name, Selector)] = [
-            (UIApplication.didBecomeActiveNotification, #selector(handleAppDidBecomeActive)),
-            (UIApplication.didEnterBackgroundNotification, #selector(retainBackgroundRuntime)),
-            (.skipBreakActionTriggered, #selector(handleSkipBreakAction)),
-            (.playTimerActionTriggered, #selector(handlePlayTimerAction)),
-            (.stopTimerActionTriggered, #selector(handleStopTimerAction)),
-            (.repeatTimerActionTriggered, #selector(handleRepeatTimerAction))
-        ]
-
-        for (name, selector) in notifications {
-            NotificationCenter.default.addObserver(self, selector: selector, name: name, object: nil)
+    private func observeSession() {
+        let updates = countdown.sessionUpdates()
+        observeTask = Task { @MainActor [weak self] in
+            for await session in updates {
+                self?.apply(session)
+            }
         }
     }
 
-    @objc private func handleAppDidBecomeActive() {
-        refresh()
-        updateLiveActivity()
-        releaseBackgroundRuntime()
+    private func apply(_ new: CycleSession?) {
+        // Ignore anything that isn't this screen's cycle (e.g. a leftover being stopped).
+        guard let cycleID else { return }
+        if let new, new.id != cycleID { return }
+
+        let old = session
+        session = new
+
+        guard let new else {
+            ticker = nil
+            stopSound()
+            stopHaptics()
+
+            if old != nil {
+                timerActionSubject.send(.stop)
+            }
+            return
+        }
+
+        updateTicker(for: new.state)
+        publish()
+
+        let isNewCycle = old?.id != new.id
+        let stepChanged = !isNewCycle && old?.index != new.index
+        let justFinished = new.state == .alerting && new.step.isLastStep && old?.state != .alerting
+
+        if isNewCycle {
+            stopSound()
+            timerActionSubject.send(.start)
+        } else if stepChanged {
+            timerActionSubject.send(.start)
+            phaseFeedback(playSound: new.step.phase.isBreak)
+        } else if justFinished {
+            timerActionSubject.send(.finish)
+            phaseFeedback(playSound: true)
+        } else if case .paused = new.state, old?.state != new.state {
+            timerActionSubject.send(.pause)
+            stopHaptics()
+        } else if case .running = new.state, case .paused = old?.state {
+            timerActionSubject.send(.resume)
+        }
     }
 
-    @objc private func handleSkipBreakAction() {
-        skipBreak()
+    /// Display-only ticker: recomputes the label from the session's end date.
+    private func updateTicker(for state: CycleSession.State) {
+        guard case .running = state, schedulesTicks else {
+            ticker = nil
+            return
+        }
+        guard ticker == nil else { return }
+
+        ticker = Timer.publish(every: 0.2, on: .main, in: .common)
+            .autoconnect()
+            .sink { [weak self] _ in self?.publish() }
     }
 
-    @objc private func handlePlayTimerAction() {
-        handlePlayPauseButtonTap()
+    private func publish() {
+        guard let session else { return }
+        let step = session.step
+
+        let remaining: TimeInterval
+        let status: TimerStatus
+
+        switch session.state {
+        case .running(let endDate):
+            remaining = min(step.duration, max(0, endDate.timeIntervalSince(now())))
+            status = .playing
+
+        case .paused(let pausedRemaining):
+            remaining = pausedRemaining
+            status = .paused
+
+        case .alerting:
+            remaining = 0
+            status = step.isLastStep ? .finished : .playing
+        }
+
+        presentationSubject.send(TimerPresentationState(
+            isBreak: step.phase.isBreak,
+            status: status,
+            sessionIndex: step.interval,
+            sessionCount: step.totalIntervals,
+            remainingDuration: remaining,
+            phaseDuration: step.duration
+        ))
     }
 
-    @objc private func handleStopTimerAction() {
-        stopTimer()
-    }
+    // MARK: - In-app feedback (foreground only: AlarmKit / notifications handle the background)
 
-    @objc private func handleRepeatTimerAction() {
-        repeatTimer()
+    private func phaseFeedback(playSound: Bool) {
+        guard isAppActive else { return }
+
+        if playSound {
+            playCue()
+        }
+
+        playHaptics()
     }
 
     private func setupPlayerSound() {
@@ -427,33 +322,6 @@ class TimerViewModel {
         enqueueAudioOperation { manager in
             try manager.setPlayer(fileName: fileName, fileExtension: "mp3")
         }
-    }
-
-    private func notifyPhaseChange(isComplete: Bool) {
-        let shouldPlaySound = isComplete || isBreak
-
-        if applicationIsActive() {
-            if isComplete {
-                playFinishSound()
-            } else if shouldPlaySound {
-                playIntermediateSound()
-            }
-
-            playHaptics()
-            updateLiveActivity()
-        } else {
-            let sound = shouldPlaySound ? SoundOptions(preferences?.sound ?? "").fileName : nil
-            
-            updateLiveActivity(with: sound)
-        }
-    }
-
-    private func playFinishSound() {
-        playCue()
-    }
-
-    private func playIntermediateSound() {
-        playCue()
     }
 
     private func playCue() {
@@ -480,7 +348,7 @@ class TimerViewModel {
         hapticsManager.stop()
     }
 
-    private func enqueueAudioOperation(_ operation: @escaping (AudioManaging) throws -> Void) {
+    private func enqueueAudioOperation(_ operation: @escaping @Sendable (AudioManaging) throws -> Void) {
         let manager = audioManager
         AudioManager.playbackQueue.async { [weak self] in
             let error: Error?
@@ -497,91 +365,6 @@ class TimerViewModel {
             }
         }
     }
-
-    private var audioState: AudioState {
-        audioManager.audioState
-    }
-
-    deinit {
-        liveActivityTask?.cancel()
-        cancelBackgroundTimer()
-        releaseBackgroundRuntime()
-        NotificationCenter.default.removeObserver(self)
-        let manager = audioManager
-        AudioManager.playbackQueue.async {
-            try? manager.stop()
-        }
-        liveActivityManager?.endLiveActivity()
-    }
-}
-
-// MARK: - Live Activity
-
-extension TimerViewModel {
-    private func startLiveActivity() {
-        guard preferences?.liveActivityEnabled != false,
-              let liveActivityManager, !liveActivityManager.hasLiveActivity() else { return }
-        do {
-            liveActivityError = nil
-            try liveActivityManager.startLiveActivity(name: AppStrings.Timer.catodoroTimer,
-                                                      currentTimerValue: currentTimerValue,
-                                                      endTime: endTime,
-                                                      intervals: intervals,
-                                                      interval: interval,
-                                                      timerType: timerType ?? .main,
-                                                      timerStatus: timerStatus,
-                                                      phaseDuration: duration,
-                                                      accentCode: preferences?.color)
-
-        } catch {
-            liveActivityError = error
-        }
-    }
-
-    private func updateLiveActivity(with sound: String? = nil) {
-        guard preferences?.liveActivityEnabled != false, let liveActivityManager else { return }
-        let value = currentTimerValue
-        let end = endTime
-        let count = intervals
-        let session = interval
-        let phase = timerType ?? .main
-        let status = timerStatus
-        let phaseDuration = duration
-        let accent = preferences?.color
-        let previous = liveActivityTask
-        let generation = liveActivityGeneration
-        liveActivityTask = Task { [weak self] in
-            await previous?.value
-            guard !Task.isCancelled,
-                  let self, self.liveActivityGeneration == generation,
-                  self.preferences?.liveActivityEnabled != false else { return }
-
-            await liveActivityManager.updateLiveActivity(currentTimerValue: value,
-                                                        endTime: end,
-                                                        intervals: count,
-                                                        interval: session,
-                                                        timerType: phase,
-                                                        timerStatus: status,
-                                                        soundName: sound,
-                                                        phaseDuration: phaseDuration,
-                                                        accentCode: accent)
-        }
-    }
-
-    private func endLiveActivity() {
-        liveActivityGeneration += 1
-        liveActivityTask?.cancel()
-        guard let liveActivityManager else { return }
-        liveActivityManager.endLiveActivity()
-    }
-}
-
-extension TimerViewModel: ActiveTimer {
-    @MainActor
-    func togglePauseResumeAndUpdateActivity() async {
-        handlePlayPauseButtonTap()
-        await liveActivityTask?.value
-    }
 }
 
 #if DEBUG
@@ -590,12 +373,9 @@ extension TimerViewModel {
         .init(target: self)
     }
 
+    @MainActor
     struct TestHooks {
         let target: TimerViewModel
-
-        func flushLiveActivityOperations() async {
-            await target.liveActivityTask?.value
-        }
 
         func flushAudioOperations() async {
             await withCheckedContinuation { continuation in
@@ -607,17 +387,12 @@ extension TimerViewModel {
             }
         }
 
-        var totalDuration: TimeInterval? { target.totalDuration }
-        var intervalDuration: TimeInterval? { target.intervalDuration }
-        var timerType: TimerType? { target.timerType }
-        var timerStatus: TimerStatus { target.timerStatus }
-        var backgroundTimer: DispatchSourceTimer? { target.backgroundTimer }
+        var session: CycleSession? { target.session }
         var hapticsError: Error? { target.hapticsError }
-        var timerSubject: PassthroughSubject<String, Never> { target.timerSubject }
+        var countdownError: Error? { target.countdownError }
 
-        func startTimer() { target.startTimer() }
-        func pauseTimer() { target.pauseTimer() }
-        func resumeTimer() { target.resumeTimer() }
+        /// Feed a session directly, without a real engine.
+        func apply(_ session: CycleSession?) { target.apply(session) }
     }
 }
 #endif

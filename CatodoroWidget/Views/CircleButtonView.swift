@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 1/12/25.
 //
 
+import CatodoroShared
 import SwiftUI
 
 struct CircleButtonView: View {
@@ -13,8 +14,8 @@ struct CircleButtonView: View {
     var foregroundColor: Color = .white
     var backgroundColor: Color = .gray
     var shadowColor: Color = .gray.opacity(0.5)
-    var size: CGFloat = 60
-    var padding: CGFloat = 20
+    var size: CGFloat = Spacing.space60
+    var padding: CGFloat = Spacing.space20
     
     var body: some View {
         Button(action: onTap) {

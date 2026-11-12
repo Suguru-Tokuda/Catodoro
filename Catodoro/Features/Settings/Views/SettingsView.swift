@@ -12,27 +12,33 @@ final class SettingsView: BaseView {
     var onThemeSelected: ((ThemeOption) -> Void)?
     var onColorSelected: ((ColorOptions) -> Void)?
     var onSoundRequested: (() -> Void)?
+    var onAlertStyleRequested: (() -> Void)?
     var onLiveActivityChanged: ((Bool) -> Void)?
     var onSyncChanged: ((Bool) -> Void)?
     var onSystemSettingsRequested: (() -> Void)?
 
-    private let scrollView = UIScrollView()
+    private let scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.showsVerticalScrollIndicator = false
+        return scrollView
+    }()
 
     private let stack: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
-        stack.spacing = 20
+        stack.spacing = Spacing.space20
         return stack
     }()
 
     private let mascot = CatIllustrationView(pose: .playful)
     private let appearanceCard = CatCardView()
-    private let activityCard = CatCardView()
     private let syncCard = CatCardView()
+    private let activityCard = CatCardView()
+    private let alarmCard = CatCardView()
     private let syncStack: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
-        stack.spacing = 12
+        stack.spacing = Spacing.space12
         return stack
     }()
     private let syncSwitch: UISwitch = {
@@ -53,14 +59,21 @@ final class SettingsView: BaseView {
     private let appearanceStack: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
-        stack.spacing = 16
+        stack.spacing = Spacing.space16
         return stack
     }()
 
     private let activityStack: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
-        stack.spacing = 12
+        stack.spacing = Spacing.space12
+        return stack
+    }()
+
+    private let alarmStack: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.spacing = Spacing.space12
         return stack
     }()
 
@@ -86,7 +99,7 @@ final class SettingsView: BaseView {
         let control = UISegmentedControl(items: ThemeOption.allCases.map(\.title))
         control.accessibilityLabel = AppStrings.Settings.theme
         control.accessibilityIdentifier = AccessibilityID.themeSelector
-        control.heightAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
+        control.heightAnchor.constraint(greaterThanOrEqualToConstant: Spacing.space44).isActive = true
         return control
     }()
 
@@ -102,7 +115,7 @@ final class SettingsView: BaseView {
     private let swatches: UIStackView = {
         let stack = UIStackView()
         stack.axis = .horizontal
-        stack.spacing = 4
+        stack.spacing = Spacing.space4
         stack.distribution = .fillEqually
         return stack
     }()
@@ -117,12 +130,14 @@ final class SettingsView: BaseView {
         button.configuration = configuration
         button.accessibilityLabel = AppStrings.Settings.accentLabel(option.title)
         button.accessibilityIdentifier = option.code
-        button.heightAnchor.constraint(equalToConstant: 44).isActive = true
-        button.widthAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
+        button.heightAnchor.constraint(equalToConstant: Spacing.space44).isActive = true
+        button.widthAnchor.constraint(greaterThanOrEqualToConstant: Spacing.space44).isActive = true
         return button
     }
 
     private let soundRow = CatSummaryRow(title: AppStrings.Settings.timerSound, value: "", symbol: "speaker.wave.2.fill")
+
+    private let alarmRow = CatSummaryRow(title: AppStrings.Settings.alarm, value: "", symbol: "bell.fill")
 
     private let activityTitle: UILabel = {
         let label = UILabel()
@@ -145,7 +160,7 @@ final class SettingsView: BaseView {
         let stack = UIStackView()
         stack.axis = .horizontal
         stack.alignment = .center
-        stack.spacing = 12
+        stack.spacing = Spacing.space12
         return stack
     }()
 
@@ -158,11 +173,38 @@ final class SettingsView: BaseView {
         return label
     }()
 
+    private let alarmTitle: UILabel = {
+        let label = UILabel()
+        label.text = AppStrings.Settings.alarm
+        label.font = CatTheme.font(.headline, weight: .bold)
+        label.textColor = CatTheme.text
+        label.adjustsFontForContentSizeCategory = true
+        label.numberOfLines = 0
+        return label
+    }()
+
+    private let alarmHeader: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .horizontal
+        stack.alignment = .center
+        stack.spacing = Spacing.space12
+        return stack
+    }()
+
+    private let alarmDescription: UILabel = {
+        let label = UILabel()
+        label.font = CatTheme.font(.subheadline)
+        label.textColor = CatTheme.secondaryText
+        label.numberOfLines = 0
+        label.adjustsFontForContentSizeCategory = true
+        return label
+    }()
+
     private let systemSettingsButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle(AppStrings.Settings.openIOSSettings, for: .normal)
         button.titleLabel?.font = CatTheme.font(.body, weight: .semibold)
-        button.heightAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
+        button.heightAnchor.constraint(greaterThanOrEqualToConstant: Spacing.space44).isActive = true
         return button
     }()
 
@@ -172,6 +214,7 @@ final class SettingsView: BaseView {
         constructSyncCard()
         constructAppearanceCard()
         constructActivityCard()
+        constructAlarmCard()
         configureColorActions()
         configureSoundAndActivityActions()
     }
@@ -180,7 +223,7 @@ final class SettingsView: BaseView {
         backgroundColor = CatTheme.background
         addAutolayoutSubview(scrollView)
         scrollView.addAutolayoutSubview(stack)
-        stack.addArrangedSubviews([mascot, appearanceCard, syncCard, activityCard])
+        stack.addArrangedSubviews([mascot, appearanceCard, syncCard, activityCard, alarmCard])
     }
 
     private func constructSyncCard() {
@@ -193,7 +236,7 @@ final class SettingsView: BaseView {
         syncTitle.adjustsFontForContentSizeCategory = true
 
         let syncHeader = UIStackView(arrangedSubviews: [syncTitle, syncSwitch])
-        syncHeader.spacing = 12
+        syncHeader.spacing = Spacing.space12
         syncHeader.alignment = .center
 
         syncStack.addArrangedSubviews([syncHeader, syncDescription])
@@ -221,6 +264,12 @@ final class SettingsView: BaseView {
         activityStack.addArrangedSubviews([activityHeader, activityDescription, systemSettingsButton])
     }
 
+    private func constructAlarmCard() {
+        alarmCard.addAutolayoutSubview(alarmStack)
+        alarmHeader.addArrangedSubview(alarmTitle)
+        alarmStack.addArrangedSubviews([alarmHeader, alarmDescription, alarmRow])
+    }
+
     private func configureColorActions() {
         for (option, button) in zip(ColorOptions.allCases, colorButtons) {
             button.addAction(UIAction { [weak self] _ in
@@ -232,6 +281,10 @@ final class SettingsView: BaseView {
     private func configureSoundAndActivityActions() {
         soundRow.addAction(UIAction { [weak self] _ in
             self?.onSoundRequested?()
+        }, for: .touchUpInside)
+
+        alarmRow.addAction(UIAction { [weak self] _ in
+            self?.onAlertStyleRequested?()
         }, for: .touchUpInside)
 
         activitySwitch.addAction(UIAction { [weak self] _ in
@@ -252,20 +305,20 @@ final class SettingsView: BaseView {
             scrollView.bottomAnchor.constraint(equalTo: bottomAnchor),
             scrollView.leadingAnchor.constraint(equalTo: leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            stack.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor, constant: 20),
-            stack.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -24),
-            stack.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 20),
-            stack.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor, constant: -20),
-            stack.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor, constant: -40),
-            mascot.heightAnchor.constraint(equalToConstant: 140)
+            stack.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor, constant: Spacing.space20),
+            stack.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -Spacing.space24),
+            stack.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: Spacing.space20),
+            stack.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor, constant: -Spacing.space20),
+            stack.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor, constant: -Spacing.space20 * 2),
+            mascot.heightAnchor.constraint(equalToConstant: Spacing.space140)
         ])
 
-        for (card, content) in [(appearanceCard, appearanceStack), (activityCard, activityStack), (syncCard, syncStack)] {
+        for (card, content) in [(appearanceCard, appearanceStack), (activityCard, activityStack), (syncCard, syncStack), (alarmCard, alarmStack)] {
             NSLayoutConstraint.activate([
-                content.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 16),
-                content.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -16),
-                content.topAnchor.constraint(equalTo: card.topAnchor, constant: 20),
-                content.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -20)
+                content.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: Spacing.space16),
+                content.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -Spacing.space16),
+                content.topAnchor.constraint(equalTo: card.topAnchor, constant: Spacing.space20),
+                content.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -Spacing.space20)
             ])
         }
     }
@@ -275,6 +328,7 @@ final class SettingsView: BaseView {
         configureSync(state)
         configureSound(state)
         configureActivity(state)
+        configureAlarm(state)
         configureColors(state)
     }
 
@@ -306,6 +360,12 @@ final class SettingsView: BaseView {
         activityDescription.text = state.activitiesAuthorized
             ? AppStrings.Settings.liveActivityDescription
             : AppStrings.Settings.liveActivityUnavailableMessage
+    }
+
+    private func configureAlarm(_ state: SettingsViewModel.State) {
+        alarmRow.configureAccent(state.color.color)
+        alarmRow.setValue(state.alertStyle.title)
+        alarmDescription.text = state.alertStyle.detail
     }
 
     private func configureColors(_ state: SettingsViewModel.State) {

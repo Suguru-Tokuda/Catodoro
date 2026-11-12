@@ -32,7 +32,7 @@ final class TimerView: BaseView {
         let stack = UIStackView()
         stack.axis = .vertical
         stack.alignment = .center
-        stack.spacing = 16
+        stack.spacing = Spacing.space16
 
         return stack
     }()
@@ -98,7 +98,7 @@ final class TimerView: BaseView {
     private let pawsStack: UIStackView = {
         let stack = UIStackView()
         stack.axis = .horizontal
-        stack.spacing = 12
+        stack.spacing = Spacing.space12
         stack.alignment = .center
         stack.isAccessibilityElement = true
 
@@ -110,8 +110,8 @@ final class TimerView: BaseView {
             let image = UIImageView(image: UIImage(named: "CatPaw"))
             image.contentMode = .scaleAspectFit
             image.isAccessibilityElement = false
-            image.widthAnchor.constraint(equalToConstant: 28).isActive = true
-            image.heightAnchor.constraint(equalToConstant: 28).isActive = true
+            image.widthAnchor.constraint(equalToConstant: Spacing.space28).isActive = true
+            image.heightAnchor.constraint(equalToConstant: Spacing.space28).isActive = true
 
             return image
         }
@@ -122,8 +122,8 @@ final class TimerView: BaseView {
         var configuration = UIButton.Configuration.filled()
         configuration.baseForegroundColor = CatTheme.onAccent
         configuration.cornerStyle = .capsule
-        configuration.imagePadding = 10
-        configuration.contentInsets = .init(top: 16, leading: 20, bottom: 16, trailing: 20)
+        configuration.imagePadding = Spacing.space10
+        configuration.contentInsets = .init(top: Spacing.space16, leading: Spacing.space20, bottom: Spacing.space16, trailing: Spacing.space20)
         configuration.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { attributes in
             var updated = attributes
             updated.font = CatTheme.font(.headline, weight: .semibold)
@@ -152,8 +152,8 @@ final class TimerView: BaseView {
         configuration.background.strokeColor = CatTheme.separator
         configuration.background.strokeWidth = 1
         configuration.cornerStyle = .capsule
-        configuration.imagePadding = 10
-        configuration.contentInsets = .init(top: 16, leading: 20, bottom: 16, trailing: 20)
+        configuration.imagePadding = Spacing.space10
+        configuration.contentInsets = .init(top: Spacing.space16, leading: Spacing.space20, bottom: Spacing.space16, trailing: Spacing.space20)
         button.configuration = configuration
 
         return button
@@ -185,8 +185,8 @@ final class TimerView: BaseView {
             timerNameLabel, sessionLabel, ringContainer, pawsStack, messageLabel,
             primaryButton, skipBreakButton, secondaryButton
         ])
-        stackView.setCustomSpacing(4, after: timerNameLabel)
-        stackView.setCustomSpacing(28, after: messageLabel)
+        stackView.setCustomSpacing(Spacing.space4, after: timerNameLabel)
+        stackView.setCustomSpacing(Spacing.space28, after: messageLabel)
     }
 
     private func constructRingContent() {
@@ -200,7 +200,7 @@ final class TimerView: BaseView {
         primaryButton.configuration?.baseBackgroundColor = accent
 
         skipBreakButton.tintColor = accent
-        skipBreakButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
+        skipBreakButton.heightAnchor.constraint(greaterThanOrEqualToConstant: Spacing.space44).isActive = true
     }
 
     private func addActions() {
@@ -245,15 +245,15 @@ final class TimerView: BaseView {
     }
 
     private func constructStackViewConstraints() {
-        let contentWidth = stackView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor, constant: -40)
+        let contentWidth = stackView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor, constant: -Spacing.space20 * 2)
         contentWidth.priority = .defaultHigh
 
         NSLayoutConstraint.activate([
             stackView.centerXAnchor.constraint(equalTo: scrollView.frameLayoutGuide.centerXAnchor),
-            stackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor, constant: 28),
-            stackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -28),
+            stackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor, constant: Spacing.space28),
+            stackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -Spacing.space28),
             contentWidth,
-            stackView.widthAnchor.constraint(lessThanOrEqualToConstant: 420)
+            stackView.widthAnchor.constraint(lessThanOrEqualToConstant: Spacing.space420)
         ])
     }
 
@@ -263,7 +263,7 @@ final class TimerView: BaseView {
 
         NSLayoutConstraint.activate([
             ringWidth,
-            ringContainer.widthAnchor.constraint(lessThanOrEqualToConstant: 340),
+            ringContainer.widthAnchor.constraint(lessThanOrEqualToConstant: Spacing.space340),
             ringContainer.heightAnchor.constraint(equalTo: ringContainer.widthAnchor),
             timerCircleView.leadingAnchor.constraint(equalTo: ringContainer.leadingAnchor),
             timerCircleView.trailingAnchor.constraint(equalTo: ringContainer.trailingAnchor),
@@ -279,7 +279,7 @@ final class TimerView: BaseView {
             artworkContainer.topAnchor.constraint(equalTo: ringContainer.topAnchor),
             artworkContainer.bottomAnchor.constraint(equalTo: ringContainer.bottomAnchor),
             companion.centerXAnchor.constraint(equalTo: artworkContainer.centerXAnchor),
-            companion.bottomAnchor.constraint(equalTo: artworkContainer.bottomAnchor, constant: 32),
+            companion.bottomAnchor.constraint(equalTo: artworkContainer.bottomAnchor, constant: Spacing.space32),
             companion.widthAnchor.constraint(equalTo: artworkContainer.widthAnchor, multiplier: 0.95),
             companion.heightAnchor.constraint(equalTo: artworkContainer.heightAnchor, multiplier: 0.63)
         ])
@@ -287,10 +287,10 @@ final class TimerView: BaseView {
 
     private func constructLabelsConstraints() {
         NSLayoutConstraint.activate([
-            timerLabel.topAnchor.constraint(equalTo: ringContainer.topAnchor, constant: 65),
+            timerLabel.topAnchor.constraint(equalTo: ringContainer.topAnchor, constant: Spacing.space65),
             timerLabel.centerXAnchor.constraint(equalTo: ringContainer.centerXAnchor),
             timerLabel.widthAnchor.constraint(equalTo: ringContainer.widthAnchor, multiplier: 0.8),
-            statusLabel.topAnchor.constraint(equalTo: timerLabel.bottomAnchor, constant: 4),
+            statusLabel.topAnchor.constraint(equalTo: timerLabel.bottomAnchor, constant: Spacing.space4),
             statusLabel.centerXAnchor.constraint(equalTo: ringContainer.centerXAnchor),
             statusLabel.widthAnchor.constraint(equalTo: ringContainer.widthAnchor, multiplier: 0.75),
             timerNameLabel.widthAnchor.constraint(equalTo: stackView.widthAnchor),
@@ -303,8 +303,8 @@ final class TimerView: BaseView {
         NSLayoutConstraint.activate([
             primaryButton.widthAnchor.constraint(equalTo: stackView.widthAnchor),
             secondaryButton.widthAnchor.constraint(equalTo: stackView.widthAnchor),
-            primaryButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 56),
-            secondaryButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 52)
+            primaryButton.heightAnchor.constraint(greaterThanOrEqualToConstant: Spacing.space56),
+            secondaryButton.heightAnchor.constraint(greaterThanOrEqualToConstant: Spacing.space52)
         ])
     }
 

@@ -8,133 +8,111 @@
 import XCTest
 @testable import Catodoro
 
-@MainActor
-final class TimerViewModelHapticsTests: XCTestCase {
+final class TimerViewModelHapticsTests: TimerViewModelTestCase {
     private enum TestError: Error { case hapticsUnavailable }
-
-    private var instant = Date(timeIntervalSince1970: 1000)
-    private var isActive = true
-    private let haptics = MockHapticsManager()
-
-    /// 10s focus, 5s break, 2 sessions: focus → break → focus → finished.
-    private func makeRunningTimer(focus: TimeInterval = 10,
-                                  rest: TimeInterval = 5,
-                                  sessions: Int = 2) -> TimerViewModel {
-        let model = TimerViewModel(audioManager: MockAudioManager(), preferences: nil,
-                                   liveActivityManager: nil, hapticsManager: haptics,
-                                   now: { [unowned self] in self.instant },
-                                   schedulesTicks: false,
-                                   applicationIsActive: { [unowned self] in self.isActive })
-        model.configure(totalDuration: focus, intervalDuration: rest, intervals: sessions)
-        model.testHooks.startTimer()
-        // configure() resets the timer, which calls stop(); only count what happens after start.
-        haptics.reset()
-        return model
-    }
-
-    private func advance(_ seconds: TimeInterval, _ model: TimerViewModel) {
-        instant.addTimeInterval(seconds)
-        model.refresh()
-    }
 
     // MARK: - When haptics play
 
-    func test_startingTimer_doesNotVibrate() {
-        _ = makeRunningTimer()
+    func test_startingCycle_doesNotVibrate() async {
+        let model = makeViewModel()
+        countdown.startID = cycleID
+        countdown.session = firstSession()
 
-        XCTAssertEqual(haptics.events, [])
+        model.configure(config: config)
+
+        await waitUntil { model.testHooks.session != nil }
+        XCTAssertEqual(haptics.startCount, 0)
     }
 
-    func test_foreground_vibratesOnEveryPhaseChange() {
-        let model = makeRunningTimer()
+    func test_foreground_vibratesOnEveryPhaseChange() async {
+        let model = makeViewModel()
+        let first = await start(model)
 
-        advance(10, model)
-        XCTAssertTrue(model.isBreak)
+        await deliver(first.moved(to: 1, state: .running(endDate: instant + 5)), to: model)
         XCTAssertEqual(haptics.startCount, 1, "focus → break")
 
-        advance(5, model)
-        XCTAssertFalse(model.isBreak)
+        let last = first.moved(to: 2, state: .running(endDate: instant + 10))
+        await deliver(last, to: model)
         XCTAssertEqual(haptics.startCount, 2, "break → focus vibrates even though it plays no sound")
 
-        advance(10, model)
+        await deliver(last.with(state: .alerting), to: model)
         XCTAssertEqual(model.timerStatus, .finished)
         XCTAssertEqual(haptics.startCount, 3, "routine complete")
     }
 
-    func test_foreground_refreshWithinSamePhase_doesNotVibrateAgain() {
-        let model = makeRunningTimer()
+    func test_sameStepUpdate_doesNotVibrateAgain() async {
+        let model = makeViewModel()
+        let first = await start(model)
+        let rest = first.moved(to: 1, state: .running(endDate: instant + 5))
+        await deliver(rest, to: model)
 
-        advance(10, model)
-        advance(1, model)
-        model.refresh()
+        await deliver(rest.with(state: .running(endDate: instant + 4)), to: model)
 
         XCTAssertEqual(haptics.startCount, 1)
     }
 
-    func test_foreground_catchingUpSeveralMissedPhases_vibratesOnce() {
-        let model = makeRunningTimer()
+    func test_finishedUpdateRepeated_vibratesOnce() async {
+        let model = makeViewModel()
+        let first = await start(model)
+        let finished = first.moved(to: 2, state: .alerting)
+        await deliver(finished.with(state: .running(endDate: instant + 10)), to: model)
+        haptics.reset()
 
-        // Skips past focus #1 and the break in one refresh, landing 1s into focus #2.
-        advance(16, model)
+        await deliver(finished, to: model)
+        countdown.send(finished)
+        await settle()
 
-        XCTAssertFalse(model.isBreak)
-        XCTAssertEqual(model.presentationSubject.value.sessionIndex, 2)
         XCTAssertEqual(haptics.startCount, 1)
     }
 
-    func test_background_neverVibrates() {
-        isActive = false
-        let model = makeRunningTimer()
+    func test_background_neverVibratesAndResumesInForeground() async {
+        let model = makeViewModel()
+        let first = await start(model)
+        setAppActive(false)
 
-        advance(10, model)
-        advance(5, model)
-        advance(10, model)
-
-        XCTAssertEqual(model.timerStatus, .finished)
+        await deliver(first.moved(to: 1, state: .running(endDate: instant + 5)), to: model)
         XCTAssertEqual(haptics.startCount, 0)
+
+        setAppActive(true)
+        await deliver(first.moved(to: 2, state: .running(endDate: instant + 10)), to: model)
+        XCTAssertEqual(haptics.startCount, 1)
     }
 
     // MARK: - When haptics stop
 
-    func test_pause_stopsHaptics() {
-        let model = makeRunningTimer()
-        advance(10, model)
+    func test_pause_stopsHaptics() async {
+        let model = makeViewModel()
+        let first = await start(model)
+        let rest = first.moved(to: 1, state: .running(endDate: instant + 5))
+        await deliver(rest, to: model)
 
-        model.handlePlayPauseButtonTap()
+        await deliver(rest.with(state: .paused(remaining: 5)), to: model)
 
         XCTAssertEqual(model.timerStatus, .paused)
         XCTAssertEqual(haptics.events, ["start", "stop"])
     }
 
-    func test_stop_stopsHaptics() {
-        let model = makeRunningTimer()
-        advance(10, model)
+    func test_cycleEnded_stopsHaptics() async {
+        let model = makeViewModel()
+        let first = await start(model)
+        await deliver(first.moved(to: 1, state: .running(endDate: instant + 5)), to: model)
 
-        model.stopTimer()
+        await deliverEnd(to: model)
 
-        XCTAssertEqual(haptics.events.last, "stop")
-    }
-
-    func test_repeatAfterFinishing_stopsHapticsBeforeRestarting() {
-        let model = makeRunningTimer(rest: 0, sessions: 1)
-        advance(10, model)
-        XCTAssertEqual(model.timerStatus, .finished)
-
-        model.handlePlayPauseButtonTap()
-
-        XCTAssertEqual(model.timerStatus, .playing)
         XCTAssertEqual(haptics.events, ["start", "stop"])
     }
 
     // MARK: - Failures
 
-    func test_hapticsFailure_isRecordedWithoutBreakingTransitions() {
+    func test_hapticsFailure_isRecordedWithoutBreakingTransitions() async {
         haptics.startError = TestError.hapticsUnavailable
-        let model = makeRunningTimer()
+        let model = makeViewModel()
+        let first = await start(model)
 
-        advance(10, model)
-        advance(5, model)
-        advance(10, model)
+        await deliver(first.moved(to: 1, state: .running(endDate: instant + 5)), to: model)
+        let last = first.moved(to: 2, state: .running(endDate: instant + 10))
+        await deliver(last, to: model)
+        await deliver(last.with(state: .alerting), to: model)
 
         XCTAssertEqual(model.timerStatus, .finished)
         XCTAssertEqual(haptics.startCount, 3)

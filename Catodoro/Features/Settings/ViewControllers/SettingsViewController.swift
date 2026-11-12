@@ -64,6 +64,10 @@ final class SettingsViewController: BaseViewController {
         settingsView.onSoundRequested = { [weak self] in
             self?.delegate?.onSettingMenuSelected(settingOption: .sound)
         }
+
+        settingsView.onAlertStyleRequested = { [weak self] in
+            self?.delegate?.onSettingMenuSelected(settingOption: .alertStyle)
+        }
     }
 
     private func configureActivityActions() {

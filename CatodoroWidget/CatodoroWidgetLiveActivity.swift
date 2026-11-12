@@ -17,35 +17,29 @@ struct CatodoroWidgetLiveActivity: Widget {
                 .activityBackgroundTint(.clear)
                 .activitySystemActionForegroundColor(.black)
         } dynamicIsland: { context in
-            let state = context.state
-            let accent = ActivityTheme.accent(state.accentCode, scheme: .dark)
-            return DynamicIsland {
-                DynamicIslandExpandedRegion(.bottom) {
-                    ExpandedTimerActivity(state: state)
-                }
-            } compactLeading: {
-                Image("ActivityCatPaw", bundle: ActivityTheme.imageBundle)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 20, height: 20)
-                    .foregroundStyle(accent)
-                    .accessibilityLabel(state.phaseTitle)
-            } compactTrailing: {
-                ActivityCountdown(state: state)
-                    .font(.system(.caption, design: .rounded, weight: .semibold))
-                    .foregroundStyle(accent)
-                    .frame(width: state.currentTimerValue >= 3600 ? 66 : 48)
-            } minimal: {
-                Image("ActivityCatPaw", bundle: ActivityTheme.imageBundle)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 20, height: 20)
-                    .foregroundStyle(accent)
-                    .accessibilityLabel(state.phaseTitle)
-            }
-            .keylineTint(accent)
+            catodoroDynamicIsland(state: context.state)
         }
     }
+}
+
+/// The one Dynamic Island used by both the TimerAttributes and AlarmKit Live Activities.
+func catodoroDynamicIsland(state: TimerAttributes.ContentState) -> DynamicIsland {
+    let accent = ActivityTheme.accent(state.accentCode, scheme: .dark)
+    return DynamicIsland {
+        DynamicIslandExpandedRegion(.bottom) {
+            ExpandedTimerActivity(state: state)
+        }
+    } compactLeading: {
+        PawIconView(accent: accent, accessibilityLabelTitle: state.phaseTitle)
+    } compactTrailing: {
+        ActivityCountdown(state: state)
+            .font(.system(.caption, design: .rounded, weight: .semibold))
+            .foregroundStyle(accent)
+            .frame(width: state.currentTimerValue >= 3600 ? Spacing.space66 : Spacing.space48)
+    } minimal: {
+        PawIconView(accent: accent, accessibilityLabelTitle: state.phaseTitle)
+    }
+    .keylineTint(accent)
 }
 
 extension TimerAttributes {

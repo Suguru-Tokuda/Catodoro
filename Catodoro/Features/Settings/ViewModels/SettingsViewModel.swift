@@ -16,11 +16,13 @@ struct SettingModel {
 }
 
 enum SettingOptions: String, CaseIterable {
+    case alertStyle = "Alarm"
     case color = "Color"
     case sound = "Sound"
 
     var title: String {
         switch self {
+        case .alertStyle: return AppStrings.Settings.alarm
         case .color: return AppStrings.Settings.color
         case .sound: return AppStrings.Settings.sound
         }
@@ -28,6 +30,7 @@ enum SettingOptions: String, CaseIterable {
 
     var iconName: String {
         switch self {
+            case .alertStyle: return "bell.fill"
             case .color: return "paintbrush.fill"
             case .sound: return "speaker"
         }
@@ -40,6 +43,7 @@ final class SettingsViewModel {
         var theme: ThemeOption = .system
         let color: ColorOptions
         let sound: SoundOptions
+        let alertStyle: AlertStyle
         let liveActivityEnabled: Bool
         let activitiesAuthorized: Bool
         var syncEnabled = false
@@ -60,12 +64,14 @@ final class SettingsViewModel {
 
     init(preferences: CatodoroPreferencesProtocol? = nil,
          activitiesAuthorized: @escaping () -> Bool = { ActivityAuthorizationInfo().areActivitiesEnabled },
-         syncLifecycleManager: SyncLifecycleManaging? = nil) {
+         syncLifecycleManager: SyncLifecycleManaging? = nil
+    ) {
         self.syncLifecycleManager = syncLifecycleManager
         self.preferences = preferences
         self.activitiesAuthorized = activitiesAuthorized
         state = State(color: ColorOptions(preferences?.color ?? ""),
                       sound: SoundOptions(preferences?.sound ?? ""),
+                      alertStyle: (preferences?.alertStyle ?? .liveActivity).resolved(),
                       liveActivityEnabled: preferences?.liveActivityEnabled ?? true,
                       activitiesAuthorized: activitiesAuthorized())
         if let syncLifecycleManager {
@@ -76,6 +82,9 @@ final class SettingsViewModel {
         refresh()
         if let preferences {
             preferences.themePublisher.receive(on: DispatchQueue.main)
+                .sink { [weak self] _ in self?.refresh() }
+                .store(in: &subscriptions)
+            preferences.alertStylePublisher.receive(on: DispatchQueue.main)
                 .sink { [weak self] _ in self?.refresh() }
                 .store(in: &subscriptions)
             preferences.colorPublisher.combineLatest(preferences.soundPublisher, preferences.liveActivityPublisher)
@@ -119,6 +128,7 @@ final class SettingsViewModel {
     func refresh() {
         var next = State(color: ColorOptions(preferences?.color ?? ""),
                       sound: SoundOptions(preferences?.sound ?? ""),
+                      alertStyle: (preferences?.alertStyle ?? .liveActivity).resolved(),
                       liveActivityEnabled: preferences?.liveActivityEnabled ?? true,
                       activitiesAuthorized: activitiesAuthorized())
         next.syncAvailable = syncLifecycleManager != nil

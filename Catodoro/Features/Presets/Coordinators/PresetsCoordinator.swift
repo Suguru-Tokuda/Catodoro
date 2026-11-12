@@ -19,27 +19,27 @@ class PresetsCoordinator: Coordinator {
     var finishDelegate: CoordinatorFinishDelegate?
     var type: CoordinatorType { .feature }
     var childCoordinators: [Coordinator] = []
-    private let coreDataManager: CatodoroCoreDataManaging
     var navigationController: UINavigationController
     private let timerCoordinator: TimerCoordiantor
-    weak var liveActivityManager: LiveActivityManaging?
-    var hapticsManager: HapticsManaging?
     private var editorCompletion: (() -> Void)?
-    weak var preferences: CatodoroPreferences?
     private var configuration: PresetsCoordinatorConfiguration
+    private let dependencies: AppDependencies
+
+    private var preferences: CatodoroPreferences { dependencies.preferences }
+    private var coreDataManager: CatodoroCoreDataManaging { dependencies.coreDataManager }
 
     init(navigationController: UINavigationController = BaseNavigationController(),
          configuration: PresetsCoordinatorConfiguration = PresetsCoordinatorConfiguration(),
-         coreDataManager: CatodoroCoreDataManaging
+         dependencies: AppDependencies
     ) {
-        self.coreDataManager = coreDataManager
         self.navigationController = navigationController
         self.configuration = configuration
+        self.dependencies = dependencies
         timerCoordinator = TimerCoordiantor(
             navigationController: navigationController,
             configuration: TimerCoordinatorConfiguration(
                 shouldHideBottomBarWhenTimerStart: configuration.shouldHideBottomBar),
-            coreDataManager: coreDataManager
+            dependencies: dependencies
         )
         childCoordinators = [timerCoordinator]
     }
@@ -69,9 +69,6 @@ extension PresetsCoordinator: PresetsViewControllerDelegate {
         let configuration = preset.configuration
         guard configuration.isValid else { return }
 
-        timerCoordinator.preferences = preferences
-        timerCoordinator.liveActivityManager = liveActivityManager
-        timerCoordinator.hapticsManager = hapticsManager
         timerCoordinator.navigateToTimerView(viewModel: .init(timerModel: configuration, coreDataManager: coreDataManager))
     }
     

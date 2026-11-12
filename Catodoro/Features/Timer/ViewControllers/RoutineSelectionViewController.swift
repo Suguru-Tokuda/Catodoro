@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 10/10/26.
 //
 
+import CatodoroShared
 import UIKit
 
 enum RoutineSelection {
@@ -87,7 +88,7 @@ extension UIViewController {
         let editor = makeRoutineSelectionEditor(selection, configuration: configuration, accent: accent, onCommit: onCommit)
         let navigation = BaseNavigationController(rootViewController: editor)
         navigation.modalPresentationStyle = traitCollection.userInterfaceIdiom == .pad ? .formSheet : .pageSheet
-        navigation.preferredContentSize = CGSize(width: 500, height: 520)
+        navigation.preferredContentSize = CGSize(width: Spacing.space500, height: Spacing.space520)
 
         if let sheet = navigation.sheetPresentationController {
             let initialHeight: CGFloat = selection == .sessions ? 580 : 520

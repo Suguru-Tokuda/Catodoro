@@ -23,7 +23,7 @@ final class PresetEditorView: BaseView {
     private let stack: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
-        stack.spacing = 16
+        stack.spacing = Spacing.space16
         return stack
     }()
 
@@ -48,9 +48,9 @@ final class PresetEditorView: BaseView {
         field.textColor = CatTheme.text
         field.backgroundColor = CatTheme.card
         field.layer.cornerRadius = 16
-        field.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 1))
+        field.leftView = UIView(frame: CGRect(x: 0, y: 0, width: Spacing.space16, height: Spacing.space1))
         field.leftViewMode = .always
-        field.rightView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 1))
+        field.rightView = UIView(frame: CGRect(x: 0, y: 0, width: Spacing.space16, height: Spacing.space1))
         field.rightViewMode = .always
         field.autocapitalizationType = .sentences
         field.returnKeyType = .done
@@ -145,19 +145,19 @@ final class PresetEditorView: BaseView {
             scrollView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            stack.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor, constant: 16),
-            stack.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -24),
-            stack.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 20),
-            stack.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor, constant: -20),
-            stack.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor, constant: -40),
-            artwork.heightAnchor.constraint(equalToConstant: 150),
-            imageButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 44),
-            nameField.heightAnchor.constraint(greaterThanOrEqualToConstant: 56),
-            saveButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 56),
-            routineStack.topAnchor.constraint(equalTo: card.topAnchor, constant: 8),
-            routineStack.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -8),
-            routineStack.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 16),
-            routineStack.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -16)
+            stack.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor, constant: Spacing.space16),
+            stack.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -Spacing.space24),
+            stack.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: Spacing.space20),
+            stack.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor, constant: -Spacing.space20),
+            stack.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor, constant: -Spacing.space20 * 2),
+            artwork.heightAnchor.constraint(equalToConstant: Spacing.space150),
+            imageButton.heightAnchor.constraint(greaterThanOrEqualToConstant: Spacing.space44),
+            nameField.heightAnchor.constraint(greaterThanOrEqualToConstant: Spacing.space56),
+            saveButton.heightAnchor.constraint(greaterThanOrEqualToConstant: Spacing.space56),
+            routineStack.topAnchor.constraint(equalTo: card.topAnchor, constant: Spacing.space8),
+            routineStack.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -Spacing.space8),
+            routineStack.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: Spacing.space16),
+            routineStack.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -Spacing.space16)
         ])
     }
 

@@ -72,39 +72,23 @@ class MainCoordinator: @preconcurrency MainCoordinatorProtocol {
     var navigationController: UINavigationController
     var childCoordinators = [Coordinator]()
     var type: CoordinatorType { .app }
-    private let preferences: CatodoroPreferences
-    private let coreDataManager: CatodoroCoreDataManaging
-    weak var liveActivityManager: LiveActivityManaging?
-    private let hapticsManager: HapticsManaging?
-    private let syncLifecycleManager: SyncLifecycleManaging
+    private let dependencies: AppDependencies
 
     required init(_ navigationController: UINavigationController? = nil,
-                  preferences: CatodoroPreferences,
-                  liveActivityManager: LiveActivityManaging?,
-                  hapticsManager: HapticsManaging? = nil,
-                  coreDataManager: CatodoroCoreDataManaging,
-                  syncLifecycleManager: SyncLifecycleManaging
-    ) {
-        self.coreDataManager = coreDataManager
+                  dependencies: AppDependencies) {
         self.navigationController = navigationController ?? BaseNavigationController()
-        self.preferences = preferences
-        self.liveActivityManager = liveActivityManager
-        self.hapticsManager = hapticsManager
-        self.syncLifecycleManager = syncLifecycleManager
-        self.navigationController.setNavigationBarHidden(true, animated: false)        
+        self.dependencies = dependencies
+        self.navigationController.setNavigationBarHidden(true, animated: false)
     }
 
     func start() {
-        syncLifecycleManager.start()
+        dependencies.syncLifecycleManager.start()
 
-        if preferences.hasCompletedOnboarding {
+        if dependencies.preferences.hasCompletedOnboarding {
             showMainFlow()
         } else {
-            let viewModel = OnboardingViewModel(
-                lifecycle: syncLifecycleManager,
-                preferences: preferences
-            )
-            let onboarding = OnboardingCoordinator(navigationController: navigationController, viewModel: viewModel)
+            let onboarding = OnboardingCoordinator(navigationController: navigationController,
+                                                   dependencies: dependencies)
             onboarding.finishDelegate = self
             childCoordinators.append(onboarding)
             onboarding.start()
@@ -112,12 +96,7 @@ class MainCoordinator: @preconcurrency MainCoordinatorProtocol {
     }
 
     func showMainFlow() {
-        let tabCoordinator = TabCoordinator.init(navigationController,
-                                                 preferences: preferences,
-                                                 liveActivityManager: liveActivityManager,
-                                                 hapticsManager: hapticsManager,
-                                                 coreDataManager: coreDataManager,
-                                                 syncLifecycleManager: syncLifecycleManager)
+        let tabCoordinator = TabCoordinator(navigationController, dependencies: dependencies)
         tabCoordinator.finishDelegate = self
         tabCoordinator.start()
         childCoordinators.append(tabCoordinator)

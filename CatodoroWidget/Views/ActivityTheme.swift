@@ -82,7 +82,7 @@ struct ActivityProgress: View {
             }
         }
         .progressViewStyle(.linear)
-        .frame(height: 4, alignment: .center)
+        .frame(height: Spacing.space4, alignment: .center)
         .animation(nil, value: state.timerStatus)
         .accessibilityHidden(true)
     }
@@ -100,7 +100,7 @@ struct ActivityControls: View {
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: Spacing.space8) {
             if state.timerStatus == .finished {
                 Button(intent: RepeatTimerIntent()) {
                     Label(AppStrings.Common.focusAgain, systemImage: "arrow.clockwise")
@@ -118,13 +118,13 @@ struct ActivityControls: View {
                         state.timerStatus == .paused ? AppStrings.Common.resume : AppStrings.Common.pause,
                         systemImage: state.timerStatus == .paused ? "play.fill" : "pause.fill"
                     )
-                    .frame(width: 80)
+                    .frame(width: Spacing.space80)
                     .transition(.identity)
                 }
             }
 
             Button(intent: StopTimerIntent()) {
-                Label("End", systemImage: "xmark")
+                Label(AppStrings.Common.end, systemImage: "xmark")
             }
         }
         .font(.system(.caption, design: .rounded, weight: .semibold))

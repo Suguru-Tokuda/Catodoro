@@ -27,16 +27,6 @@ final class Task6Tests: XCTestCase {
 
     private var instant = Date(timeIntervalSince1970: 1000)
 
-    private func timer(preferences: CatodoroPreferencesProtocol? = nil,
-                       activities: LiveActivityManaging? = nil, count: Int = 3) -> TimerViewModel {
-        let timer = TimerViewModel(audioManager: MockAudioManager(), preferences: preferences,
-                                   liveActivityManager: activities, now: { [unowned self] in self.instant },
-                                   schedulesTicks: false, applicationIsActive: { true })
-        timer.configure(totalDuration: 10, intervalDuration: 5, intervals: count)
-        timer.testHooks.startTimer()
-        return timer
-    }
-
     func test_liveActivityPreferenceDefaultsOnAndPersistsBothValues() throws {
         let suite = "Task6-" + UUID().uuidString
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
@@ -62,167 +52,70 @@ final class Task6Tests: XCTestCase {
         XCTAssertEqual(preferences.color, "nPink")
     }
 
-    func test_skipBreakIsIgnoredDuringFocusAndAfterCompletion() {
-        let model = timer(count: 1)
-        let original = model.presentationSubject.value
-        model.skipBreak()
-        XCTAssertEqual(model.presentationSubject.value, original)
-        instant += 10
-        model.refresh()
-        model.skipBreak()
-        XCTAssertEqual(model.presentationSubject.value.status, .finished)
-        XCTAssertEqual(model.presentationSubject.value.sessionIndex, 1)
+    // MARK: - Live Activity / alarm buttons → CountdownIntentRouter
+
+    func test_intentsRouteToCountdownHandlerWithTheirAlarmID() async throws {
+        let countdown = MockCountdown()
+        let previous = CountdownIntentRouter.handler
+        CountdownIntentRouter.handler = countdown
+        defer { CountdownIntentRouter.handler = previous }
+
+        _ = try await PlayTimerIntent(alarmID: "a1").perform()
+        _ = try await SkipBreakIntent(alarmID: "a2").perform()
+        _ = try await AdvanceIntent(alarmID: "a3").perform()
+        _ = try await RepeatTimerIntent(alarmID: "a4").perform()
+        _ = try await StopTimerIntent(alarmID: "a5").perform()
+        _ = try await EndCycleIntent(alarmID: "a6").perform()
+
+        XCTAssertEqual(countdown.calls, [
+            .togglePauseResume("a1"),
+            .skipBreak("a2"),
+            .advance("a3"),
+            .restartCycle("a4"),
+            .endCycle("a5"),
+            .endCycle("a6"),
+        ])
     }
 
-    func test_skipPausedBreakStartsFullNextFocusAndPreservesRemainingSessions() {
-        let model = timer()
-        instant += 10
-        model.refresh()
-        model.testHooks.pauseTimer()
-        XCTAssertTrue(model.isBreak)
-        model.skipBreak()
-        let state = model.presentationSubject.value
-        XCTAssertFalse(state.isBreak)
-        XCTAssertEqual(state.status, .playing)
-        XCTAssertEqual(state.sessionIndex, 2)
-        XCTAssertEqual(state.remainingDuration, 10)
-        instant += 10
-        model.refresh()
-        XCTAssertTrue(model.isBreak)
-        XCTAssertEqual(model.presentationSubject.value.sessionIndex, 2)
-    }
-
-    func test_skipReconcilesExpiredBreakWithoutSkippingNewFocus() {
-        let model = timer()
-        instant += 10
-        model.refresh()
-        instant += 7
-        model.skipBreak()
-        XCTAssertFalse(model.isBreak)
-        XCTAssertEqual(model.presentationSubject.value.sessionIndex, 2)
-        XCTAssertEqual(model.presentationSubject.value.remainingDuration, 8)
-    }
-
-    func test_liveActivityIntentUsesSameSkipActionAndUpdatesActivity() async throws {
-        let activity = MockLiveActivityManager()
-        let model = timer(activities: activity)
-        instant += 10
-        model.refresh()
-        _ = try await SkipBreakIntent().perform()
-        await model.testHooks.flushLiveActivityOperations()
-        XCTAssertEqual(model.presentationSubject.value.sessionIndex, 2)
-        XCTAssertFalse(model.isBreak)
-        XCTAssertEqual(activity.lastState?.timerType, .main)
-        XCTAssertEqual(activity.lastState?.currentTimerValue, 10)
-        XCTAssertEqual(activity.lastState?.phaseDuration, 10)
-    }
-
-    func test_playIntentUpdatesRegisteredTimerOnPauseAndResume() async throws {
-        let activities = MockLiveActivityManager()
-        let model = timer(activities: activities)
-        let previousTimer = TimerController.shared.activeTimer
-        TimerController.shared.activeTimer = model
-        defer { TimerController.shared.activeTimer = previousTimer }
-
-        instant += 2
-        _ = try await PlayTimerIntent().perform()
-        XCTAssertEqual(model.timerStatus, .paused)
-        XCTAssertEqual(activities.lastState?.timerStatus, .paused)
-        XCTAssertEqual(activities.lastState?.currentTimerValue, 8)
-
-        instant += 20
-        _ = try await PlayTimerIntent().perform()
-        XCTAssertEqual(model.timerStatus, .playing)
-        XCTAssertEqual(activities.lastState?.timerStatus, .playing)
-        XCTAssertEqual(activities.lastState?.currentTimerValue, 8)
-        XCTAssertEqual(activities.lastState?.endTime, instant + 8)
-    }
-
-    func test_playIntentWaitsForLiveActivityUpdateBeforeReturning() async throws {
-        let activities = MockLiveActivityManager()
-        let model = timer(activities: activities)
-        let previousTimer = TimerController.shared.activeTimer
-        TimerController.shared.activeTimer = model
-        defer { TimerController.shared.activeTimer = previousTimer }
-
-        let updateStarted = expectation(description: "Activity update started")
-        var releaseUpdate: CheckedContinuation<Void, Never>?
-        activities.beforeUpdate = {
-            await withCheckedContinuation { continuation in
-                releaseUpdate = continuation
-                updateStarted.fulfill()
-            }
-        }
-        var intentReturned = false
-        let operation = Task { @MainActor in
-            _ = try await PlayTimerIntent().perform()
-            intentReturned = true
-        }
-
-        await fulfillment(of: [updateStarted], timeout: 2)
-        XCTAssertEqual(model.timerStatus, .paused)
-        XCTAssertFalse(intentReturned, "The intent must await the activity update")
-        XCTAssertNil(activities.lastState)
-
-        releaseUpdate?.resume()
-        try await operation.value
-        XCTAssertTrue(intentReturned)
-        XCTAssertEqual(activities.lastState?.timerStatus, .paused)
-    }
-
-    func test_playIntentThrowsWhenNoTimerIsRegistered() async {
-        let previousTimer = TimerController.shared.activeTimer
-        TimerController.shared.activeTimer = nil
-        defer { TimerController.shared.activeTimer = previousTimer }
+    func test_intentsPassHandlerErrorsBack() async {
+        let countdown = MockCountdown()
+        countdown.actionError = CountdownError.invalidSteps
+        let previous = CountdownIntentRouter.handler
+        CountdownIntentRouter.handler = countdown
+        defer { CountdownIntentRouter.handler = previous }
 
         do {
-            _ = try await PlayTimerIntent().perform()
-            XCTFail("Expected noActiveTimer")
-        } catch TimerController.TimerError.noActiveTimer {
-            // Expected: an intent without an active routine cannot toggle a timer.
+            _ = try await PlayTimerIntent(alarmID: "a1").perform()
+            XCTFail("Expected the handler's error")
+        } catch CountdownError.invalidSteps {
+            // Expected.
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
     }
 
-    func test_disabledPreferencePreventsActivityWithoutStoppingTimer() {
-        let preferences = MockPreferences()
-        preferences.setLiveActivityEnabled(false)
-        let activities = MockLiveActivityManager()
-        let model = timer(preferences: preferences, activities: activities)
-        XCTAssertFalse(activities.didStartLiveActivity)
-        XCTAssertEqual(model.presentationSubject.value.status, .playing)
+    func test_intentsWithoutHandlerDoNothing() async throws {
+        let previous = CountdownIntentRouter.handler
+        CountdownIntentRouter.handler = nil
+        defer { CountdownIntentRouter.handler = previous }
+
+        _ = try await PlayTimerIntent(alarmID: "a1").perform()
+        _ = try await StopTimerIntent(alarmID: "a1").perform()
     }
 
-    func test_toggleDuringPausedRoutineEndsAndRecreatesActivityWithCurrentState() async {
-        let preferences = MockPreferences()
-        let activities = MockLiveActivityManager()
-        let model = timer(preferences: preferences, activities: activities)
-        model.testHooks.pauseTimer()
-        let ended = expectation(description: "Activity ends when disabled")
-        activities.onEnd = { ended.fulfill() }
-        preferences.setLiveActivityEnabled(false)
-        await fulfillment(of: [ended], timeout: 1)
-        XCTAssertEqual(model.presentationSubject.value.status, .paused)
-        let started = expectation(description: "Activity restarts when enabled")
-        activities.onStart = { started.fulfill() }
-        preferences.setLiveActivityEnabled(true)
-        await fulfillment(of: [started], timeout: 1)
-        await model.testHooks.flushLiveActivityOperations()
-        XCTAssertEqual(activities.lastState?.timerStatus, .paused)
-        XCTAssertEqual(activities.lastState?.currentTimerValue, 10)
-        activities.onEnd = nil
-        activities.onStart = nil
+    func test_appDelegateStyleWiring_routesToDependenciesCountdown() async throws {
+        let dependencies = TestDependencies()
+        defer { dependencies.tearDown() }
+        let previous = CountdownIntentRouter.handler
+        CountdownIntentRouter.handler = dependencies.app.countdown
+        defer { CountdownIntentRouter.handler = previous }
+
+        _ = try await SkipBreakIntent(alarmID: "b1").perform()
+
+        XCTAssertEqual(dependencies.countdown.calls, [.skipBreak("b1")])
     }
 
-    func test_authorizationFailureIsReportedAndTimerRemainsUsable() {
-        let activities = MockLiveActivityManager()
-        activities.startError = LiveActivityError.disabled
-        let model = timer(activities: activities)
-        XCTAssertNotNil(model.liveActivityError)
-        XCTAssertEqual(model.presentationSubject.value.status, .playing)
-        model.testHooks.pauseTimer()
-        XCTAssertEqual(model.presentationSubject.value.status, .paused)
+    func test_liveActivityManagerRefusesToStartWhenActivitiesAreDisabled() {
         let manager = LiveActivityManager(activitiesEnabled: { false })
         XCTAssertThrowsError(try manager.startLiveActivity(name: "Catodoro", currentTimerValue: 10,
                                                           endTime: instant + 10, intervals: 3, interval: 1,

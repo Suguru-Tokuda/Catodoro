@@ -5,6 +5,7 @@
 //  Created by Suguru Tokuda on 8/27/24.
 //
 
+import CatodoroShared
 import UIKit
 
 enum TimerButtonStatus {
@@ -27,8 +28,8 @@ class PlayPauseButton: UIButton {
     let buttonWidth: CGFloat
     let config = UIImage.SymbolConfiguration(weight: .thin)
 
-    init(buttonHeight: CGFloat = 80,
-         buttonWidth: CGFloat = 80,
+    init(buttonHeight: CGFloat = Spacing.space80,
+         buttonWidth: CGFloat = Spacing.space80,
          buttonStatus: TimerButtonStatus = .playing) {
         self.buttonHeight = buttonHeight
         self.buttonWidth = buttonWidth

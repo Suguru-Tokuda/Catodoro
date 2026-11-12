@@ -80,7 +80,7 @@ class TimerPickerView: BaseView {
     }
     
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        fatalError(AppStrings.Diagnostics.initCoderNotImplemented)
     }
 
     override func constructSubviews() {
@@ -115,8 +115,8 @@ class TimerPickerView: BaseView {
         ])
 
         NSLayoutConstraint.activate([
-            labelStackView.heightAnchor.constraint(greaterThanOrEqualToConstant: 24),
-            pickersStackView.heightAnchor.constraint(equalToConstant: 180)
+            labelStackView.heightAnchor.constraint(greaterThanOrEqualToConstant: Spacing.space24),
+            pickersStackView.heightAnchor.constraint(equalToConstant: Spacing.space180)
         ])
     }
 

@@ -9,70 +9,67 @@ import CatodoroShared
 import UIKit
 
 protocol SoundSelectionViewControllerDelegate: AnyObject {
-    func onSoundSelect()
+    /// Done was tapped; the screen can be dismissed.
+    func soundSelectionViewControllerDidFinish(_ viewController: SoundSelectionViewController)
+    /// The screen left the navigation stack (Back, swipe, Done or pop).
+    func soundSelectionViewControllerDidClose(_ viewController: SoundSelectionViewController)
 }
 
-class SoundSelectionViewController: BaseOptionSelectionViewController {
+final class SoundSelectionViewController: BaseOptionSelectionViewController {
     weak var delegate: SoundSelectionViewControllerDelegate?
-    private let audioManager: AudioManaging
-    var viewModel: OptionSelectionViewModel
+    private let viewModel: SoundSelectionViewModel
 
-    init(viewModel: OptionSelectionViewModel, titleLabelText: String, audioManager: AudioManaging = AudioManager()) {
-        self.audioManager = audioManager
+    init(viewModel: SoundSelectionViewModel, titleLabelText: String) {
         self.viewModel = viewModel
         super.init(titleLabelText: titleLabelText)
     }
-    
+
     required init?(coder: NSCoder) {
         nil
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneTapped))
         optionTableView.delegate = self
         optionTableView.dataSource = self
+        viewModel.onPreviewFailed = { [weak self] _ in
+            self?.showPreviewFailedAlert()
+        }
     }
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        guard isMovingFromParent || navigationController?.isBeingDismissed == true else { return }
+        if isMovingFromParent || navigationController?.isBeingDismissed == true {
+            viewModel.stopPreview()
+        }
+    }
 
-        let manager = audioManager
-        AudioManager.playbackQueue.async {
-            try? manager.stop()
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        if isMovingFromParent {
+            delegate?.soundSelectionViewControllerDidClose(self)
         }
     }
 
     @objc private func doneTapped() {
-        delegate?.onSoundSelect()
+        delegate?.soundSelectionViewControllerDidFinish(self)
+    }
+
+    private func showPreviewFailedAlert() {
+        let alert = UIAlertController(title: AppStrings.Settings.couldntPreviewSound,
+                                      message: AppStrings.Settings.pleaseTryAgain,
+                                      preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: AppStrings.Common.ok, style: .default))
+        present(alert, animated: true)
     }
 }
 
 extension SoundSelectionViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectedId = viewModel.options[indexPath.row].id
-        viewModel.selectedId = selectedId
         tableView.deselectRow(at: indexPath, animated: true)
-        viewModel.setSound(soundId: selectedId)
+        viewModel.selectOption(at: indexPath.row)
         optionTableView.reloadData()
-
-        let manager = audioManager
-        let file = SoundOptions(selectedId).fileName
-        AudioManager.playbackQueue.async {
-            do {
-                try manager.stop()
-                try manager.setPlayer(fileName: file, fileExtension: "mp3")
-                try manager.play(numberOfLoops: 0)
-            } catch {
-                DispatchQueue.main.async { [weak self = self] in
-                    guard let self else { return }
-
-                    let alert = UIAlertController(title: AppStrings.Settings.couldntPreviewSound, message: AppStrings.Settings.pleaseTryAgain, preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: AppStrings.Common.ok, style: .default))
-                    present(alert, animated: true)
-                }
-            }
-        }
     }
 }
 
@@ -80,14 +77,14 @@ extension SoundSelectionViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         viewModel.options.count
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if let cell = tableView.dequeueReusableCell(withIdentifier: OptionSelectionViewCell.reuseIdentifier, for: indexPath) as? OptionSelectionViewCell {
-            let option = viewModel.options[indexPath.row]
-            cell.configure(optionLabelText: option.title, isSelected: option.selected)
-            return cell
-        } else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: OptionSelectionViewCell.reuseIdentifier,
+                                                       for: indexPath) as? OptionSelectionViewCell else {
             return UITableViewCell()
         }
+        let option = viewModel.options[indexPath.row]
+        cell.configure(optionLabelText: option.title, isSelected: option.selected)
+        return cell
     }
 }

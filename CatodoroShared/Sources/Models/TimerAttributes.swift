@@ -37,7 +37,8 @@ public struct TimerAttributes: ActivityAttributes {
                     timerType: TimerType,
                     timerStatus: TimerStatus,
                     phaseDuration: TimeInterval? = nil,
-                    accentCode: String? = nil) {
+                    accentCode: String? = nil
+        ) {
             self.phaseDuration = phaseDuration
             self.accentCode = accentCode
             self.currentTimerValue = currentTimerValue

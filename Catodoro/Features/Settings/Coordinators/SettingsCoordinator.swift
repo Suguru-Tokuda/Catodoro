@@ -13,82 +13,51 @@ class SettingsCoordinator: Coordinator {
     var type: CoordinatorType { .feature }
     var childCoordinators: [Coordinator] = []
     var navigationController: UINavigationController
-    var preferences: CatodoroPreferencesProtocol?
-    private let syncLifecycleManager: SyncLifecycleManaging?
+    private let dependencies: AppDependencies
 
     init(navigationController: UINavigationController = BaseNavigationController(),
-         syncLifecycleManager: SyncLifecycleManaging? = nil) {
-        self.syncLifecycleManager = syncLifecycleManager
+         dependencies: AppDependencies) {
         self.navigationController = navigationController
+        self.dependencies = dependencies
     }
 
     func start() {
-        let settingsViewController = SettingsViewController(preferences: preferences, syncLifecycleManager: syncLifecycleManager)
+        let settingsViewController = SettingsViewController(preferences: dependencies.preferences,
+                                                            syncLifecycleManager: dependencies.syncLifecycleManager)
         settingsViewController.delegate = self
         navigationController.pushViewController(settingsViewController, animated: false)
     }
 
-    private func pop() {
-        navigationController.popViewController(animated: true)
+    /// Each option screen gets its own child coordinator. It removes itself
+    /// through `coordinatorDidFinish` once its screen leaves the stack.
+    private func startChild(_ child: Coordinator) {
+        child.finishDelegate = self
+        childCoordinators.append(child)
+        child.start()
     }
 
-    private func popToRoot() {
-        navigationController.popToRootViewController(animated: true)
-    }
-
-    private func navigateToColorSelectionsView() {
-        var options: [OptionModel] = []
-        let selectedColorCode = preferences?.color ?? ColorOptions.neonBlue.code
-        ColorOptions.allCases.forEach {
-            options.append(.init(id: $0.code,
-                                 title: $0.title,
-                                 selected: $0.code == selectedColorCode,
-                                 color: $0.color))
+    private func makeChild(for option: SettingOptions) -> Coordinator {
+        switch option {
+        case .alertStyle:
+            AlertStyleSelectionCoordinator(navigationController: navigationController, dependencies: dependencies)
+        case .color:
+            ColorSelectionCoordinator(navigationController: navigationController, dependencies: dependencies)
+        case .sound:
+            SoundSelectionCoordinator(navigationController: navigationController, dependencies: dependencies)
         }
-        let viewModel = OptionSelectionViewModel(options: options)
-        viewModel.preferences = preferences
-        viewModel.selectedId = selectedColorCode
-
-        let colorSelectionViewController = ColorSelectionViewController(viewModel: viewModel, titleLabelText: AppStrings.Settings.color)
-        colorSelectionViewController.delegate = self
-        navigationController.pushViewController(colorSelectionViewController, animated: true)
-    }
-
-    private func navigateToSoundSelectionsView() {
-        var options: [OptionModel] = []
-        let selectedSoundId = preferences?.sound ?? SoundOptions.meowRegular.id
-        SoundOptions.allCases.forEach {
-            options.append(.init(id: $0.id, title: $0.title, selected: $0.id == selectedSoundId))
-        }
-        let viewModel = OptionSelectionViewModel(options: options)
-        viewModel.preferences = preferences
-        viewModel.selectedId = selectedSoundId
-        
-        let soundSelectionViewController = SoundSelectionViewController(viewModel: viewModel, titleLabelText: AppStrings.Settings.sound)
-        soundSelectionViewController.delegate = self
-        navigationController.pushViewController(soundSelectionViewController, animated: true)
     }
 }
 
 extension SettingsCoordinator: SettingsViewControllerDelegate {
     func onSettingMenuSelected(settingOption: SettingOptions) {
-        switch settingOption {
-        case .color:
-            navigateToColorSelectionsView()
-        case .sound:
-            navigateToSoundSelectionsView()
-        }
+        // One option screen at a time; ignores a quick double tap on a row.
+        guard childCoordinators.isEmpty else { return }
+        startChild(makeChild(for: settingOption))
     }
 }
 
-extension SettingsCoordinator: SoundSelectionViewControllerDelegate {
-    func onSoundSelect() {
-        navigationController.popViewController(animated: true)
-    }
-}
-
-extension SettingsCoordinator: ColorSelectionViewControllerDelegate {
-    func onColorSelected() {
-        navigationController.popViewController(animated: true)
+extension SettingsCoordinator: CoordinatorFinishDelegate {
+    func coordinatorDidFinish(childCoordinator: Coordinator) {
+        childCoordinators.removeAll { $0 === childCoordinator }
     }
 }

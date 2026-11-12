@@ -21,7 +21,7 @@ final class DurationSelectionView: RoutineSelectionView {
         let stack = UIStackView()
         stack.axis = .horizontal
         stack.distribution = .fillEqually
-        stack.spacing = CatTheme.Spacing.small
+        stack.spacing = Spacing.space8
 
         return stack
     }()
@@ -52,7 +52,7 @@ final class DurationSelectionView: RoutineSelectionView {
             configuration.baseBackgroundColor = CatTheme.color(0xF1E8DC, 0x39333D)
             configuration.cornerStyle = .capsule
             button.configuration = configuration
-            button.heightAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
+            button.heightAnchor.constraint(greaterThanOrEqualToConstant: Spacing.space44).isActive = true
             button.addAction(UIAction { [weak self] _ in
                 self?.onShortcutSelection?(minutes)
             }, for: .touchUpInside)
