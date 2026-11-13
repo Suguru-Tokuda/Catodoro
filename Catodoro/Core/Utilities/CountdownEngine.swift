@@ -257,8 +257,8 @@ final class CountdownEngine: NSObject, ObservableObject {
     ///     "Start break" button then has the system count it down (`postAlert`) even if the
     ///     app never runs; `AdvanceIntent` swaps in a real break alarm when it can.
     @available(iOS 26.0, *)
-    private func scheduleAlarm(id: UUID, step: CycleStep, duration: TimeInterval, breakAfter: TimeInterval?) async throws {
-        let alert = alertContent(for: step, alarmID: id, startsBreak: breakAfter != nil)
+    private func scheduleAlarm(id: UUID, step: CycleStep, duration: TimeInterval, startsBreak: Bool) async throws {
+        let alert = Self.alertContent(for: step, alarmID: id, startsBreak: startsBreak)
 
         let presentation = AlarmPresentation(
             alert: alert.presentation,
@@ -288,7 +288,7 @@ final class CountdownEngine: NSObject, ObservableObject {
         let soundFile = "\(SoundOptions(preferences.sound ?? "").fileName).mp3"
 
         let config = AlarmManager.AlarmConfiguration(
-            countdownDuration: Alarm.CountdownDuration(preAlert: duration, postAlert: breakAfter),
+            countdownDuration: Alarm.CountdownDuration(preAlert: duration, postAlert: nil),
             attributes: attributes,
             stopIntent: alert.stopIntent,
             secondaryIntent: alert.secondaryIntent,
@@ -596,12 +596,16 @@ final class CountdownEngine: NSObject, ObservableObject {
     private func systemBreakEndDate(from current: CycleSession, movingTo index: Int) -> Date? {
         guard current.backend == .alarmKit,
               index == current.index + 1,
-              Self.breakDuration(after: current.index, in: current.steps) != nil else { return nil }
+              let breakLength = Self.breakDuration(after: current.index, in: current.steps) else { return nil }
         guard #available(iOS 26.0, *) else { return nil }
 
         let activity = Activity<AlarmAttributes<CatodoroAlarmMetadata>>.activities
             .first { $0.content.state.alarmID == current.alarmID }
         guard case .countdown(let countdown)? = activity?.content.state.mode else { return nil }
+
+        guard abs(countdown.totalCountdownDuration - breakLength) < 1,
+              countdown.fireDate > .now.addingTimeInterval(1) else { return nil }
+        
         return countdown.fireDate
     }
 
@@ -650,8 +654,10 @@ final class CountdownEngine: NSObject, ObservableObject {
             switch backend {
             case .alarmKit:
                 guard #available(iOS 26.0, *) else { throw CountdownError.alarmKitUnavailable }
-                try await scheduleAlarm(id: alarmID, step: step, duration: duration,
-                                        breakAfter: Self.breakDuration(after: index, in: steps))
+                try await scheduleAlarm(id: alarmID, step: step,
+                                        duration: duration,
+                                        startsBreak: Self.breakDuration(after: index, in: steps) != nil
+                )
             case .liveActivity:
                 guard let session else { return }
 
@@ -696,7 +702,9 @@ final class CountdownEngine: NSObject, ObservableObject {
     }
 
     @available(iOS 26.0, *)
-    private func alertContent(for step: CycleStep, alarmID: UUID, startsBreak: Bool) -> (
+    /// What the alert shows when `step` ends, and what its two buttons run.
+    /// Static (no engine state) so tests can check every case.
+    static func alertContent(for step: CycleStep, alarmID: UUID, startsBreak: Bool) -> (
         presentation: AlarmPresentation.Alert,
         stopIntent: any LiveActivityIntent,
         secondaryIntent: (any LiveActivityIntent)?
@@ -725,25 +733,29 @@ final class CountdownEngine: NSObject, ObservableObject {
             // runs even if the app can't. Its intent also wakes the app, which replaces this
             // alarm with a proper break alarm for the time that's left.
             return (
-                AlarmPresentation.Alert(
+                presentation: AlarmPresentation.Alert(
                     title: AppStrings.Alarm.focusComplete,
-                    secondaryButton: AlarmButton(text: AppStrings.Alarm.startBreakButton, textColor: .white, systemImageName: "moon.zzz.fill"),
-                    secondaryButtonBehavior: .countdown
+                    secondaryButton: AlarmButton(
+                        text: AppStrings.Alarm.skipBreakButton,
+                        textColor: .white,
+                        systemImageName: "forward.end.fill"
+                    ),
+                    secondaryButtonBehavior: .custom
                 ),
-                AdvanceIntent(alarmID: id),
-                AdvanceIntent(alarmID: id)
+                stopIntent: AdvanceIntent(alarmID: id),
+                secondaryIntent: SkipBreakIntent(alarmID: id)
             )
         case .catnap:
             return (
-                AlarmPresentation.Alert(title: AppStrings.Alarm.breakOver),
-                AdvanceIntent(alarmID: id),
-                nil
+                presentation: AlarmPresentation.Alert(title: AppStrings.Alarm.breakOver),
+                stopIntent: AdvanceIntent(alarmID: id),
+                secondaryIntent: nil
             )
         @unknown default:
             return (
-                AlarmPresentation.Alert(title: AppStrings.Alarm.breakOver),
-                AdvanceIntent(alarmID: id),
-                nil
+                presentation: AlarmPresentation.Alert(title: AppStrings.Alarm.breakOver),
+                stopIntent: AdvanceIntent(alarmID: id),
+                secondaryIntent: nil
             )
         }
     }

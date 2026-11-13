@@ -19,8 +19,8 @@ public enum AppStrings {
             LocalizedStringResource("alarm.restartButton", defaultValue: "Restart", bundle: .atURL(bundle.bundleURL))
         }
 
-        public static var startBreakButton: LocalizedStringResource {
-            LocalizedStringResource("alarm.startBreakButton", defaultValue: "Start break", bundle: .atURL(bundle.bundleURL))
+        public static var skipBreakButton: LocalizedStringResource {
+            LocalizedStringResource("alarm.skipBreakButton", defaultValue: "Skip break", bundle: .atURL(bundle.bundleURL))
         }
 
         public static var paused: LocalizedStringResource {

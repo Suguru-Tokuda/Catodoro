@@ -100,13 +100,13 @@
         }
       }
     },
-    "alarm.startBreakButton" : {
+    "alarm.skipBreakButton" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Start break"
+            "value" : "Skip break"
           }
         }
       }

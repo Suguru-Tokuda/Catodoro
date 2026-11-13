@@ -28,7 +28,7 @@ struct AppStringsTests {
     @Test func newCatalogKeysAreCompiledIntoSharedFramework() throws {
         let bundle = try #require(Bundle(identifier: "com.sugurutokuda.CatodoroShared"))
         let expected = [
-            "alarm.startBreakButton": "Start break",
+            "alarm.skipBreakButton": "Skip break",
             "alarm.breakOver": "Break's over",
             "alertStyles.liveActivityTitle": "Live Activity Only",
             "alertStyles.openSettings": "Open Settings",
